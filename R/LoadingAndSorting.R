@@ -12,7 +12,7 @@
 #' @param spectroLiP Spectronaut report of LiP data.
 #' Spectronaut report should have been exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.
 #' @param spectroTrp Spectronaut report of Trp data
-#' Spectronaut report should have been exportet using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.
+#' Spectronaut report should have been exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.
 #' @param analysisLvl a character defining the level on which the peptide/protein quantities should be exported.
 #' 'Peptide' by default, can alternatively be set to "ModifiedPeptide" or "Precursor".
 #' @param sampleName a character defining the column of the Spectronaut report where samples names are provided.
