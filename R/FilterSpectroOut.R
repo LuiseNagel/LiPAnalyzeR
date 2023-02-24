@@ -27,7 +27,7 @@
 #' Default is 'TRUE'.
 #' @param thresholdMinLogQuant a numeric value, quantities below this threshold will be set to NA
 #' if \code{filterMinLogQuant} = TRUE.
-#' Default is 10. 12 would be an advised stricture choice.
+#' Default is set tp 10. Setting it to 12 would be an optional stricter choice.
 #' @param filterNA a boolean value, defining peptides should be filtered based on number of NAs.
 #' Default is 'TRUE'.
 #' @param maxNAperCondition a numeric value, defining maximal number of NAs per condition.
