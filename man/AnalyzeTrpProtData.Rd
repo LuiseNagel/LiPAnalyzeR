@@ -5,52 +5,52 @@
 \title{Fitting model for protein abundance changes}
 \usage{
 AnalyzeTrpProtData(spectroList, annotS, annotPP,
-infoCondition = "Condition", infoProtName = "Protein",
-formulaBVLS = NULL, formulaOLS = NULL,
-lowBVLS = NULL, upBVLS = NULL, addBVLSbounds = F,
-LiPonly = F)
+infoCondition="Condition", infoProtName="Protein", formulaBVLS=NULL,
+formulaOLS=NULL, lowBVLS=NULL, upBVLS=NULL, addBVLSbounds=FALSE,
+LiPonly=FALSE)
 }
 \arguments{
-\item{spectroList}{a list of matrices, containing peptide/protein quantities.
-Rows represent features and columns refer to the samples.
-Names of the list items should be set to "LiPPep", "TrpPep" and "TrpProt"
-(if the LiP only version is run, names should refer to "LiPPep" and "LiPProt")}
+\item{spectroList}{A list of matrices, containing peptide/protein quantities.
+Rows represent features and columns refer to the samples. Names of the list
+items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
+version is run, names should refer to "LiPPep" and "LiPProt").}
 
-\item{annotS}{a data.frame object containing sample annotation.
-Rows are samples and must match to columns of \code{spectroList}.}
+\item{annotS}{A data.frame containing sample annotation. Rows are samples and
+must match to columns of \code{spectroList}.}
 
-\item{annotPP}{data.frame with peptide and protein annotatioon.
-Rows are features and must match to the row.names of SpectroList/QuantityMatrix.}
+\item{annotPP}{A data.frame with peptide and protein annotatioon. Rows are
+features and must match to the row.names of SpectroList/QuantityMatrix.}
 
-\item{infoCondition}{a character, providing column name of \code{annotS} in which condition is provided.
-Default is 'Condition'.}
+\item{infoCondition}{A character string providing column name of
+\code{annotS} in which condition is provided. Default is 'Condition'.}
 
-\item{infoProtName}{a character, providing column name of \code{annotPP} in which the protein names are provided.
-Default is 'Protein'.}
+\item{infoProtName}{A character string providing column name of
+\code{annotPP} in which the protein names are provided. Default is 'Protein'.}
 
-\item{formulaBVLS}{a character string or formula defining the BVLS models.
+\item{formulaBVLS}{A character string or formula defining the BVLS models.
 Default is defined as 'NULL'.}
 
-\item{formulaOLS}{a character string or formula defining the OLS models.
+\item{formulaOLS}{A character string or formula defining the OLS models.
 If 'NULL' will be set to 'Y~\code{infoCondition}}
 
-\item{lowBVLS}{a numeric vector defining lower boundaries of the coefficients of the BVLS models.
-Elements refer to definition of \code{formulaBVLS}.
+\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
+of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
 Default is defined as 'NULL'.}
 
-\item{upBVLS}{a numeric vector defining upper boundaries of the coefficients of the BVLS models.
-Elements refer to definition of \code{formulaBVLS}.
+\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
+of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
 Default is defined as 'NULL'.}
 
-\item{addBVLSbounds}{a boolean value, if TRUE as many bounds as additionally needed
-in each BVLS model are added to \code{lowBVLS} and \code{upBVLS}.
-Added boundaries are automatically set to -Inf for \code{lowBVLS} and Inf for \code{upBVLS}}
+\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each BVLS model are added to \code{lowBVLS} and
+\code{upBVLS}. Added boundaries are automatically set to -Inf for
+\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
+are for example also running batch correction in the BVLS model.}
 
-\item{LiPonly}{a boolean value, set to 'TRUE' if you are running the
-LiPonly version o the package and not providing trypsin-only data.}
+\item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
+LiPonly version of the package and not providing trypsin-only data.}
 }
 \description{
 Function to build linear regression models for fitting MS data
-
-add later
+and retrieving protein abundance variation between different conditions.
 }

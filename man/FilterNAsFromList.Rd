@@ -7,26 +7,27 @@
 FilterNAsFromList(SpectroList, annotS, infoCondition, maxNAperCondition)
 }
 \arguments{
-\item{SpectroList}{list of matrices, containing peptides/proteins quantities
-Rows represent features and columns refer to the samples.
-Can be output from \code{ExtractDataFromSpectro}.}
+\item{SpectroList}{A list ist of matrices, containing peptides/proteins
+quantities. Rows represent features and columns refer to the samples. Can be
+output from \code{ExtractDataFromSpectro}.}
 
-\item{annotS}{data.frame containing sample and condition annotation.
+\item{annotS}{A data.frame containing sample and condition annotation.
 Rows are samples and must match to columns of SpectroList/QuantityMatrix.
 Needs to contain column about different conditions/groups.}
 
-\item{infoCondition}{character, giving column of \code{annotPP} in which condition is provided.
-Default is 'Condition'.
-If NA filtering should not be applied on condition level provide only one value in
+\item{infoCondition}{A character string providing column name of
+\code{annotS} in which condition is provided. Default is 'Condition'. If NA
+filtering should not be applied on condition level provide only one value in
 \code{infoCondition} in \code{annotS}.}
 
-\item{maxNAperCondition}{numeric, defining maximal number of NAs per condition.
-Default is '0'.}
+\item{maxNAperCondition}{A numeric value, defining maximal number of NAs
+in an individual feature per condition. Default is '0'.}
 }
 \value{
 list of NA filtered matrices with petide/protein quantities.
 }
 \description{
 Function for preprocessing data before fitting models.
-Filtering can be applied based on different features such as digest type, proteotypic or number of missed cleavages.
+Filtering can be applied based on different features such as digest type,
+proteotypic or number of missed cleavages.
 }

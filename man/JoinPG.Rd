@@ -4,21 +4,23 @@
 \alias{JoinPG}
 \title{Combining protein names of identical peptides}
 \usage{
-JoinPG(annotPP, iRow, protCol = "Protein")
+JoinPG(annotPP, iCol, protCol = "Protein")
 }
 \arguments{
-\item{annotPP}{data.frame with peptide and protein annotation.
-Rows are features, must include a column protein name(s)}
+\item{annotPP}{A data.frame with peptide and protein annotation.
+Rows are feature and must include a column protein name(s)}
 
-\item{iRow}{character describing row in which features are provided
-Based on the chosen \code{analysisLvl}.}
+\item{iCol}{A character string defining the column in which features are
+provided. Based on the chosen \code{analysisLvl}.}
 
-\item{protCol}{character defining column in which protein name(s) are provide.
-'Protein' by default.}
+\item{protCol}{A character string defining column in which protein name(s)
+are provide. Set to 'Protein' by default.}
 }
 \value{
-data.frame including all necessary annotation on peptides and proteins with joined protein names
+A data.frame including all necessary annotation on peptides and
+proteins with joined protein names.
 }
 \description{
-Joining protein names together if a peptide was matched to different PG groups in different Spectronaut reports.
+Joining protein names together if a peptide was matched to
+different PG groups in different Spectronaut reports.
 }

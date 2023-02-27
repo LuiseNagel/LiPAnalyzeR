@@ -4,38 +4,44 @@
 \alias{GetSampleAnnot}
 \title{Creating data.frame with sample annotation from Spectronaut report}
 \usage{
-GetSampleAnnot(spectroOut, sampleName = "R.FileName", sampleCondition = "R.Condition",
-typeCondition = "factor", contrastCoding = "dummyCoding", baseLevel = NULL)
+GetSampleAnnot(spectroOut, sampleName="R.FileName",
+sampleCondition="R.Condition", typeCondition="factor",
+contrastCoding="dummyCoding", baseLevel=NULL)
 }
 \arguments{
-\item{spectroOut}{Spectronaut report.
-Spectronaut report should have been exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.}
+\item{spectroOut}{Spectronaut report of MS data. Spectronaut report should
+have been exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{sampleName}{character giving the column in which sample names can be found in the Spectronaut report.
-'R.FileName' by default.
-Only used if \code{analysisLvl} is set to 'Precursor'.}
+\item{sampleName}{A character string  giving the column in which sample names
+can be found in the Spectronaut report. Set to R.FileName' by default.}
 
-\item{sampleCondition}{character giving the column in which conditions which should be compared can be found in the Spectronaut report.
-'R.Condition' by default.}
+\item{sampleCondition}{A character string giving the column in which
+conditions can be found in the Spectronaut report. Set to 'R.Condition' by
+default.}
 
-\item{typeCondition}{character providing information if condition is a factor or continuous variable
-If condition is continuous has to be provided as numeric.
-'factor' is default.}
+\item{typeCondition}{A character string providing information if condition is
+a factor or continuous variable If condition is continuous it has to be
+provided as numeric in the Spectronaut report. Defined as ' 'factor' is
+default, alternatively set to 'continuous'/}
 
-\item{contrastCoding}{character providing information which type of contrast coding to use if condition is a factor
-'dummyCoding' is default, alternatives 'sumCoding' or 'wecCoding' can be chosen
-Can be set to NULL to not define contrast coding automatically}
+\item{contrastCoding}{A character string providing information which type of
+contrast coding to use if condition is a factor. Defined as 'dummyCoding' by
+default. Alternatively, 'sumCoding' or 'wecCoding' can be chosen. Can be set
+to NULL to not define contrast coding automatically in case you want to
+defined it yourself.}
 
-\item{baseLevel}{character giving name of reference level if condition is a factor
-and dummy or wec coding is used
-If not provided will choose the first condition in Spectronaut report}
+\item{baseLevel}{A character strong giving name of reference level if
+\code{typeCondition} is a factor. If not provided the function will choose
+the first condition in Spectronaut report as the reference level.}
 }
 \value{
-data.frame containing sample and condition annotation.
+Returns a data.frame containing sample and condition annotation.
 Rows are samples.
 }
 \description{
-Creates an annotation file on samples including information on the conditions of samples.
-This function only runs, if all the annotations were added to the Spectronaut report, else
-please create the sample annotation file yourself.
+Creates an annotation file on samples including information on
+the conditions of samples. This function only runs, if all the annotations
+were added to the Spectronaut report, else please create the sample
+annotation file yourself.
 }

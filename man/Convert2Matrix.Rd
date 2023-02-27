@@ -2,24 +2,31 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{Convert2Matrix}
 \alias{Convert2Matrix}
-\title{Extracting a single matrix from Spectronaut report}
+\title{Extracting a single peptude/protein matrix from Spectronaut report}
 \usage{
 Convert2Matrix(spectroOut, values, rows, cols)
 }
 \arguments{
-\item{spectroOut}{Spectronaut report}
+\item{spectroOut}{Spectronaut report exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{values}{character defining column in Spectronaut report where quantities to export are located}
+\item{values}{A character string defining the column in Spectronaut report
+where quantities to export are located/}
 
-\item{rows}{character defining column in Spectronaut report where the names of the quantities to export are located.
-If there are different quantities for the same \code{rows} the mean of these values is used.}
+\item{rows}{A character string defining the column in Spectronaut report
+where the names of the quantities to export are located. If there are
+different quantities for the same \code{rows} the mean of these values is
+used.}
 
-\item{cols}{character defining  in Spectronaut report where the sample or file name are located}
+\item{cols}{A character string defining the column in Spectronaut report
+where the sample or file names are located.}
 }
 \value{
-matrix with quantities, \code{rows} represent features and \code{cols} refer to the samples.
+Retunr a matrix atrix with quantities, \code{rows} represent features
+and \code{cols} refer to the samples.
 }
 \description{
-Function which exports quantities from the Spectronaut report and writes them into a matrix.
-Rows are peptides/proteins and columns are samples.
+This function exports quantities from the Spectronaut report
+and writes them into a matrix. Rows are peptides/proteins and columns are
+samples.
 }

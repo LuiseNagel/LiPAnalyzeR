@@ -4,58 +4,59 @@
 \alias{RunModel}
 \title{Fitting models to MS data}
 \usage{
-RunModel(spectroList, annotS = NULL, formulaBVLS = "Y~XPep+XProt", formulaOLS = "Y~Condition",
-lowBVLS = c(-1e9, 0, 0), upBVLS = c(Inf, Inf, Inf), addBVLSbounds = F,
-returnBVLSmodels = F, returnOLSmodels = F, LiPonly = F)
+RunModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
+formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
+addBVLSbounds=FALSE, returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
+LiPonly=FALSE)
 }
 \arguments{
-\item{spectroList}{a list of matrices, containing peptide/protein quantities.
-Rows represent features and columns refer to the samples.
-Names of the list items should be set to "LiPPep", "TrpPep" and "TrpProt"
-(if the LiP only version is run, names should refer to "LiPPep" and "LiPProt")}
+\item{spectroList}{A list of matrices, containing peptide/protein quantities.
+Rows represent features and columns refer to the samples. Names of the list
+items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
+version is run, names should refer to "LiPPep" and "LiPProt").}
 
-\item{annotS}{a data.frame object containing sample annotation.
-Rows are samples and must match to columns of \code{spectroList}.}
+\item{annotS}{A data.frame containing sample annotation. Rows are samples and
+must match to columns of \code{spectroList}.}
 
-\item{formulaBVLS}{a character string or formula defining the bounded variable least square models.
-Use Y for defining the quantity matrix with values to predict. ´
-If additional quantity matrices should be used as variables in the models,
-please refer to these as XPep and/or XProt.
+\item{formulaBVLS}{A character string or formula defining the bounded
+variable least square models. Use 'Y' for defining the quantity matrix with
+values to predict. ´ If additional quantity matrices should be used as
+variables in the models, please refer to these as 'XPep' and/or 'XProt'. All
+other variables in the formula should refer to columns in \code{annotS}. If
+BVLS should not be run, set to 'NULL'. Default is defined as 'Y~XPep+XProt'.}
+
+\item{formulaOLS}{A character string or formula defining the ordinary
+variable least square models. Use 'Y' for defining the quantity matrix with
+values to predict. ´If additional quantity matrices should be used as
+variables in the models, please refer to these as 'XPep' and/or 'XProt'.
 All other variables in the formula should refer to columns in \code{annotS}.
-If BVLS should not be run, set to 'NULL'.
-Default is defined as 'Y~XPep+XProt'.}
+If OLS should not be run, set to 'NULL'. Default is defined as 'Y~Condition'.
+If set to 'NULL', the residuals of the BVLS models will additionally be
+returned.}
 
-\item{formulaOLS}{a character string or formula defining the ordinary variable least square models.
-Use Y for defining the quantity matrix with values to predict. ´
-If additional quantity matrices should be used as variables in the models,
-please refer to these as XPep and/or XProt.
-All other variables in the formula should refer to columns in \code{annotS}.
-If OLS should not be run, set to 'NULL'.
-Default is defined as 'Y~Condition'.}
-
-\item{lowBVLS}{a numeric vector defining lower boundaries of the coefficients of the BVLS models.
-Elements refer to definition of \code{formulaBVLS}.
+\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
+of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
 Default is defined as 'c(-Inf, 0, 0)'}
 
-\item{upBVLS}{a numeric vector defining upper boundaries of the coefficients of the BVLS models.
-Elements refer to definition of \code{formulaBVLS}.
+\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
+of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
 Default is defined as 'c(Inf, Inf, Inf)'}
 
-\item{addBVLSbounds}{a boolean value, if TRUE as many bounds as additionally needed
-in each BVLS model are added to \code{lowBVLS} and \code{upBVLS}.
-Added boundaries are automatically set to -Inf for \code{lowBVLS} and Inf for \code{upBVLS}}
+\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each BVLS model are added to \code{lowBVLS} and
+\code{upBVLS}. Added boundaries are automatically set to -Inf for
+\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
+are for example also running batch correction in the BVLS model.}
 
-\item{returnBVLSmodels}{a boolean value, set to 'TRUE' for
-additionally return all BVLS models}
+\item{returnBVLSmodels}{A boolean value, set to 'TRUE' if you want the
+function to additionally return all BVLS models.}
 
-\item{returnOLSmodels}{a boolean value, set to 'TRUE' for
-additionally return all OLS models}
+\item{returnOLSmodels}{A boolean value, set to 'TRUE' if you want the
+function to additionally return all OLS models}
 
-\item{LiPonly}{a boolean value, set to 'TRUE' if you are running the
-LiPonly version o the package and not providing trypsin-only data}
+\item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
+LiPonly version of the package and not providing trypsin-only data.}
 }
 \description{
-Function to build linear regression models for fitting MS data
-
-add later
+Function to build linear regression models for fitting MS data.
 }

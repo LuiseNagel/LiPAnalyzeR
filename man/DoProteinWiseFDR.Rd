@@ -2,33 +2,34 @@
 % Please edit documentation in R/ModelResults.R
 \name{DoProteinWiseFDR}
 \alias{DoProteinWiseFDR}
-\title{Performing protein-wise FDR}
+\title{Performing protein-wise FDR on peptide p-values}
 \usage{
 DoProteinWiseFDR(vecPval, pAdjust, annotPP, infoFeature, infoProtein)
 }
 \arguments{
-\item{vecPval}{a named numeric vector with P values and corresponding features}
+\item{vecPval}{A named numeric vector with p-values and corresponding
+features}
 
-\item{pAdjust}{a character string giving the correction method to use in \code{p.adjust},
-Check \code{p.adjust} for more information.
-Set to 'fdr' (Benjamini & Hochberg (1995)) by default.}
+\item{pAdjust}{A character string giving the correction method to use when
+performing FDR Check ?p.adjust for more information. Set to 'fdr' (Benjamini
+& Hochberg (1995)) by default.}
 
-\item{annotPP}{a data.frame with peptide and protein annotation.
-Rows are features and columns must include \code{infoFeature} and \code{infoProtein}.
+\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
+features and columns must include \code{infoFeature} and \code{infoProtein}.
 Is only required if \code{correctPval} is set to 'protein-wise'.}
 
-\item{infoFeature}{a character string providing column name of \code{annotPP} where
-features which were fitted in the models are noted.
-Default is set to 'Peptide'.}
+\item{infoFeature}{A character string providing column name of \code{annotPP}
+where features which were fitted in the models are noted. Default is set to
+'Peptide'.}
 
-\item{infoProtein}{a character string providing column name of \code{annotPP} where
-protein names/groups are noted. If \code{correctPval} is defines as 'protein-wise'
-peptides with the same \code{infoProtein} valueWDD will be corrected together
-Default is set to 'Protein'.}
+\item{infoProtein}{A character string providing column name of \code{annotPP}
+where protein names/groups are noted. If \code{correctPval} is defines as
+'protein-wise' peptides with the same \code{infoProtein} value will be
+corrected together. Default is set to 'Protein'.}
 }
 \value{
 vector of protein-wise adjusted P values
 }
 \description{
-Performing protein-wise FDR
+Performing protein-wise FDR on peptide p-values
 }

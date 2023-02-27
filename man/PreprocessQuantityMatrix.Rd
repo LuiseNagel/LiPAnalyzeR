@@ -4,86 +4,92 @@
 \alias{PreprocessQuantityMatrix}
 \title{Preprocessing peptide and protein quantities}
 \usage{
-PreprocessQuantityMatrix(SpectroList = NULL, QuantityMatrix = NULL, annotPP = NULL, annotS = NULL, logT = TRUE,
-filterMinLogQuant = T, thresholdMinLogQuant = 10, filterNA = T, maxNAperCondition = 0,  infoCondition = "Condition",
-filterTryptic = T, infoTryptic = "isTryptic", nameFT = "Specific",
-filterProteotryptic = F, infoProteotypic = "isProteotypic", nameProteotypic = "True",
-filterMissedCleaved = F, maxMissedCleave = 2, infoMissedCleave = "NMissedCleavages")
+PreprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
+annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
+thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
+infoCondition="Condition", filterTryptic=TRUE, infoTryptic="isTryptic",
+nameFT="Specific", filterProteotryptic=FALSE,
+infoProteotypic="isProteotypic", nameProteotypic="True",
+filterMissedCleaved=FALSE, maxMissedCleave=2,
+infoMissedCleave="NMissedCleavages")
 }
 \arguments{
-\item{SpectroList}{a list of matrices, containing peptides/proteins quantities
-Rows represent features and columns refer to the samples.
-Can simply be output from \code{ExtractDataFromSpectro}.}
+\item{SpectroList}{A list of matrices, containing peptides/proteins
+quantities. Rows represent features and columns refer to the samples. Can
+simply be output from \code{ExtractDataFromSpectro}.}
 
-\item{QuantityMatrix}{single matrix with peptide/protein quantities.
-Rows represent features and columns refer to the samples.}
+\item{QuantityMatrix}{single matrix with peptide/protein quantities. Rows
+represent features and columns refer to the samples.}
 
-\item{annotPP}{data.frame with peptide and protein annotation.
-Rows are features and must match to the row.names of SpectroList/QuantityMatrix.
+\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
+features and must match to the row.names of SpectroList/QuantityMatrix.
 Must include all columns needed for filtering of data.}
 
-\item{annotS}{a data.frame object containing sample annotation.
-Rows are samples and must match to columns of \code{SpectroList}.
-If NA filtering is set to true, needs to contain column about different conditions/groups.}
+\item{annotS}{A data.frame object containing sample annotation. Rows are
+samples and must match to columns of \code{SpectroList}. If \code{filterNA}
+is set to 'TRUE', it needs to contain column about different
+conditions/groups.}
 
-\item{logT}{a boolean value, defining if data should be log-transformed.
+\item{logT}{A boolean value defining if data should be log-transformed.
 Default is 'TRUE'.}
 
-\item{filterMinLogQuant}{a boolean value, defining small quantities should be set to NA.
-Default is 'TRUE'.}
+\item{filterMinLogQuant}{A boolean value defining small quantities should be
+set to NA. Default is 'TRUE'.}
 
-\item{thresholdMinLogQuant}{a numeric value, quantities below this threshold will be set to NA
-if \code{filterMinLogQuant} = TRUE.
-Default is 10. 12 would be an advised stricture choice.}
+\item{thresholdMinLogQuant}{A numeric value, quantities below this threshold
+will be set to NA if \code{filterMinLogQuant} is 'TRUE'. Default is set to
+10. Setting it to 12 would be an optional stricter choice.}
 
-\item{filterNA}{a boolean value, defining peptides should be filtered based on number of NAs.
-Default is 'TRUE'.}
+\item{filterNA}{A boolean value defining peptides should be filtered based on
+number of NAs. Default is 'TRUE'.}
 
-\item{maxNAperCondition}{a numeric value, defining maximal number of NAs per condition.
-Default is '0'.}
+\item{maxNAperCondition}{A numeric value, defining maximal number of NAs
+in an individual feature per condition. Default is '0'.}
 
-\item{infoCondition}{a character, providing column name of \code{annotS} in which condition is provided.
-Default is 'Condition'.
-If NA filtering should not be applied on condition level provide only one value in
+\item{infoCondition}{A character string providing column name of
+\code{annotS} in which condition is provided. Default is 'Condition'. If NA
+filtering should not be applied on condition level provide only one value in
 \code{infoCondition} in \code{annotS}.}
 
-\item{filterTryptic}{a boolean value, defining small peptides should be filtered based digest type.
-Default is 'TRUE'.}
+\item{filterTryptic}{A boolean value defining if peptides should be filtered
+based digest type. Default is 'TRUE', removing all not fully tryptic peptides
+from the data matrices.}
 
-\item{infoTryptic}{a character, giving column of \code{annotPP} in which digest annotation is provided.
-Default is 'isTryptic'.}
+\item{infoTryptic}{A character string giving column of \code{annotPP} in
+which digest annotation is provided. Default is 'isTryptic'.}
 
-\item{nameFT}{a character, defining which peptide in \code{infoTryptic} should remain in the data.
-Default is 'Specific'.}
+\item{nameFT}{A character string defining which peptide in \code{infoTryptic}
+should remain in the data. Default is 'Specific'.}
 
-\item{filterProteotryptic}{a boolean value, defining small peptides should be filtered based on if they are proteotypic.
-Deault is 'FALSE'.}
+\item{filterProteotryptic}{A boolean value, defining if peptides should be
+filtered based on if they are proteotypic. Default is 'FALSE'.}
 
-\item{infoProteotypic}{a character, giving column of \code{annotPP} in which annotation if peptides is proteotypic is provided.
-Default is 'isProteotypic'.}
+\item{infoProteotypic}{A character string giving column of \code{annotPP} in
+which annotation if peptides is proteotypic is provided. Default is
+'isProteotypic'.}
 
-\item{nameProteotypic}{a character, defining which peptide in \code{infoProteotypic}) is proteotypic
-Default is 'True'.}
+\item{nameProteotypic}{A character string defining which peptide in
+\code{infoProteotypic} is proteotypic and will be filtered out if
+\code{filterProteotryptic} is set to 'TRUE'. Default is 'True'.}
 
-\item{filterMissedCleaved}{a boolean value, defining small peptides should be filtered based on number of missed cleavages.
-Deault is 'FALSE'.}
+\item{filterMissedCleaved}{A boolean value defining if peptides should be
+filtered based on number of missed cleavages. Default is 'FALSE'.}
 
-\item{maxMissedCleave}{a numeric value, defining maximal number of missed cleavages allowed per peptide
+\item{maxMissedCleave}{A numeric value, defining maximal number of missed
+cleavages allowed per peptide if \code{filterMissedCleaved} is set to 'TRUE'.
 Default is '2'.}
 
-\item{infoMissedCleave}{a character, giving column of \code{annotPP} in which number of missed cleavage are provided.
-Default is 'NMissedCleavages'.}
+\item{infoMissedCleave}{a character string giving column of \code{annotPP} in
+which number of missed cleavage are provided. Default is 'NMissedCleavages'.}
 }
 \value{
-a list of matrices containing preprocessed and filtered
-peptide and protein quantities.
-OR a matrix containing preprocessed and filtered
-peptide or protein quantities.
-Rows represent features and columns refer to the samples.
+Returns a list of matrices containing preprocessed and filtered
+peptide and protein quantities  OR a single matrix containing preprocessed
+and filtered peptide or protein quantities. Rows represent features and
+columns refer to the samples.
 }
 \description{
-Function for preprocessing data before fitting models.
-Filtering can be applied based on different features such as digest type, proteotypic or number of missed cleavages.
-
-add later
+Function for preprocessing data before fitting models. Different
+filtering can be applied based on various features such as digest type,
+proteotypic status or number of missed cleavages.
 }

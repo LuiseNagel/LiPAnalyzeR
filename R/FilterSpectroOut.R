@@ -1,81 +1,95 @@
 
 #' @title Preprocessing peptide and protein quantities
 #'
-#' @description Function for preprocessing data before fitting models.
-#' Filtering can be applied based on different features such as digest type, proteotypic or number of missed cleavages.
+#' @description Function for preprocessing data before fitting models. Different
+#' filtering can be applied based on various features such as digest type,
+#' proteotypic status or number of missed cleavages.
 #'
-#' @usage PreprocessQuantityMatrix(SpectroList = NULL, QuantityMatrix = NULL, annotPP = NULL, annotS = NULL, logT = TRUE,
-#' filterMinLogQuant = T, thresholdMinLogQuant = 10, filterNA = T, maxNAperCondition = 0,  infoCondition = "Condition",
-#' filterTryptic = T, infoTryptic = "isTryptic", nameFT = "Specific",
-#' filterProteotryptic = F, infoProteotypic = "isProteotypic", nameProteotypic = "True",
-#' filterMissedCleaved = F, maxMissedCleave = 2, infoMissedCleave = "NMissedCleavages")
+#' @usage PreprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
+#' annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
+#' thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
+#' infoCondition="Condition", filterTryptic=TRUE, infoTryptic="isTryptic",
+#' nameFT="Specific", filterProteotryptic=FALSE,
+#' infoProteotypic="isProteotypic", nameProteotypic="True",
+#' filterMissedCleaved=FALSE, maxMissedCleave=2,
+#' infoMissedCleave="NMissedCleavages")
 #'
-#' @param SpectroList a list of matrices, containing peptides/proteins quantities
-#' Rows represent features and columns refer to the samples.
-#' Can simply be output from \code{ExtractDataFromSpectro}.
-#' @param QuantityMatrix single matrix with peptide/protein quantities.
-#' Rows represent features and columns refer to the samples.
-#' @param annotPP data.frame with peptide and protein annotation.
-#' Rows are features and must match to the row.names of SpectroList/QuantityMatrix.
+#' @param SpectroList A list of matrices, containing peptides/proteins
+#' quantities. Rows represent features and columns refer to the samples. Can
+#' simply be output from \code{ExtractDataFromSpectro}.
+#' @param QuantityMatrix single matrix with peptide/protein quantities. Rows
+#' represent features and columns refer to the samples.
+#' @param annotPP A data.frame with peptide and protein annotation. Rows are
+#' features and must match to the row.names of SpectroList/QuantityMatrix.
 #' Must include all columns needed for filtering of data.
-#' @param annotS a data.frame object containing sample annotation.
-#' Rows are samples and must match to columns of \code{SpectroList}.
-#' If NA filtering is set to true, needs to contain column about different conditions/groups.
-#' @param logT a boolean value, defining if data should be log-transformed.
+#' @param annotS A data.frame object containing sample annotation. Rows are
+#' samples and must match to columns of \code{SpectroList}. If \code{filterNA}
+#' is set to 'TRUE', it needs to contain column about different
+#' conditions/groups.
+#' @param logT A boolean value defining if data should be log-transformed.
 #' Default is 'TRUE'.
-#' @param filterMinLogQuant a boolean value, defining small quantities should be set to NA.
-#' Default is 'TRUE'.
-#' @param thresholdMinLogQuant a numeric value, quantities below this threshold will be set to NA
-#' if \code{filterMinLogQuant} = TRUE.
-#' Default is set tp 10. Setting it to 12 would be an optional stricter choice.
-#' @param filterNA a boolean value, defining peptides should be filtered based on number of NAs.
-#' Default is 'TRUE'.
-#' @param maxNAperCondition a numeric value, defining maximal number of NAs per condition.
-#' Default is '0'.
-#' @param infoCondition a character, providing column name of \code{annotS} in which condition is provided.
-#' Default is 'Condition'.
-#' If NA filtering should not be applied on condition level provide only one value in
+#' @param filterMinLogQuant A boolean value defining small quantities should be
+#' set to NA. Default is 'TRUE'.
+#' @param thresholdMinLogQuant A numeric value, quantities below this threshold
+#' will be set to NA if \code{filterMinLogQuant} is 'TRUE'. Default is set to
+#' 10. Setting it to 12 would be an optional stricter choice.
+#' @param filterNA A boolean value defining peptides should be filtered based on
+#' number of NAs. Default is 'TRUE'.
+#' @param maxNAperCondition A numeric value, defining maximal number of NAs
+#' in an individual feature per condition. Default is '0'.
+#' @param infoCondition A character string providing column name of
+#' \code{annotS} in which condition is provided. Default is 'Condition'. If NA
+#' filtering should not be applied on condition level provide only one value in
 #' \code{infoCondition} in \code{annotS}.
-#' @param filterTryptic a boolean value, defining small peptides should be filtered based digest type.
-#' Default is 'TRUE'.
-#' @param infoTryptic a character, giving column of \code{annotPP} in which digest annotation is provided.
-#' Default is 'isTryptic'.
-#' @param nameFT a character, defining which peptide in \code{infoTryptic} should remain in the data.
-#' Default is 'Specific'.
-#' @param filterProteotryptic a boolean value, defining small peptides should be filtered based on if they are proteotypic.
-#' Deault is 'FALSE'.
-#' @param infoProteotypic a character, giving column of \code{annotPP} in which annotation if peptides is proteotypic is provided.
-#' Default is 'isProteotypic'.
-#' @param nameProteotypic a character, defining which peptide in \code{infoProteotypic}) is proteotypic
-#' Default is 'True'.
-#' @param filterMissedCleaved a boolean value, defining small peptides should be filtered based on number of missed cleavages.
-#' Deault is 'FALSE'.
-#' @param maxMissedCleave a numeric value, defining maximal number of missed cleavages allowed per peptide
+#' @param filterTryptic A boolean value defining if peptides should be filtered
+#' based digest type. Default is 'TRUE', removing all not fully tryptic peptides
+#' from the data matrices.
+#' @param infoTryptic A character string giving column of \code{annotPP} in
+#' which digest annotation is provided. Default is 'isTryptic'.
+#' @param nameFT A character string defining which peptide in \code{infoTryptic}
+#' should remain in the data. Default is 'Specific'.
+#' @param filterProteotryptic A boolean value, defining if peptides should be
+#' filtered based on if they are proteotypic. Default is 'FALSE'.
+#' @param infoProteotypic A character string giving column of \code{annotPP} in
+#' which annotation if peptides is proteotypic is provided. Default is
+#' 'isProteotypic'.
+#' @param nameProteotypic A character string defining which peptide in
+#' \code{infoProteotypic} is proteotypic and will be filtered out if
+#' \code{filterProteotryptic} is set to 'TRUE'. Default is 'True'.
+#' @param filterMissedCleaved A boolean value defining if peptides should be
+#' filtered based on number of missed cleavages. Default is 'FALSE'.
+#' @param maxMissedCleave A numeric value, defining maximal number of missed
+#' cleavages allowed per peptide if \code{filterMissedCleaved} is set to 'TRUE'.
 #' Default is '2'.
-#' @param infoMissedCleave a character, giving column of \code{annotPP} in which number of missed cleavage are provided.
-#' Default is 'NMissedCleavages'.
+#' @param infoMissedCleave a character string giving column of \code{annotPP} in
+#' which number of missed cleavage are provided. Default is 'NMissedCleavages'.
 #'
-#' @return a list of matrices containing preprocessed and filtered
-#' peptide and protein quantities.
-#' OR a matrix containing preprocessed and filtered
-#' peptide or protein quantities.
-#' Rows represent features and columns refer to the samples.
-#'
-#' @description
-#' add later
+#' @return Returns a list of matrices containing preprocessed and filtered
+#' peptide and protein quantities  OR a single matrix containing preprocessed
+#' and filtered peptide or protein quantities. Rows represent features and
+#' columns refer to the samples.
 #'
 #' @export
-PreprocessQuantityMatrix <- function(SpectroList = NULL, QuantityMatrix = NULL, annotPP = NULL, annotS = NULL, logT = TRUE,
-                                     filterMinLogQuant = T, thresholdMinLogQuant = 10, filterNA = T, maxNAperCondition = 0,  infoCondition = "Condition",
-                                     filterTryptic = T, infoTryptic = "isTryptic", nameFT = "Specific",
-                                     filterProteotryptic = F, infoProteotypic = "isProteotypic", nameProteotypic = "True",
-                                     filterMissedCleaved = F, maxMissedCleave = 2, infoMissedCleave = "NMissedCleavages"){
+PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
+                                     annotPP=NULL, annotS=NULL, logT=TRUE,
+                                     filterMinLogQuant=TRUE,
+                                     thresholdMinLogQuant=10, filterNA=TRUE,
+                                     maxNAperCondition=0, infoCondition="Condition",
+                                     filterTryptic=TRUE,
+                                     infoTryptic="isTryptic", nameFT="Specific",
+                                     filterProteotryptic=FALSE,
+                                     infoProteotypic="isProteotypic",
+                                     nameProteotypic="True",
+                                     filterMissedCleaved=FALSE,
+                                     maxMissedCleave=2,
+                                     infoMissedCleave="NMissedCleavages"){
 
 
-    # check for input data
+    # check input data
     if(is.null(SpectroList)){
         if(is.null(QuantityMatrix)){
-            stop("Please provide an input with peptide or protein quantities using 'SpectroList' or 'QuantityMatrix'")
+            stop("Please provide an input with peptide or protein quantities
+                 using 'SpectroList' or 'QuantityMatrix'")
         }
         else{
             SpectroList <- as.list(QuantityMatrix)
@@ -127,7 +141,8 @@ PreprocessQuantityMatrix <- function(SpectroList = NULL, QuantityMatrix = NULL, 
 
     # Filter NAs
     if(filterNA){
-        SpectroList <- FilterNAsFromList(SpectroList, annotS, infoCondition, maxNAperCondition)
+        SpectroList <- FilterNAsFromList(SpectroList, annotS, infoCondition,
+                                         maxNAperCondition)
     }
     if(is.null(SpectroList)){
         SpectroList <- unlist(SpectroList)
@@ -138,23 +153,26 @@ PreprocessQuantityMatrix <- function(SpectroList = NULL, QuantityMatrix = NULL, 
 #' @title Preprocessing peptide and protein quantities
 #'
 #' @description Function for preprocessing data before fitting models.
-#' Filtering can be applied based on different features such as digest type, proteotypic or number of missed cleavages.
+#' Filtering can be applied based on different features such as digest type,
+#' proteotypic or number of missed cleavages.
 #'
-#' @param SpectroList list of matrices, containing peptides/proteins quantities
-#' Rows represent features and columns refer to the samples.
-#' Can be output from \code{ExtractDataFromSpectro}.
-#' @param annotS data.frame containing sample and condition annotation.
+#' @param SpectroList  A list ist of matrices, containing peptides/proteins
+#' quantities. Rows represent features and columns refer to the samples. Can be
+#' output from \code{ExtractDataFromSpectro}.
+#' @param annotS  A data.frame containing sample and condition annotation.
 #' Rows are samples and must match to columns of SpectroList/QuantityMatrix.
 #' Needs to contain column about different conditions/groups.
-#' @param maxNAperCondition numeric, defining maximal number of NAs per condition.
-#' Default is '0'.
-#' @param infoCondition character, giving column of \code{annotPP} in which condition is provided.
-#' Default is 'Condition'.
-#' If NA filtering should not be applied on condition level provide only one value in
+#' @param maxNAperCondition A numeric value, defining maximal number of NAs
+#' in an individual feature per condition. Default is '0'.
+#' @param infoCondition A character string providing column name of
+#' \code{annotS} in which condition is provided. Default is 'Condition'. If NA
+#' filtering should not be applied on condition level provide only one value in
 #' \code{infoCondition} in \code{annotS}.
 #'
 #' @return list of NA filtered matrices with petide/protein quantities.
-FilterNAsFromList <- function(SpectroList, annotS, infoCondition, maxNAperCondition){
+#'
+FilterNAsFromList <- function(SpectroList, annotS, infoCondition,
+                              maxNAperCondition){
     # add matrices together to get NA if any of them is NA
     matNA <- Reduce('+', SpectroList)
     if(maxNAperCondition == 0){
@@ -162,7 +180,8 @@ FilterNAsFromList <- function(SpectroList, annotS, infoCondition, maxNAperCondit
     }
 
     else{
-        matNA <- split(as.data.frame(t(matNA)), annotS[, infoCondition]) # splitting by condition
+        # splitting data based on conditions
+        matNA <- split(as.data.frame(t(matNA)), annotS[, infoCondition])
         matNA <- lapply(matNA, function(x){
             apply(t(x), 1, function(y){
                 sum(is.na(y))<=maxNAperCondition

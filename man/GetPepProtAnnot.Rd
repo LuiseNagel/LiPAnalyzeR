@@ -2,55 +2,74 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{GetPepProtAnnot}
 \alias{GetPepProtAnnot}
-\title{Creating data.frame with peptide and protein annotation}
+\title{Creating a data.frame with peptide and protein annotation.}
 \usage{
-GetPepProtAnnot(spectroOut, spectroOut2 = NULL,analysisLvl = "Peptide",
-Precursor = "EG.PrecursorId", modPeptide = "EG.ModifiedSequence", Peptide = "PEP.StrippedSequence",
-Protein = "PG.ProteinGroups", AllProtein = "PEP.AllOccurringProteinAccessions", NMissedCleavages = "PEP.NrOfMissedCleavages",
-isProteotypic = "PEP.IsProteotypic", isTryptic = "PEP.DigestType....Trypsin.P.", start = "PEP.PeptidePosition")
+GetPepProtAnnot(spectroOut, spectroOut2=NULL,analysisLvl="Peptide",
+Precursor="EG.PrecursorId", modPeptide="EG.ModifiedSequence",
+Peptide="PEP.StrippedSequence", Protein="PG.ProteinGroups",
+AllProtein="PEP.AllOccurringProteinAccessions",
+NMissedCleavages="PEP.NrOfMissedCleavages",
+isProteotypic="PEP.IsProteotypic", isTryptic="PEP.DigestType....Trypsin.P.",
+start="PEP.PeptidePosition")
 }
 \arguments{
-\item{spectroOut}{Spectronaut report of MS data.
-Spectronaut report should have been exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.}
+\item{spectroOut}{Spectronaut report of MS data. Spectronaut report should
+have been exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{spectroOut2}{optional additional Spectronaut report, default is NULL.
-Spectronaut report should have been exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut.}
+\item{spectroOut2}{An optional additional Spectronaut report, default is
+'NULL', assuming only one Spectronaut report is present. Spectronaut
+report(s) should have been exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{analysisLvl}{character defining the level on which the peptide/protein quantities should be exported.
-'Peptide' by default, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.
-Should be identical to how \code{analysisLvl} defined in ExtractDataFromSpectro.}
+\item{analysisLvl}{A character string defining the level on which the
+peptide/protein quantities should be exported.
+'Peptide' by default, can alternatively be set to 'ModifiedPeptide' or
+'Precursor'. Should be identical to the \code{analysisLvl} defined in
+\code{ExtractDataFromSpectro}.}
 
-\item{Precursor}{character giving the column name in which precursor IDs can be found in the Spectronaut report.
-'EG.PrecursorId' by default.
-Only used if \code{analysisLvl} is set to 'Precursor'.}
+\item{Precursor}{A character string giving the column name in which
+precursor IDs can be found in the Spectronaut report. Defined as
+'EG.PrecursorId' by default. Only used if \code{analysisLvl} is set to
+'Precursor'.}
 
-\item{modPeptide}{character giving the column in which modified peptide sequence can be found in the Spectronaut report.
-'EG.ModifiedSequence' by default.
-Only used if \code{analysisLvl} is set to 'ModifiedPeptide'.}
+\item{modPeptide}{A character strong giving the column in which modified
+peptide sequence can be found in the Spectronaut report. Defined as
+'EG.ModifiedSequence' by default. Only used if \code{analysisLvl} is set to
+'ModifiedPeptide'.}
 
-\item{Peptide}{character giving the column in which peptide sequence can be found in the Spectronaut report.
+\item{Peptide}{A character string giving the column in which peptide
+sequence can be found in the Spectronaut report. Defined as
 'PEP.StrippedSequence' by default.}
 
-\item{Protein}{character giving the column in which protein names can be found in the Spectronaut report.
-'PG.ProteinGroups' by default.}
+\item{Protein}{A character string giving the column in which protein names
+can be found in the Spectronaut report. Defined as 'PG.ProteinGroups' by
+default.}
 
-\item{AllProtein}{character giving the column in which all protein names mapping to a peptide sequence can be found in the Spectronaut report.
-'PEP.AllOccurringProteinAccessions' by default.}
+\item{AllProtein}{A character string giving the column in which all protein
+names mapping to a peptide sequence can be found in the Spectronaut report.
+Defined as 'PEP.AllOccurringProteinAccessions' by default.}
 
-\item{NMissedCleavages}{character giving the column in which number of missed cleavages in each peptide can be found in the Spectronaut report.
-'PEP.NrOfMissedCleavages' by default.}
+\item{NMissedCleavages}{A character string giving the column in which number
+of missed cleavages in each peptide can be found in the Spectronaut report.
+Defined as 'PEP.NrOfMissedCleavages' by default.}
 
-\item{isProteotypic}{character giving the column in which annotation if the peptide is proteotypic can be found in the Spectronaut report.
-'PEP.IsProteotypic' by default.}
+\item{isProteotypic}{A character string giving the column in which annotation
+if the peptide is proteotypic can be found in the Spectronaut report.
+Defined as 'PEP.IsProteotypic' by default.}
 
-\item{isTryptic}{character giving the column in which annotation of the digest type can be found in the Spectronaut report.
+\item{isTryptic}{A character string giving the column in which annotation of
+the digest type can be found in the Spectronaut report. Defined as
 'PEP.DigestType....Trypsin.P.' by default.}
 
-\item{start}{character giving the column in which start position in each peptide can be found in the Spectronaut report.
+\item{start}{A character stringgiving the column in which start position of
+each peptide can be found in the Spectronaut report. Defined as
 'PEP.PeptidePosition' by default.
 
- @return data.frame including all necessary annotation on peptides and proteins}
+ @return Returns a data.frame including all necessary annotation on peptides
+ and proteins}
 }
 \description{
-Creates an annotation file on the peptides and proteins in the Spectronaut report.
+Creates an annotation file on the peptides and proteins in the
+Spectronaut report.
 }

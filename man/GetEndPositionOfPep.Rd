@@ -4,30 +4,34 @@
 \alias{GetEndPositionOfPep}
 \title{Estimating end position of peptide sequences}
 \usage{
-GetEndPositionOfPep(annotPP, startCol = "startPosition", pepCol = "Peptide")
+GetEndPositionOfPep(annotPP, startCol="startPosition",
+pepCol="Peptide")
 }
 \arguments{
-\item{annotPP}{a data.frame with peptide and protein annotation.
-Rows are features. Data frame must include a column providing the start position of each peptide in the proteins
-and one containing the peptide sequence peptides are provided.
-Different start positions for the same peptide should be separated by
-',' for peptides mapping to the same protein multiple times and
-';' for peptides mapping to multiple proteins.}
+\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
+features. The Data.frame must include a column providing the start position
+of each peptide in the proteins and one containing the peptide sequences.
+Different start positions for the same peptide should be separated by ',' for
+peptides mapping to the same protein multiple times and ';' for peptides
+mapping to multiple proteins.}
 
-\item{startCol}{a character defining column in which start positions of peptides are provided
-'startPosition' by default.}
+\item{startCol}{A character string defining column in which start positions
+of peptides are provided
+Defined as 'startPosition' by default.}
 
-\item{pepCol}{character defining column in which peptide sequences are provide.
-Peptide sequences have to be provided without modifications or charges.
-'Peptide' by default.}
+\item{pepCol}{A character string defining column in which peptide sequences
+are provide. Peptide sequences have to be provided without modifications
+or charges. Set to 'Peptide' by default.}
 }
 \value{
-character vector of end positions of peptides
-#' Different start positions for the same peptide should be separated by
-',' for peptides mapping to the same protein multiple times and
-';' for peptides mapping to multiple proteins.
+Returns a character vector with the end positions of all peptides.
+Different start positions for the same peptide should be separated by ',' for
+peptides mapping to the same protein multiple times and ';' for peptides
+mapping to multiple proteins.
 }
 \description{
-Getting end position fo peptides sequences from the starting positions provided.
-Function takes into account that peptides can map to multiple regions in the proteome.
+Getting end position of peptides sequences from the starting
+positions provided. Function takes into account that peptides can map to
+multiple regions in the proteome, providing multiple end positions if
+multiple start positions are given.
 }
