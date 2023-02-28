@@ -231,6 +231,14 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
 #' @param LiPonly A boolean value to set to 'TRUE' if you are running the
 #' LiPonly version of the package and not providing trypsin-only data.
 #'
+#' @return If run with BVLS & OLS or only OLS model it will return a list of two
+#' data.frames, the first contains the model coefficients of the BVLS & OLS
+#' model, the second one provides the p-values estimated in the OLS model. If
+#' only BVLS is run, it will return a list of two data.frame, the first
+#' containing the residuals of the BVLS model, the second one provides the
+#' coefficients from the model. If \code{returnOLSmodels} and/or
+#' \code{returnBVLSmodels} is set to 'TRUE', least square models for each
+#' peptide will be exported as additional list elements.
 #'
 #' @export
 RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
