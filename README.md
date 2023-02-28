@@ -6,7 +6,7 @@ LiPAnalyzer was developed unter R 4.2.2 under Ubuntu 22.04.2 LTS.
 
 ## Installation
 
-LiPAnalyzer requires R version 4.1.3. The following R commands allow you to install LiPAnalyzeR from github:
+LiPAnalyzer requires R version 4.2.0. The following R commands allow you to install LiPAnalyzeR from github:
 ```
 if (!require("devtools")) install.packages("devtools")
 library(devtools)
