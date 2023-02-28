@@ -1,0 +1,74 @@
+* using log directory ‘/data/user/lnagel6/Documents/LiPAnalyzer/Package/LiPAnalyzer/LiPAnalyzer.Rcheck’
+* using R version 4.2.2 Patched (2022-11-10 r83330)
+* using platform: x86_64-pc-linux-gnu (64-bit)
+* using session charset: UTF-8
+* using options ‘--no-manual --as-cran’
+* checking for file ‘LiPAnalyzer/DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘LiPAnalyzer’ version ‘0.1.0’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘LiPAnalyzer’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for future file timestamps ... NOTE
+unable to verify current time
+* checking DESCRIPTION meta-information ... WARNING
+Dependence on R version ‘4.2.2’ not with patchlevel 0
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... NOTE
+Namespaces in Imports field not imported from:
+  ‘ggplot2’ ‘ggpubr’ ‘grDevices’
+  All declared Imports should be used.
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... NOTE
+Rd file 'GetPepProtAnnot.Rd':
+  \usage lines wider than 90 characters:
+     Precursor = "EG.PrecursorId", modPeptide = "EG.ModifiedSequence", Peptide = "PEP.StrippedSequence",
+     Protein = "PG.ProteinGroups", AllProtein = "PEP.AllOccurringProteinAccessions", NMissedCleavages = "PEP.NrOfMissedCleavages",
+     isProteotypic = "PEP.IsProteotypic", isTryptic = "PEP.DigestType....Trypsin.P.", start = "PEP.PeptidePosition")
+
+Rd file 'PreprocessQuantityMatrix.Rd':
+  \usage lines wider than 90 characters:
+     PreprocessQuantityMatrix(SpectroList = NULL, QuantityMatrix = NULL, annotPP = NULL, annotS = NULL, logT = TRUE,
+     filterMinLogQuant = T, thresholdMinLogQuant = 10, filterNA = T, maxNAperCondition = 0,  infoCondition = "Condition",
+
+Rd file 'RunModel.Rd':
+  \usage lines wider than 90 characters:
+     RunModel(spectroList, annotS = NULL, formulaBVLS = "Y~XPep+XProt", formulaOLS = "Y~Condition",
+
+These lines will be truncated in the PDF manual.
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... NONE
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 1 WARNING, 3 NOTEs
