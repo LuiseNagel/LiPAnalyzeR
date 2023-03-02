@@ -306,6 +306,13 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         annotS <- annotS[samples, ]
     }
 
+    # returning warning message if no formulas are provided
+    if(!is.null(formulaBVLS) & !is.null(formulaOLS)){
+        stop("No BVLS or OLS formula provided. Please provide at least one of
+             them to define the model(s) you want to run.")
+    }
+    resAll <- NULL
+
     # running BVLS
     if(!is.null(formulaBVLS)){
         message("Running bounded variable least square models.")
@@ -342,6 +349,19 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         rownames(x) <- feat
         return(as.data.frame(x))
     })
+
+    # Add message if there TrpPep or TrpProt coefficients are unrealistic
+    if(any(grepl("XPep|XProt", colnames(resAll[[1]])))){
+        if(max(stats::na.omit(c(resAll[[1]][, grepl("XPep",
+                                                    colnames(resAll[[1]]))],
+                                resAll[[1]][, grepl("XProt",
+                                                    colnames(resAll[[1]]))])))
+           >5){
+            message("At least one peptide/protein coefficient is higher than 5,
+                    please check the results of the effected peptides for
+                    plausability.")
+        }
+    }
 
     # Adding models to results if required
     if(returnBVLSmodels){
