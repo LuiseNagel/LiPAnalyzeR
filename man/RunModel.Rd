@@ -7,7 +7,7 @@
 RunModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
 formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
 addBVLSbounds=FALSE, returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
-LiPonly=FALSE)
+LiPonly=FALSE, withHT=FALSE)
 }
 \arguments{
 \item{spectroList}{A list of matrices, containing peptide/protein quantities.
@@ -55,7 +55,11 @@ function to additionally return all BVLS models.}
 function to additionally return all OLS models}
 
 \item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
-LiPonly version of the package and not providing trypsin-only data.}
+LiPonly version of the package and not providing trypsin-only data. Default
+is set to 'FALSE'.}
+
+\item{withHT}{A boolean value to set to 'TRUE' if LiPPep should only be
+corrected for TrpProt only. Default is set to 'FALSE'.}
 }
 \value{
 If run with BVLS & OLS or only OLS model it will return a list of two

@@ -6,7 +6,7 @@
 \usage{
 AnalyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
 formulaBVLS="Y~XPep+XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0, 0),
-upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE)
+upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
 }
 \arguments{
 \item{spectroList}{A list of matrices, containing peptide/protein quantities.
@@ -41,7 +41,19 @@ additionally needed in each BVLS model are added to \code{lowBVLS} and
 are for example also running batch correction in the BVLS model.}
 
 \item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
-LiPonly version of the package and not providing trypsin-only data.}
+LiPonly version of the package and not providing trypsin-only data. If set
+to TRUE' BVLS boundaries will be adjusted, \code{lowBVLS} will be set to
+c(-1e9, 0) and \code{BVLS} will be set to c(Inf, Inf). Additionally,
+\code{formulaBVLS} will be adjusted. In case you want to add further
+variables to the models, please use the \code{runModel} function. Default is
+'FALSE'.}
+
+\item{withHT}{A boolean value to set to 'TRUE' if LiPPep should only be
+corrected for TrpProt only. If set to TRUE' BVLS boundaries will be adjusted,
+\code{lowBVLS} will be set to c(-1e9, 0) and \code{BVLS} will be set to
+c(Inf, Inf). Additionally, \code{formulaBVLS} will be adjusted. In case you
+want to add further variables to the models, please use the \code{runModel}
+function. Default is 'FALSE'.}
 }
 \description{
 Function to build linear regression models for fitting MS data

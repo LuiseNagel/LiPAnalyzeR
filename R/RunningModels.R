@@ -8,7 +8,7 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #'
 #' @usage  AnalyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
 #' formulaBVLS="Y~XPep+XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0, 0),
-#' upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE)
+#' upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
 #'
 #' @param spectroList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
@@ -34,15 +34,43 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #' \code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
 #' are for example also running batch correction in the BVLS model.
 #' @param LiPonly A boolean value to set to 'TRUE' if you are running the
-#' LiPonly version of the package and not providing trypsin-only data.
+#' LiPonly version of the package and not providing trypsin-only data. If set
+#' to TRUE' BVLS boundaries will be adjusted, \code{lowBVLS} will be set to
+#' c(-1e9, 0) and \code{BVLS} will be set to c(Inf, Inf). Additionally,
+#' \code{formulaBVLS} will be adjusted. In case you want to add further
+#' variables to the models, please use the \code{runModel} function. Default is
+#' 'FALSE'.
+#' @param withHT A boolean value to set to 'TRUE' if LiPPep should only be
+#' corrected for TrpProt only. If set to TRUE' BVLS boundaries will be adjusted,
+#' \code{lowBVLS} will be set to c(-1e9, 0) and \code{BVLS} will be set to
+#' c(Inf, Inf). Additionally, \code{formulaBVLS} will be adjusted. In case you
+#' want to add further variables to the models, please use the \code{runModel}
+#' function. Default is 'FALSE'.
+#'
 #'
 #' @export
 AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
                               formulaBVLS="Y~XPep+XProt", formulaOLS=NULL,
                               lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
-                              addBVLSbounds=FALSE, LiPonly=FALSE){
+                              addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE){
     if(is.null(formulaOLS)){
         formulaOLS <- paste0("Y~", infoCondition)
+    }
+    if(LiPonly|withHT){
+        if(LiPonly){
+            message("Running 'LiPonly' mode and only regressing out LiPProt
+            quantities from LiPPeps in BVLS model. If you want to add further
+            variables to the BVLS please use the 'runModel' function.")
+        }
+        else if(withHT){
+            message("Running 'withHT' mode and only regressing out LiPProt
+            quantities from LiPPeps in BVLS model. If you want to add further
+            variables to the BVLS please use the 'runModel' function.")
+        }
+
+        formulaBVLS <- "Y~XProt"
+        lowBVLS <- c(-1e9, 0)
+        upBVLS <- c(1e9, 1e9)
     }
     LiPOut <- RunModel(spectroList=spectroList,
                        annotS=annotS,
@@ -51,7 +79,8 @@ AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
                        lowBVLS=lowBVLS,
                        upBVLS=upBVLS,
                        addBVLSbounds=addBVLSbounds,
-                       LiPonly=LiPonly)
+                       LiPonly=LiPonly,
+                       withHT=withHT)
     return(LiPOut)
 }
 
@@ -191,7 +220,7 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
 #' @usage RunModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
 #' formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
 #' addBVLSbounds=FALSE, returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
-#' LiPonly=FALSE)
+#' LiPonly=FALSE, withHT=FALSE)
 #'
 #' @param spectroList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
@@ -229,7 +258,10 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
 #' @param returnOLSmodels A boolean value, set to 'TRUE' if you want the
 #' function to additionally return all OLS models
 #' @param LiPonly A boolean value to set to 'TRUE' if you are running the
-#' LiPonly version of the package and not providing trypsin-only data.
+#' LiPonly version of the package and not providing trypsin-only data. Default
+#' is set to 'FALSE'.
+#' @param withHT A boolean value to set to 'TRUE' if LiPPep should only be
+#' corrected for TrpProt only. Default is set to 'FALSE'.
 #'
 #' @return If run with BVLS & OLS or only OLS model it will return a list of two
 #' data.frames, the first contains the model coefficients of the BVLS & OLS
@@ -245,7 +277,7 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
                      formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0),
                      upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE,
                      returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
-                     LiPonly=FALSE){
+                     LiPonly=FALSE, withHT=FALSE){
 
     # if necessary transforming formulas into character
     # remove spaces in formula
@@ -265,23 +297,32 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
     # check input format of formulas
     if(!(is.null(formulaBVLS)|is.character(formulaBVLS))&
        (is.null(formulaOLS)|is.character(formulaOLS))){
-        stop("Please provide 'formula' in the corrrect class. Use 'character' or
+        stop("Please provide 'formula' in the correct class. Use 'character' or
              'formula'.")
     }
 
+    # stopping functions if formulaBVLS does not look as expected
     if(LiPonly){
-        if(as.character(formulaBVLS) == "Y~XPep+XProt"){
-            formulaBVLS <- "Y~XProt"
-            lowBVLS <- c(-1e9, 0)
-            upBVLS <- c(Inf, Inf)
+        if(grepl("XPep", as.character(formulaBVLS))){
+            stop("Function is run in 'LiPonly' mode, but 'formulaBVLS' includes
+                 XPep. Please adjust 'formulaBVLS'.")
         }
     }
 
-    if(paste(names(spectroList), collapse="_") == c("LiPPep_TrpPep_TrpProt")){
+    if(withHT){
+        if(grepl("XPep", as.character(formulaBVLS))){
+            stop("Function is run in 'withHT' mode, but 'formulaBVLS' includes
+                 XPep. Please adjust 'formulaBVLS'.")
+        }
+    }
+
+    # adjusting names of SpectroList matrices
+    if(paste(names(spectroList), collapse="") == c("LiPPepTrpPepTrpProt")){
         names(spectroList) <- c("Y", "XPep", "XProt")
     }
 
-    else if(paste(names(spectroList), collapse="_") == c("LiPPep_LiPProt")){
+    else if(paste(names(spectroList), collapse="") == c("LiPPepLiPProt")|
+            paste(names(spectroList), collapse="") == c("LiPPepTrpProt")){
         names(spectroList) <- c("Y", "XProt")
     }
 
@@ -307,7 +348,7 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
     }
 
     # returning warning message if no formulas are provided
-    if(!is.null(formulaBVLS) & !is.null(formulaOLS)){
+    if(is.null(formulaBVLS) & is.null(formulaOLS)){
         stop("No BVLS or OLS formula provided. Please provide at least one of
              them to define the model(s) you want to run.")
     }
