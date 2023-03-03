@@ -7,7 +7,8 @@
 PreprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
 annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
 thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
-infoCondition="Condition", filterTryptic=TRUE, infoTryptic="isTryptic",
+infoCondition="Condition", runHT = FALSE, namePepQuant = "Peptide",
+nameProtQuant = "Protein", filterTryptic=TRUE, infoTryptic="isTryptic",
 nameFT="Specific", filterProteotryptic=FALSE,
 infoProteotypic="isProteotypic", nameProteotypic="True",
 filterMissedCleaved=FALSE, maxMissedCleave=2,
@@ -50,6 +51,22 @@ in an individual feature per condition. Default is '0'.}
 \code{annotS} in which condition is provided. Default is 'Condition'. If NA
 filtering should not be applied on condition level provide only one value in
 \code{infoCondition} in \code{annotS}.}
+
+\item{runHT}{A boolean value defining if the function and further analysis
+steps should be run including the half-tryptic LiP peptides. If set to true,
+the TrpPep matrix will be removed, resulting in only the LiPPep and TrpProt
+matrices remaining in the data and \code{filterTryptic} will automatically be
+set to 'FALSE'. Need to provide \code{annotPP} to match protein quantities to
+half-tryptic peptides in LiP data. \code{runHT} is set to 'FALSE' per
+default.}
+
+\item{namePepQuant}{A character string giving column of \code{annotPP} which
+matches to the row.names of the peptide quantities.
+Set to 'Peptide' by default.}
+
+\item{nameProtQuant}{A character string giving column of \code{annotPP} which
+matches to the row.names of the protein quantities.
+Set to 'Protein' by default.}
 
 \item{filterTryptic}{A boolean value defining if peptides should be filtered
 based digest type. Default is 'TRUE', removing all not fully tryptic peptides

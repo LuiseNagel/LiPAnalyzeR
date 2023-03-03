@@ -2,12 +2,12 @@
 % Please edit documentation in R/FilterSpectroOut.R
 \name{FilterNAsFromList}
 \alias{FilterNAsFromList}
-\title{Preprocessing peptide and protein quantities}
+\title{Filtering peptide and protein quantities based on NAs}
 \usage{
 FilterNAsFromList(SpectroList, annotS, infoCondition, maxNAperCondition)
 }
 \arguments{
-\item{SpectroList}{A list ist of matrices, containing peptides/proteins
+\item{SpectroList}{A list of matrices, containing peptides/proteins
 quantities. Rows represent features and columns refer to the samples. Can be
 output from \code{ExtractDataFromSpectro}.}
 
@@ -27,7 +27,6 @@ in an individual feature per condition. Default is '0'.}
 list of NA filtered matrices with petide/protein quantities.
 }
 \description{
-Function for preprocessing data before fitting models.
-Filtering can be applied based on different features such as digest type,
-proteotypic or number of missed cleavages.
+Function for removing peptides with too many NAs on one of the
+peptide and protein quantity levels.
 }
