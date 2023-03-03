@@ -209,7 +209,7 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
 
 FilterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
     message("Running function in 'runHT' mode, removing TrpPep data and matching
-            protein abundances to HT LiP peptides.")
+            TrpProt data to all LiP peptides.")
     LiPPP <- annotPP[match(row.names(SpectroList$LiPPep),
                            annotPP[, namePepQuant]),]
     TrpPP <- annotPP[match(row.names(SpectroList$TrpProt),
