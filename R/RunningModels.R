@@ -392,15 +392,15 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
     })
 
     # Add message if there TrpPep or TrpProt coefficients are unrealistic
-    if(any(grepl("XPep|XProt", colnames(resAll[[1]])))){
-        if(max(stats::na.omit(c(resAll[[1]][, grepl("XPep",
-                                                    colnames(resAll[[1]]))],
-                                resAll[[1]][, grepl("XProt",
-                                                    colnames(resAll[[1]]))])))
-           >5){
+    if(any(grepl("XPep|XProt", colnames(resALL[[1]])))){
+        coeffPepProt <- unlist(c(resALL[[1]][, grepl("XPep",
+                                                     colnames(resALL[[1]]))],
+                                 resALL[[1]][, grepl("XProt",
+                                                     colnames(resALL[[1]]))]))
+        if(max(stats::na.omit(coeffPepProt))>5){
             message("At least one peptide/protein coefficient is higher than 5,
-                    please check the results of the effected peptides for
-                    plausability.")
+                     please check the results of the effected peptides for
+                     plausability.")
         }
     }
 
