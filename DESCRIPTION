@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Luise Nagel
 Maintainer: Luise Nagel <lnagel6@uni-koeln.de>
 Description: Package for inferring peptide-specific changes in the PK accessibility from LiP-MS data. Provides funtions from reading in the data from Spectronaut reports over filtering and normaizing to running different linear models to remove unwanted effects and carve out signal due to structural differences between conditions.
-License: GNU General Public License v3.0
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:

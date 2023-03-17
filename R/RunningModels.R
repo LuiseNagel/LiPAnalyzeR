@@ -400,7 +400,7 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         if(max(stats::na.omit(coeffPepProt))>5){
             message("At least one peptide/protein coefficient is higher than 5,
                      please check the results of the effected peptides for
-                     plausability.")
+                     plausibility.")
         }
     }
 
