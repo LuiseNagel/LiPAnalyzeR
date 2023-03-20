@@ -29,10 +29,10 @@ TrpSpectro <- read.csv("/LiPSpectronautReprot.csv")
 
 ### Creating peptide, protein and annotation matrices in R
 
-First, the necessary peptide and protein matrices have to be create. This can be archieved with calling the function ```ExtractDataFromSpectro```. Per default, peptide(```PEP.Quantity```) and protein(```PG.Quantity```) quantities are extracted from the Spectronaut report. Alternatively, you can also choose to extract modified peptides or precursors instead of peptides by changing ```analysisLvl``` in the function.
+First, the necessary peptide and protein matrices have to be create. This can be archieved with calling the function ```extractDataFromSpectro```. Per default, peptide(```PEP.Quantity```) and protein(```PG.Quantity```) quantities are extracted from the Spectronaut report. Alternatively, you can also choose to extract modified peptides or precursors instead of peptides by changing ```analysisLvl``` in the function.
 
 ```
-QuantityList <- ExtractDataFromSpectro(spectroLiP = LiPSpectro,
+QuantityList <- extractDataFromSpectro(spectroLiP = LiPSpectro,
                                        spectroTrp = TrpSpectro)
 ```
 
@@ -41,8 +41,8 @@ Subsequently, please ensure that the column names (sample annotations) are ident
 Additionally, create annotation files of the peptides and proteins as well as the samples. 
 
 ```
-annotPepProt <- GetPepProtAnnot(spectroOut = TrpSpectro, spectroOut2 = LiPSpectro)
-annotSample <- GetSampleAnnot(spectroOut = TrpSpectro
+annotPepProt <- getPepProtAnnot(spectroOut = TrpSpectro, spectroOut2 = LiPSpectro)
+annotSample <- getSampleAnnot(spectroOut = TrpSpectro
 ```
 
 Creating the sample annotation only works, if all necessary information is already added in Spectronaut. If this is not the case, please create the sample annotation file by hand, making sure that the rows are samples, with the row names matching the column names of all ```QuantityList``` matrices.
@@ -53,7 +53,7 @@ Creating the sample annotation only works, if all necessary information is alrea
 Before models are fitted to the data should be log-transformed as well as filtered. Per default all peptide all log2 transformed quantities below 10 are set to NA, this setting can be accessed wiht ```thresholdMinLogQuant```. All peptides with NAs will be removed by the filtering. This is a very strict filter and can easily be adjusted in the function by defining the number of NAs allowed per condition ```maxNAperCondition```. If too many NAs are allowed the results will not be very reliable or models cannot be fitted due to a lack of degrees of freedom available. How strict the NA filter is set can therefore be very dataset dependent. 
 
 ```
-QuantityList <- PreprocessQuantityMatrix(SpectroList = QuantityList,
+QuantityList <- preprocessQuantityMatrix(SpectroList = QuantityList,
                                          annotPP = annotPepProt,
                                          annotS = annotSample)
 ```
@@ -63,9 +63,9 @@ QuantityList <- PreprocessQuantityMatrix(SpectroList = QuantityList,
 LiPAnalyzeR allows to remove unwanted variation from the LiP peptide quantities, carving out the structural signal and provides the additional option to subsequently inferring differences in the structural proteome in between conditions. Additionally, the coefficients of the structural effect as well as the p-values can be extraced from the results, including the option for p-value correction.
 
 ```
-modelStrucVar <- AnalyzeLiPPepData(spectroList = QuantityList, 
+modelStrucVar <- analyzeLiPPepData(spectroList = QuantityList, 
                                    annotS = annotSample)
-resStrucVar <- SummarizeModelResults(resModel = modelStrucVar, 
+resStrucVar <- summarizeModelResults(resModel = modelStrucVar, 
                                      evalCovariable = "Condition_OLS")
 ```
 
