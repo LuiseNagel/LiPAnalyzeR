@@ -6,7 +6,7 @@
 #' Spectronaut reports per default. Alternatively, function can be run in
 #' \code{LiPonly} mode, only requiring LiP data.
 #'
-#' @usage ExtractDataFromSpectro(spectroLiP, spectroTrp=NULL,
+#' @usage extractDataFromSpectro(spectroLiP, spectroTrp=NULL,
 #' analysisLvl="Peptide", sampleName="R.FileName", valuePep=NULL,
 #' valueProt="PG.Quantity", LiPonly=FALSE)
 #'
@@ -40,23 +40,23 @@
 #'
 #' @export
 
-ExtractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
+extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
                                    analysisLvl="Peptide",
                                    sampleName="R.FileName", valuePep=NULL,
                                    valueProt="PG.Quantity", LiPonly=FALSE){
 
-    # checking if value of 'AnalysisLvl' is set correctly
+    ## checking if value of 'AnalysisLvl' is set correctly
     if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
         stop(analysisLvl, " is an unknown input for 'analysisLvl'. Please choose
              'peptide' or 'modifiedpeptide' or 'precursor'.")
     }
 
-    # checking if 'spectroTrp' is provided in case that LiPonly is FALSE
+    ## checking if 'spectroTrp' is provided in case that LiPonly is FALSE
     if(!LiPonly & is.null(spectroTrp)){
         stop("Please add spectroTrp data or set LiPonly to TRUE.")
     }
 
-    # defining names feature and quantity columns based on 'AnalysisLvl'
+    ## defining names feature and quantity columns based on 'AnalysisLvl'
     if(tolower(analysisLvl) == "peptide"){
         rows <- "PEP.StrippedSequence"
         if(is.null(valuePep)){
@@ -76,19 +76,19 @@ ExtractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
         }
     }
 
-    # extracting feature matrices for LiP and Trp data
+    ## extracting feature matrices for LiP and Trp data
     message("Creating LiP ", tolower(analysisLvl), " matrix.")
-    LiPPep <- Convert2Matrix(spectroLiP, valuePep, rows, sampleName)
+    LiPPep <- convert2Matrix(spectroLiP, valuePep, rows, sampleName)
     if(LiPonly){
         message("Creating LiP protein matrix.")
-        LiPProt <- Convert2Matrix(spectroLiP, valueProt, rows, sampleName)
+        LiPProt <- convert2Matrix(spectroLiP, valueProt, rows, sampleName)
         out <- list(LiPPep=LiPPep, LiPProt=LiPProt)
     }
     else{
         message("Creating Trp ", tolower(analysisLvl), " matrix.")
-        TrpPep <- Convert2Matrix(spectroTrp, valuePep, rows, sampleName)
+        TrpPep <- convert2Matrix(spectroTrp, valuePep, rows, sampleName)
         message("Creating Trp protein matrix.")
-        TrpProt <- Convert2Matrix(spectroTrp, valueProt, rows, sampleName)
+        TrpProt <- convert2Matrix(spectroTrp, valueProt, rows, sampleName)
         out <- list(LiPPep=LiPPep, TrpPep=TrpPep, TrpProt=TrpProt)
     }
 
@@ -102,7 +102,7 @@ ExtractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 #' and writes them into a matrix. Rows are peptides/proteins and columns are
 #' samples.
 #'
-#' @usage Convert2Matrix(spectroOut, values, rows, cols)
+#' @usage convert2Matrix(spectroOut, values, rows, cols)
 #'
 #' @param spectroOut Spectronaut report exported using the Spectronaut schema
 #' 'SpectroSchema_LiPAnalyzerOut'.
@@ -120,7 +120,7 @@ ExtractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 #'
 #' @export
 
-Convert2Matrix <- function(spectroOut, values, rows, cols){
+convert2Matrix <- function(spectroOut, values, rows, cols){
     message(values, " used as intensities.")
     myMat <- data.frame(rows=gsub("_", "", spectroOut[, rows]),
                         cols=spectroOut[, cols],
@@ -131,7 +131,7 @@ Convert2Matrix <- function(spectroOut, values, rows, cols){
                              fill=0, # adding 0 if no quantity given
                              value.var="values")
 
-    # setting all not measured values to NA
+    ## setting all not measured values to NA
     myMat[myMat == 0] <- NA
     myMat[myMat == "NaN"] <- NA
 
@@ -146,7 +146,7 @@ Convert2Matrix <- function(spectroOut, values, rows, cols){
 #' @description Creates an annotation file on the peptides and proteins in the
 #' Spectronaut report.
 #'
-#' @usage GetPepProtAnnot(spectroOut, spectroOut2=NULL,analysisLvl="Peptide",
+#' @usage getPepProtAnnot(spectroOut, spectroOut2=NULL,analysisLvl="Peptide",
 #' Precursor="EG.PrecursorId", modPeptide="EG.ModifiedSequence",
 #' Peptide="PEP.StrippedSequence", Protein="PG.ProteinGroups",
 #' AllProtein="PEP.AllOccurringProteinAccessions",
@@ -201,7 +201,7 @@ Convert2Matrix <- function(spectroOut, values, rows, cols){
 #'
 #' @export
 
-GetPepProtAnnot <- function(spectroOut,
+getPepProtAnnot <- function(spectroOut,
                             spectroOut2=NULL,
                             analysisLvl="Peptide",
                             Precursor="EG.PrecursorId",
@@ -214,18 +214,18 @@ GetPepProtAnnot <- function(spectroOut,
                             isTryptic="PEP.DigestType....Trypsin.P.",
                             start="PEP.PeptidePosition"){
 
-    # checking if value of AnalysisLvl is set correctly
+    ## checking if value of AnalysisLvl is set correctly
     if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
         stop(analysisLvl, " is an unknown input for 'analysisLvl'. Please choose
              'peptide' or 'modifiedpeptide' or 'precursor'.")
     }
 
-    # join Spectronaut reports if two are provided
+    ## join Spectronaut reports if two are provided
     if(!is.null(spectroOut2)){
         spectroOut <-rbind(spectroOut, spectroOut2)
     }
 
-    # creating basic peptide & protein annotation file
+    ## creating basic peptide & protein annotation file
     annotPP <- data.frame(Peptide=spectroOut[, Peptide],
                           Protein=spectroOut[, Protein],
                           AllProtein=spectroOut[, AllProtein],
@@ -234,7 +234,7 @@ GetPepProtAnnot <- function(spectroOut,
                           isTryptic =spectroOut[, isTryptic],
                           startPosition=spectroOut[, start])
 
-    # adding modified peptides/precursors if a different 'analysisLvl' is chosen
+    ## adding modified peptides/precursors based on 'analysisLvl'
     if(tolower(analysisLvl) == "modifiedpeptide"){
         annotPP$modPeptide <- gsub("[ _]", "", spectroOut[, modPeptide])
         annotPP <- annotPP[, c(ncol(annotPP), 1:ncol(annotPP)-1)]
@@ -244,17 +244,17 @@ GetPepProtAnnot <- function(spectroOut,
         annotPP <- annotPP[, c(ncol(annotPP), 1:ncol(annotPP)-1)]
     }
 
-    annotPP <- unique(annotPP) # removing all duplicated rows from data.frame
+    annotPP <- unique(annotPP) ## removing all duplicated rows from data.frame
     iRow <- switch(tolower(analysisLvl), "peptide"="Peptide",
                    "modifiedpeptide"="modPeptide", "precursor"="Precursor")
 
-    # join protein names if peptide was matched to different PG groups in
-    # different Spectronaut reports
+    ## join protein names if peptide was matched to different PG groups in
+    ## different Spectronaut reports
     if(!is.null(spectroOut2)){
-        annotPP <- JoinPG(annotPP, iRow)
+        annotPP <- joinPG(annotPP, iRow)
     }
-    # get end position of peptides
-    annotPP$endPosition <- GetEndPositionOfPep(annotPP)
+    ## get end position of peptides
+    annotPP$endPosition <- getEndPositionOfPep(annotPP)
 
     row.names(annotPP) <- annotPP[, iRow]
     return(annotPP)
@@ -267,7 +267,7 @@ GetPepProtAnnot <- function(spectroOut,
 #' multiple regions in the proteome, providing multiple end positions if
 #' multiple start positions are given.
 #'
-#' @usage GetEndPositionOfPep(annotPP, startCol="startPosition",
+#' @usage getEndPositionOfPep(annotPP, startCol="startPosition",
 #' pepCol="Peptide")
 #'
 #' @param annotPP A data.frame with peptide and protein annotation. Rows are
@@ -288,24 +288,25 @@ GetPepProtAnnot <- function(spectroOut,
 #' peptides mapping to the same protein multiple times and ';' for peptides
 #' mapping to multiple proteins.
 
-GetEndPositionOfPep <- function(annotPP, startCol="startPosition",
+getEndPositionOfPep <- function(annotPP, startCol="startPosition",
                                 pepCol="Peptide"){
     end <- sapply(seq(1:nrow(annotPP)), function(i){
         start <- as.character(annotPP[, startCol][i])
         length <- nchar(annotPP[, pepCol][i])-1
 
-        # estimate end position if  one start position of peptide is provided
+        ## estimate end position if  one start position of peptide is provided
         if(!grepl("[;,]", start)){
             end <- as.character(as.numeric(start)+length)
         }
 
-        # split start positions and estimate end position if multiple start
-        # positions of peptide are provided
+        ## split start positions and estimate end position if multiple start
+        ## positions of peptide are provided
         else{
             start <- unlist(strsplit(start, ";"))
             end <- sapply(start, function(x){
                 x <- unlist(strsplit(x, ","))
-                end <- paste(unname(sapply(x, function(y){as.character(as.numeric(y)+length)})), collapse=",")
+                end <- paste(unname(sapply(x, function(y){as.character(
+                    as.numeric(y)+length)})), collapse=",")
             })
             end <- paste(unname(end), collapse=";")
         }
@@ -331,7 +332,7 @@ GetEndPositionOfPep <- function(annotPP, startCol="startPosition",
 #' @return A data.frame including all necessary annotation on peptides and
 #' proteins with joined protein names.
 
-JoinPG <- function(annotPP, iCol, protCol="Protein"){
+joinPG <- function(annotPP, iCol, protCol="Protein"){
     annotPP <- split(annotPP, annotPP[, iCol])
     annotPP <- do.call(rbind, lapply(annotPP, function(x){
         if(nrow(x)>1){
@@ -353,7 +354,7 @@ JoinPG <- function(annotPP, iCol, protCol="Protein"){
 #' were added to the Spectronaut report, else please create the sample
 #' annotation file yourself.
 #'
-#' @usage GetSampleAnnot(spectroOut, sampleName="R.FileName",
+#' @usage getSampleAnnot(spectroOut, sampleName="R.FileName",
 #' sampleCondition="R.Condition", typeCondition="factor",
 #' contrastCoding="dummyCoding", baseLevel=NULL)
 #'
@@ -383,7 +384,7 @@ JoinPG <- function(annotPP, iCol, protCol="Protein"){
 #'
 #' @export
 
-GetSampleAnnot <- function(spectroOut,
+getSampleAnnot <- function(spectroOut,
                            sampleName="R.FileName",
                            sampleCondition="R.Condition",
                            typeCondition="factor",

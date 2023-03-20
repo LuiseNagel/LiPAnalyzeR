@@ -6,7 +6,7 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving structural variation between different conditions.
 #'
-#' @usage  AnalyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
+#' @usage  analyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
 #' formulaBVLS="Y~XPep+XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0, 0),
 #' upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
 #'
@@ -49,7 +49,7 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #'
 #'
 #' @export
-AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
+analyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
                               formulaBVLS="Y~XPep+XProt", formulaOLS=NULL,
                               lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
                               addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE){
@@ -72,7 +72,7 @@ AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
         lowBVLS <- c(-1e9, 0)
         upBVLS <- c(1e9, 1e9)
     }
-    LiPOut <- RunModel(spectroList=spectroList,
+    LiPOut <- runModel(spectroList=spectroList,
                        annotS=annotS,
                        formulaBVLS=formulaBVLS,
                        formulaOLS=formulaOLS,
@@ -89,7 +89,7 @@ AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving PK-independent peptide variation between different conditions.
 #'
-#' @usage AnalyzeTrpPepData(spectroList, annotS, infoCondition="Condition",
+#' @usage analyzeTrpPepData(spectroList, annotS, infoCondition="Condition",
 #' formulaBVLS="Y~XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0),
 #' upBVLS=c(Inf, Inf), addBVLSbounds=FALSE)
 #'
@@ -117,7 +117,7 @@ AnalyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
 #' are for example also running batch correction in the BVLS model.
 #'
 #' @export
-AnalyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
+analyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
                               formulaBVLS="Y~XProt", formulaOLS=NULL,
                               lowBVLS=c(-1e9, 0), upBVLS=c(Inf, Inf),
                               addBVLSbounds=FALSE){
@@ -125,7 +125,7 @@ AnalyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
         formulaOLS <- paste0("Y~", infoCondition)
     }
     spectroList <- list(Y=spectroList$TrpPep, XProt=spectroList$TrpProt)
-    TrpOut <- RunModel(spectroList=spectroList,
+    TrpOut <- runModel(spectroList=spectroList,
                        annotS=annotS,
                        formulaBVLS=formulaBVLS,
                        formulaOLS=formulaOLS,
@@ -141,7 +141,7 @@ AnalyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving protein abundance variation between different conditions.
 #'
-#' @usage AnalyzeTrpProtData(spectroList, annotS, annotPP,
+#' @usage analyzeTrpProtData(spectroList, annotS, annotPP,
 #' infoCondition="Condition", infoProtName="Protein", formulaBVLS=NULL,
 #' formulaOLS=NULL, lowBVLS=NULL, upBVLS=NULL, addBVLSbounds=FALSE,
 #' LiPonly=FALSE)
@@ -178,7 +178,7 @@ AnalyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
 
 #'
 #' @export
-AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
+analyzeTrpProtData <- function(spectroList, annotS, annotPP,
                                infoCondition="Condition",
                                infoProtName="Protein", formulaBVLS=NULL,
                                formulaOLS=NULL, lowBVLS=NULL, upBVLS=NULL,
@@ -187,7 +187,7 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
         formulaOLS <- paste0("Y~", infoCondition)
     }
 
-    # map peptides to proteins
+    ## map peptides to proteins
     if(!LiPonly){
         protData <- spectroList$TrpProt
     }
@@ -196,12 +196,12 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
     }
     Peps2Prots <- split(row.names(protData), annotPP[row.names(protData),
                                                      infoProtName])
-    table(unlist(lapply(Peps2Prots, length)))
     Peps2Prots <- unlist(lapply(Peps2Prots, \(x) (x[1])))
     spectroList <- list(Y=protData[Peps2Prots,])
     row.names(spectroList$Y) <- names(Peps2Prots)
 
-    ProtOut <- RunModel(spectroList=spectroList,
+    ## running models on protein data
+    ProtOut <- runModel(spectroList=spectroList,
                         annotS=annotS,
                         formulaBVLS=formulaBVLS,
                         formulaOLS=formulaOLS,
@@ -217,7 +217,7 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
 
 #' @description Function to build linear regression models for fitting MS data.
 #'
-#' @usage RunModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
+#' @usage runModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
 #' formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
 #' addBVLSbounds=FALSE, returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
 #' LiPonly=FALSE, withHT=FALSE)
@@ -273,14 +273,14 @@ AnalyzeTrpProtData <- function(spectroList, annotS, annotPP,
 #' peptide will be exported as additional list elements.
 #'
 #' @export
-RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
+runModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
                      formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0),
                      upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE,
                      returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
                      LiPonly=FALSE, withHT=FALSE){
 
-    # if necessary transforming formulas into character
-    # remove spaces in formula
+    ## if necessary transforming formulas into character
+    ## remove spaces in formula
     if(!is.null(formulaBVLS)){
         if(inherits(formulaBVLS,"formula")){
             formulaBVLS <- Reduce(paste, deparse(formulaBVLS))
@@ -294,14 +294,14 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         formulaOLS <- gsub(" ", "", formulaOLS)
     }
 
-    # check input format of formulas
+    ## check input format of formulas
     if(!(is.null(formulaBVLS)|is.character(formulaBVLS))&
        (is.null(formulaOLS)|is.character(formulaOLS))){
         stop("Please provide 'formula' in the correct class. Use 'character' or
              'formula'.")
     }
 
-    # stopping functions if formulaBVLS does not look as expected
+    ## checking if 'formulaBVLS' contains unexpected variables
     if(LiPonly){
         if(grepl("XPep", as.character(formulaBVLS))){
             stop("Function is run in 'LiPonly' mode, but 'formulaBVLS' includes
@@ -316,7 +316,7 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         }
     }
 
-    # adjusting names of SpectroList matrices
+    ## adjusting names of SpectroList matrices
     if(paste(names(spectroList), collapse="") == c("LiPPepTrpPepTrpProt")){
         names(spectroList) <- c("Y", "XPep", "XProt")
     }
@@ -326,7 +326,7 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         names(spectroList) <- c("Y", "XProt")
     }
 
-    # Assuring row.names and colnames fit over all input data
+    ## assuring row.names and colnames fit over all input data
     feat <- Reduce(intersect, lapply(spectroList, row.names))
     samples <- Reduce(intersect, lapply(spectroList, colnames))
 
@@ -347,22 +347,22 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         annotS <- annotS[samples, ]
     }
 
-    # returning warning message if no formulas are provided
+    ## stop if no formulas are provided
     if(is.null(formulaBVLS) & is.null(formulaOLS)){
         stop("No BVLS or OLS formula provided. Please provide at least one of
              them to define the model(s) you want to run.")
     }
     resAll <- NULL
 
-    # running BVLS
+    ## running BVLS models
     if(!is.null(formulaBVLS)){
         message("Running bounded variable least square models.")
-        modelMat <- CreateModelMatrix(spectroList, formulaBVLS, annotS, samples)
-        modelBVLS <- RunBVLS(formulaBVLS, modelMat, lowBVLS, upBVLS,
+        modelMat <- createModelMatrix(spectroList, formulaBVLS, annotS, samples)
+        modelBVLS <- runBVLS(formulaBVLS, modelMat, lowBVLS, upBVLS,
                              addBVLSbounds)
-        resBVLS <- ExtractBVLS(modelBVLS, samples)
+        resBVLS <- extractBVLS(modelBVLS, samples)
         if(is.null(formulaOLS)){
-            resALL <- resBVLS
+            resAll <- resBVLS
             message("Returning BVLS results including residuals and estimated
                     coefficients.")
         }
@@ -373,30 +373,30 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         dfBVLS <- NULL
     }
 
-    # running OLS
+    ## running OLS models
     if(!is.null(formulaOLS)){
         message("Running ordinary least square models.")
-        modelMat <- CreateModelMatrix(spectroList, formulaOLS, annotS, samples)
-        modelOLS <- RunOLS(modelMat)
-        resOLS <- ExtractOLS(modelOLS, formulaOLS, dfBVLS)
+        modelMat <- createModelMatrix(spectroList, formulaOLS, annotS, samples)
+        modelOLS <- runOLS(modelMat)
+        resOLS <- extractOLS(modelOLS, formulaOLS, dfBVLS)
         if(!is.null(formulaBVLS)){
             resOLS$modelCoeff <- cbind(resBVLS$modelCoeff,resOLS$modelCoeff)
         }
-        resALL <- resOLS
+        resAll <- resOLS
     }
 
-    # Adding feature names to output)
-    resALL <- lapply(resALL, function(x){
+    ## adding feature names to output
+    resAll <- lapply(resAll, function(x){
         rownames(x) <- feat
         return(as.data.frame(x))
     })
 
-    # Add message if there TrpPep or TrpProt coefficients are unrealistic
-    if(any(grepl("XPep|XProt", colnames(resALL[[1]])))){
-        coeffPepProt <- unlist(c(resALL[[1]][, grepl("XPep",
-                                                     colnames(resALL[[1]]))],
-                                 resALL[[1]][, grepl("XProt",
-                                                     colnames(resALL[[1]]))]))
+    ## add message if there TrpPep or TrpProt coefficients are very high
+    if(any(grepl("XPep|XProt", colnames(resAll[[1]])))){
+        coeffPepProt <- unlist(c(resAll[[1]][, grepl("XPep",
+                                                     colnames(resAll[[1]]))],
+                                 resAll[[1]][, grepl("XProt",
+                                                     colnames(resAll[[1]]))]))
         if(max(stats::na.omit(coeffPepProt))>5){
             message("At least one peptide/protein coefficient is higher than 5,
                      please check the results of the effected peptides for
@@ -404,26 +404,30 @@ RunModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
         }
     }
 
-    # Adding models to results if required
+    ## adding models to results if set in function input
     if(returnBVLSmodels){
-        resALL[[length(resALL)+1]] <- list(modelBVLS)
-        names(resALL)[length(resALL)] <- "modelBVLS"
+        resAll[[length(resAll)+1]] <- list(modelBVLS)
+        names(resAll)[length(resAll)] <- "modelBVLS"
     }
 
     if(returnOLSmodels){
-        resALL[[length(resALL)+1]] <- list(modelOLS)
-        names(resALL)[length(resALL)] <- "modelOLS"
+        resAll[[length(resAll)+1]] <- list(modelOLS)
+        names(resAll)[length(resAll)] <- "modelOLS"
     }
 
-    # Potentially adding models
-    return(resALL)
+    return(resAll)
 }
 
 
-# Function for getting list of Y and model matrix for all peptides
-CreateModelMatrix <- function(spectroList, formula, annotS, samples){
-    #formula <- gsub(".*~", "~", formula)
-    list2env(spectroList, envir=environment()) # write matrixes into environment
+## @title Creating model matrices to run BVLS or OLS on
+##
+## @description Creates one model matrices per peptide/protein which are given
+## into the BVLS or OLS functions afterwards
+##
+## @return list with matrices for linear modelling
+createModelMatrix <- function(spectroList, formula, annotS, samples){
+
+    list2env(spectroList, envir=environment()) ## write matrices to environment
     modelMat <- lapply(as.list(seq(1, nrow(Y))), function(i){
         Y <- as.numeric(Y[i, ])
         formula <- stats::as.formula(formula)
@@ -450,23 +454,25 @@ CreateModelMatrix <- function(spectroList, formula, annotS, samples){
     return(modelMat)
 }
 
+## @title Running BVLS models
+##
+## @description Function to run BVLS on a list of model matrices, one element in
+## the list should represent one peptide or protein.
+##
+## @return Returns complete BVLS model
+runBVLS <- function(formula, modelMat, lowBVLS, upBVLS, addBVLSbounds){
 
-# Running BVLS, returning residuals and coeff
-RunBVLS <- function(formula, modelMat, lowBVLS, upBVLS, addBVLSbounds){
-
-    # bvls does not take -Inf as an input
-    # change -Inf to high negative number instead
+    ## change -Inf to high negative number instead, since bvls() does not take
+    ## -Inf as an input
     lowBVLS[lowBVLS == -Inf] <- -1e9
 
-    # run BVLS models
     modelRes <- lapply(modelMat, function(data){
 
-        ### Add progress bar
         Y <- data$Y
         X <- data$X
 
-        # if set to true, adding as many as necessary -Inf and Inf to the
-        # boundaries of the BVLS
+        ## adding as many as necessary -Inf and Inf to the boundaries for bvls()
+        ## if 'addBVLSbounds' is set to TRUE
         if(addBVLSbounds){
             nX <- ncol(X)
             lowRep <- nX-length(lowBVLS)
@@ -475,13 +481,13 @@ RunBVLS <- function(formula, modelMat, lowBVLS, upBVLS, addBVLSbounds){
             upBVLS <- c(upBVLS, rep(Inf, upRep))
         }
 
-        # running BVLS
+        ## running BVLS
         BVLS <- bvls::bvls(A=X,
                            b=Y,
                            bl= lowBVLS,
                            bu=upBVLS)
 
-        ## Add variable and sample annotation to BVLS output
+        ## add variable and sample annotation to BVLS output
         varsBVLS <- paste0(dimnames(X)[[2]], "_BVLS")
         varsBVLS[1] <- "Intercept_BVLS"
         attr(BVLS, "variables") <- varsBVLS
@@ -491,10 +497,17 @@ RunBVLS <- function(formula, modelMat, lowBVLS, upBVLS, addBVLSbounds){
     return(modelRes)
 }
 
-# Getting Ceoff from BVLS
-ExtractBVLS <- function(BVLS, samples){
+## @title Extracting information from BVLS models
+##
+## @description Function to extract the coefficients and residuals for each
+## peptide/protein from the BVLS models
+##
+## @return List with the first element being a data.frame with residuals from
+## the BVLS models and the second element being a data.frame with coefficients
+## from the BVLS models
+extractBVLS <- function(BVLS, samples){
 
-    # extract residuals and coefficients from BVLS models
+    ## extract residuals and coefficients from BVLS models
     modelResid <- do.call(plyr::rbind.fill, lapply(BVLS, function(x){
         y <- as.data.frame(t(x$residuals))
         colnames(y) <- attributes(x)$samples
@@ -507,7 +520,7 @@ ExtractBVLS <- function(BVLS, samples){
         return(y)
     }))
 
-    # adding NA columns in resid
+    ## adding NA columns in residuals if peptide in sample could not be modeled
     startDf <- as.data.frame(matrix(NA, nrow=1, ncol=length(samples)))
     colnames(startDf) <- samples
     modelResid <- plyr::rbind.fill(startDf, modelResid)[-1,]
@@ -515,9 +528,13 @@ ExtractBVLS <- function(BVLS, samples){
     return(list(modelResid=modelResid, modelCoeff=modelCoeff))
 }
 
-# Running OLS
-## Add warning for degrees of freedom
-RunOLS <- function(modelMat){
+## @title Running OLS models
+##
+## @description Function to run OLS on a list of model matrices, one element in
+## the list should represent one peptide or protein.
+##
+## @return Returns complete OLS model
+runOLS <- function(modelMat){
     modelRes <- lapply(modelMat, function(data){
         ### Add progress bar
         Y <- data$Y
@@ -527,9 +544,17 @@ RunOLS <- function(modelMat){
     return(modelRes)
 }
 
-
-# Getting Ceoff and P-values from OLS
-ExtractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
+## @title Extracting information from OLS models
+##
+## @description Function to extract the coefficients and p-values for each
+## peptide/protein from the OLS models. If BVLS was run before the OLS, the
+## p-values are estimated taken the degrees of freedom already used by the BVLS
+## into account.
+##
+## @return List with the first element being a data.frame with coefficients from
+## the OLS models and the second element being a data.frame with p- values from
+## the OLS models
+extractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
                        coeffTval="t value"){
     modelCoef <- do.call(plyr::rbind.fill, lapply(OLS, function(x){
         as.data.frame(t(stats::coef(x)))
@@ -540,12 +565,12 @@ ExtractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
             as.data.frame(t(summary(x)$coefficients[, coeffPval]))
         }))
     }
-
     else{
         message("Estimating p-values while removing degrees of freedom
                 consumed by BVLS.")
-        modelPv <- CalcualtePvalAfterBVLS(OLS, coeffTval, dfBVLS)
+        modelPv <- calcualtePvalAfterBVLS(OLS, coeffTval, dfBVLS)
     }
+
     if(ncol(modelCoef) == 2){
         formulaOLS <- stats::as.formula(formulaOLS)
         formulaVars <- formula.tools::get.vars(formulaOLS)[
@@ -562,9 +587,14 @@ ExtractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
     return(list(modelCoeff=modelCoef, modelPv=modelPv))
 }
 
-# Calculate p-value from OLS model taking degrees of freedom already considered
-#in BVLS into account
-CalcualtePvalAfterBVLS <- function(LM,coeffTval, dfBVLS){
+## @title Estimate p-values taking degrees of freedom into account
+##
+## @description Function estimates p-values for all coefficients in the OLS
+## model, but takes the degrees of freedom used when running the BVLS into
+## account.
+##
+## @return Returns a data.frame with p-values
+calcualtePvalAfterBVLS <- function(LM,coeffTval, dfBVLS){
     modelPv <- do.call(plyr::rbind.fill.matrix, lapply(LM, function(x){
         x <- stats::summary.lm(x)
         df <- x$df[2] - dfBVLS

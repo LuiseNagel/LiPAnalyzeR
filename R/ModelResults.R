@@ -7,7 +7,7 @@ globalVariables(names=c("Pval", "Yaxis", "aes",  "start", "end"))
 #' \code{RunModel} output. Also performs FDR correction, either over all
 #' peptides/proteins or over all peptides of each protein individually
 #'
-#' @usage SummarizeModelResults(resModel, evalCovariable="Condition_OLS",
+#' @usage summarizeModelResults(resModel, evalCovariable="Condition_OLS",
 #' correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="Peptide",
 #' infoProtein="Protein")
 #'
@@ -39,7 +39,7 @@ globalVariables(names=c("Pval", "Yaxis", "aes",  "start", "end"))
 #'
 #' @export
 #'
-SummarizeModelResults <- function(resModel, evalCovariable="Condition_OLS",
+summarizeModelResults <- function(resModel, evalCovariable="Condition_OLS",
                                   correctPval="all", pAdjust="fdr",
                                   annotPP=NULL, infoFeature="Peptide",
                                   infoProtein="Protein"){
@@ -52,7 +52,7 @@ SummarizeModelResults <- function(resModel, evalCovariable="Condition_OLS",
     }
     else if(correctPval == "protein-wise"){
         message("Preforming protein-wise FDR correction.")
-        modelPvalAdj <- DoProteinWiseFDR(modelPval, pAdjust, annotPP,
+        modelPvalAdj <- doProteinWiseFDR(modelPval, pAdjust, annotPP,
                                          infoFeature, infoProtein)
     }
     else{
@@ -87,7 +87,7 @@ SummarizeModelResults <- function(resModel, evalCovariable="Condition_OLS",
 #'
 #' @return vector of protein-wise adjusted P values
 
-DoProteinWiseFDR <- function(vecPval, pAdjust, annotPP, infoFeature,
+doProteinWiseFDR <- function(vecPval, pAdjust, annotPP, infoFeature,
                              infoProtein){
     if(is.null(annotPP)){
         stop("Please provide peptide and protein annotations in form of the
@@ -120,10 +120,10 @@ DoProteinWiseFDR <- function(vecPval, pAdjust, annotPP, infoFeature,
 #' #'
 #' #' @param modelSum a data.frame object, including coefficients and P values to be plotted
 #' #' @param infoPval a character string providing column name of P values to use for plotting.
-#' #' Output from \code{SummarizeModelResults} provides a data.frame in required format.
+#' #' Output from \code{summarizeModelResults} provides a data.frame in required format.
 #' #' Default is set to 'Padj'.
 #' #' @param infoCoef a character string providing column name of coefficients to use for plotting.
-#' #' Output from \code{SummarizeModelResults} provides a data.frame in required format.
+#' #' Output from \code{summarizeModelResults} provides a data.frame in required format.
 #' #' Default is set to 'Coefficient'.
 #' #' @param annotPP a data.frame with peptide and protein annotation.
 #' #' Rows are features and columns must include \code{infoFeature} and \code{infoProtein}.

@@ -5,7 +5,7 @@
 #' filtering can be applied based on various features such as digest type,
 #' proteotypic status or number of missed cleavages.
 #'
-#' @usage PreprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
+#' @usage preprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
 #' annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
 #' thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
 #' infoCondition="Condition", runHT = FALSE, namePepQuant = "Peptide",
@@ -84,7 +84,7 @@
 #' columns refer to the samples.
 #'
 #' @export
-PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
+preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
                                      annotPP=NULL, annotS=NULL, logT=TRUE,
                                      filterMinLogQuant=TRUE,
                                      thresholdMinLogQuant=10, filterNA=TRUE,
@@ -102,7 +102,7 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
                                      infoMissedCleave="NMissedCleavages"){
 
 
-    # check input data
+    ## check input and data
     if(is.null(SpectroList)){
         if(is.null(QuantityMatrix)){
             stop("Please provide an input with peptide or protein quantities
@@ -123,13 +123,13 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
         stop("Please provide annotS.")
     }
 
-    # removing TrpPep and mapping TrpProt to HT peptides in case the function is
-    # run in runHT mode
+    ## removing TrpPep and mapping TrpProt to HT peptides in case the function
+    ## is run in runHT mode
     if(runHT){
         filterTryptic <- FALSE
         if(paste(names(SpectroList), collapse = "") ==
            c("LiPPepTrpPepTrpProt")){
-            SpectroList <- FilterForRunHT(SpectroList, annotPP,
+            SpectroList <- filterForRunHT(SpectroList, annotPP,
                                           namePepQuant, nameProtQuant)
         }
         else if(paste(names(SpectroList), collapse = "") != c("LiPPepLiPProt")){
@@ -140,7 +140,7 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
         }
     }
 
-    # adjusting peptides and samples to be identical in all data
+    ## adjusting peptides and samples to be identical in all data
     peps <- Reduce(intersect, lapply(SpectroList, row.names))
     samples <- Reduce(intersect, lapply(SpectroList, colnames))
     if(!is.null(annotPP)){
@@ -154,7 +154,7 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
     SpectroList <- lapply(SpectroList, function(x)
     {x[peps, samples]})
 
-    # Filter FT, proteotypic and missed cleavages
+    ## filter FT, proteotypic and missed cleavages
     SpectroList <- lapply(SpectroList, function(x){
         if(logT){
             x <- log2(x)
@@ -174,9 +174,9 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
         return(x)
     })
 
-    # Filter NAs
+    ## filter NAs
     if(filterNA){
-        SpectroList <- FilterNAsFromList(SpectroList, annotS, infoCondition,
+        SpectroList <- filterNAsFromList(SpectroList, annotS, infoCondition,
                                          maxNAperCondition)
     }
 
@@ -207,7 +207,7 @@ PreprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
 #'
 #' @return A list containing LiPPep and TrpProt quantities
 
-FilterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
+filterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
     message("Running function in 'runHT' mode, removing TrpPep data and matching
             TrpProt data to all LiP peptides.")
     LiPPP <- annotPP[match(row.names(SpectroList$LiPPep),
@@ -215,7 +215,7 @@ FilterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
     TrpPP <- annotPP[match(row.names(SpectroList$TrpProt),
                            annotPP[, namePepQuant]), nameProtQuant]
 
-    # only keep peptides from proteins with TrpProt quantity available
+    ## only keep peptides from proteins with TrpProt quantity available
     TrpProt <-  split(SpectroList$TrpProt, TrpPP)
     TrpPP <- names(TrpProt)
     TrpProt <- do.call(rbind, lapply(TrpProt, \(x){x[1,]}))
@@ -224,7 +224,7 @@ FilterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
     LiPPP <- LiPPP[match(row.names(LiPPep),
                          LiPPP[, namePepQuant]), nameProtQuant]
 
-    # matching TrpProt to LiPPep quantities
+    ## matching TrpProt to LiPPep quantities
     TrpProt <- TrpProt[LiPPP,]
     row.names(TrpProt) <- row.names(LiPPep)
     SpectroList <- list(LiPPep = LiPPep,
@@ -254,16 +254,16 @@ FilterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
 #'
 #' @return list of NA filtered matrices with petide/protein quantities.
 #'
-FilterNAsFromList <- function(SpectroList, annotS, infoCondition,
+filterNAsFromList <- function(SpectroList, annotS, infoCondition,
                               maxNAperCondition){
-    # add matrices together to get NA if any of them is NA
+    ## add matrices together to get NA if any of them is NA
     matNA <- Reduce('+', SpectroList)
     if(maxNAperCondition == 0){
         matNA <- !is.na(rowSums(matNA))
     }
 
     else{
-        # splitting data based on conditions
+        ## splitting data based on conditions
         matNA <- split(as.data.frame(t(matNA)), annotS[, infoCondition])
         matNA <- lapply(matNA, function(x){
             apply(t(x), 1, function(y){
