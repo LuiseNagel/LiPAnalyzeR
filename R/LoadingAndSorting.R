@@ -19,15 +19,17 @@
 #' @param analysisLvl A character string defining the level on which the
 #' peptide/protein quantities should be exported. Is set to 'Peptide' by d
 #' efault, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.
-#' @param sampleName A character string defining the column of the Spectronaut
-#' report where samples names are provided. Is set to 'R.Filename' by default.
-#' @param valuePep A character string defining the column from which
-#' peptide/precursor quantities should be taken from. Defined as 'NULL' by
-#' default, resulting in the function automatically setting \code{valuePep}
-#' based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
+#' @param sampleName A character string or numeric giving the column name or
+#' column number in which sample names are defined in the Spectronaut report.
+#' Set to R.FileName' by default.
+#' @param valuePep A character string or numeric giving the column name or
+#' column number from which peptide/precursor quantities should be taken from.
+#' Defined as 'NULL' by default, resulting in the function automatically setting
+#' \code{valuePep} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
 #' 'ModifiedPeptide'='FG.Quantity', 'Precursor'='FG.Quantity').
-#' @param valueProt A character string defining the column from which protein
-#' quantities should be taken from. Set to 'PG.Quantity' by default.
+#' @param valueProt A character string or numeric giving the column name or
+#' column number from which protein quantities should be taken from. Set to
+#' 'PG.Quantity' by default.
 #' @param LiPonly A boolean value, set to 'TRUE' if you want to run the LiPonly
 #' version o the package and not providing trypsin-only data.Default is set to
 #' 'FALSE'.
@@ -96,7 +98,7 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 }
 
 
-#' @title Extracting a single peptude/protein matrix from Spectronaut report
+#' @title Extracting a single peptide/protein matrix from Spectronaut report
 #'
 #' @description This function exports quantities from the Spectronaut report
 #' and writes them into a matrix. Rows are peptides/proteins and columns are
@@ -106,16 +108,18 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 #'
 #' @param spectroOut Spectronaut report exported using the Spectronaut schema
 #' 'SpectroSchema_LiPAnalyzerOut'.
-#' @param values A character string defining the column in Spectronaut report
-#' where quantities to export are located/
-#' @param rows A character string defining the column in Spectronaut report
-#' where the names of the quantities to export are located. If there are
-#' different quantities for the same \code{rows} the mean of these values is
-#' used.
-#' @param cols A character string defining the column in Spectronaut report
-#' where the sample or file names are located.
+#' @param values A character string or numeric giving the column name or
+#' column number from the Spectronaut report in which quantities that should be
+#' writen into matrix are located.If there are different quantities for the
+#' same \code{rows} the mean of these values is used.
+#' @param rows A character string or numeric giving the column name or
+#' column number from the  Spectronaut report where the names of the quantities
+#' writen into matrix are located.
+#' @param cols A character string or numeric giving the column name or
+#' column number from the  Spectronaut report where the sample or file names are
+#' located.
 #'
-#' @return Retunr a matrix atrix with quantities, \code{rows} represent features
+#' @return Returns a matrix with quantities, \code{rows} represent features
 #' and \code{cols} refer to the samples.
 #'
 #' @export
@@ -162,39 +166,40 @@ convert2Matrix <- function(spectroOut, values, rows, cols){
 #' report(s) should have been exported using the Spectronaut schema
 #' 'SpectroSchema_LiPAnalyzerOut'.
 #' @param analysisLvl A character string defining the level on which the
-#' peptide/protein quantities should be exported.
-#' 'Peptide' by default, can alternatively be set to 'ModifiedPeptide' or
-#' 'Precursor'. Should be identical to the \code{analysisLvl} defined in
-#' \code{ExtractDataFromSpectro}.
+#' peptide/protein quantities should be exported. Peptide' by default, can
+#' alternatively be set to 'ModifiedPeptide' oR Precursor'. Should be identical
+#' to the \code{analysisLvl} defined in \code{ExtractDataFromSpectro}.
 #' @param Precursor  A character string giving the column name in which
 #' precursor IDs can be found in the Spectronaut report. Defined as
 #' 'EG.PrecursorId' by default. Only used if \code{analysisLvl} is set to
 #' 'Precursor'.
-#' @param modPeptide A character strong giving the column in which modified
-#' peptide sequence can be found in the Spectronaut report. Defined as
-#' 'EG.ModifiedSequence' by default. Only used if \code{analysisLvl} is set to
-#' 'ModifiedPeptide'.
-#' @param Peptide  A character string giving the column in which peptide
-#' sequence can be found in the Spectronaut report. Defined as
-#' 'PEP.StrippedSequence' by default.
-#' @param Protein A character string giving the column in which protein names
-#' can be found in the Spectronaut report. Defined as 'PG.ProteinGroups' by
+#' @param modPeptide A character string or numeric giving the column name or
+#' column number in which modified peptide sequence can be found in the
+#' Spectronaut report. Defined as EG.ModifiedSequence' by default. Only used if
+#' \code{analysisLvl} is set to 'ModifiedPeptide'.
+#' @param Peptide A character string or numeric giving the column name or
+#' column number in which peptide sequence can be found in the Spectronaut
+#' report. Defined as PEP.StrippedSequence' by default.
+#' @param Protein A character string or numeric giving the column name or
+#' column number in which protein names can be found in the Spectronaut report.
+#' Defined as 'PG.ProteinGroups' by default.
+#' @param AllProtein A character string or numeric giving the column name or
+#' column number in which all protein names mapping to a peptide sequence can be
+#' found in the Spectronaut report. Defined as
+#' 'PEP.AllOccurringProteinAccessions' by default.
+#' @param NMissedCleavages A character string or numeric giving the column name or
+#' column number in which number of missed cleavages in each peptide can be
+#' found in the Spectronaut report. Defined as 'PEP.NrOfMissedCleavages' by
 #' default.
-#' @param AllProtein A character string giving the column in which all protein
-#' names mapping to a peptide sequence can be found in the Spectronaut report.
-#' Defined as 'PEP.AllOccurringProteinAccessions' by default.
-#' @param NMissedCleavages A character string giving the column in which number
-#' of missed cleavages in each peptide can be found in the Spectronaut report.
-#' Defined as 'PEP.NrOfMissedCleavages' by default.
-#' @param isProteotypic A character string giving the column in which annotation
-#' if the peptide is proteotypic can be found in the Spectronaut report.
-#' Defined as 'PEP.IsProteotypic' by default.
-#' @param isTryptic A character string giving the column in which annotation of
-#' the digest type can be found in the Spectronaut report. Defined as
-#' 'PEP.DigestType....Trypsin.P.' by default.
-#' @param start A character stringgiving the column in which start position of
-#' each peptide can be found in the Spectronaut report. Defined as
-#' 'PEP.PeptidePosition' by default.
+#' @param isProteotypic A character string or numeric giving the column name or
+#' column number in which annotation of the peptide is proteotypic can be found
+#' in the Spectronaut report. Defined as 'PEP.IsProteotypic' by default.
+#' @param isTryptic A character string or numeric giving the column name or
+#' column number in which annotation of the digest type can be found in the
+#' Spectronaut report. Defined as PEP.DigestType....Trypsin.P.' by default.
+#' @param start A character string or numeric giving the column name or
+#' column number in which start position of each peptide can be found in the
+#' Spectronaut report. Defined as PEP.PeptidePosition' by default.
 #'
 #'  @return Returns a data.frame including all necessary annotation on peptides
 #'  and proteins
@@ -276,12 +281,13 @@ getPepProtAnnot <- function(spectroOut,
 #' Different start positions for the same peptide should be separated by ',' for
 #' peptides mapping to the same protein multiple times and ';' for peptides
 #' mapping to multiple proteins.
-#' @param startCol A character string defining column in which start positions
-#' of peptides are provided
-#' Defined as 'startPosition' by default.
-#' @param pepCol A character string defining column in which peptide sequences
-#' are provide. Peptide sequences have to be provided without modifications
-#' or charges. Set to 'Peptide' by default.
+#' @param startCol A character string or numeric giving the column name or
+#' column number defining column in which start positions of peptides are
+#' provided. Defined as 'startPosition' by default.
+#' @param pepCol A character string or numeric giving the column name or
+#' column number defining column in which peptide sequences are provide. Peptide
+#' sequences have to be provided without modifications or charges. Set to
+#' 'Peptide' by default.
 #'
 #' @return Returns a character vector with the end positions of all peptides.
 #' Different start positions for the same peptide should be separated by ',' for
@@ -324,10 +330,12 @@ getEndPositionOfPep <- function(annotPP, startCol="startPosition",
 #'
 #' @param annotPP A data.frame with peptide and protein annotation.
 #' Rows are feature and must include a column protein name(s)
-#' @param iCol A character string defining the column in which features are
-#' provided. Based on the chosen \code{analysisLvl}.
-#' @param protCol A character string defining column in which protein name(s)
-#' are provide. Set to 'Protein' by default.
+#' @param iCol A character string or numeric giving the column name or
+#' column number in which features are provided in the Spectronaut report
+#' based on the chosen \code{analysisLvl}.
+#' @param protCol A character string or numeric giving the column name or
+#' column number in which protein name(s)  are provide. Set to 'Protein' by
+#' default.
 #'
 #' @return A data.frame including all necessary annotation on peptides and
 #' proteins with joined protein names.
@@ -361,10 +369,12 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' @param spectroOut Spectronaut report of MS data. Spectronaut report should
 #' have been exported using the Spectronaut schema
 #' 'SpectroSchema_LiPAnalyzerOut'.
-#' @param sampleName A character string  giving the column in which sample names
-#' can be found in the Spectronaut report. Set to R.FileName' by default.
-#' @param sampleCondition A character string giving the column in which
-#' conditions can be found in the Spectronaut report. Set to 'R.Condition' by
+#' @param sampleName A character string or numeric giving the column name or
+#' column number in which sample names are defined in the Spectronaut report.
+#' Set to R.FileName' by default.
+#' @param sampleCondition A character string or numeric giving the column name
+#' or  column number in which conditions can be found in the Spectronaut report.
+#' Set to 'R.Condition' by
 #' default.
 #' @param typeCondition A character string providing information if condition is
 #' a factor or continuous variable If condition is continuous it has to be

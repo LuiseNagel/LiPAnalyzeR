@@ -451,6 +451,7 @@ createModelMatrix <- function(spectroList, formula, annotS, samples){
         attr(X, "samples") <- samples[as.numeric(row.names(X))]
         return(list(Y=Y[as.numeric(row.names(X))], X=X))
     })
+
     return(modelMat)
 }
 
@@ -536,7 +537,6 @@ extractBVLS <- function(BVLS, samples){
 ## @return Returns complete OLS model
 runOLS <- function(modelMat){
     modelRes <- lapply(modelMat, function(data){
-        ### Add progress bar
         Y <- data$Y
         X <- data$X[, -1, drop=FALSE]
         stats::lm(Y ~ X)
@@ -556,21 +556,27 @@ runOLS <- function(modelMat){
 ## the OLS models
 extractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
                        coeffTval="t value"){
+
+    ## extract coefficients from OLS
     modelCoef <- do.call(plyr::rbind.fill, lapply(OLS, function(x){
         as.data.frame(t(stats::coef(x)))
     }))
 
+    ## if BVLS was not run before, extract p-values directly from OLS
     if(is.null(dfBVLS)){
         modelPv <- do.call(plyr::rbind.fill, lapply(OLS, function(x){
             as.data.frame(t(summary(x)$coefficients[, coeffPval]))
         }))
     }
+    ## if BVLS was run before, calculate p-values taking degrees of freedom
+    ## used in BVLS models into account
     else{
         message("Estimating p-values while removing degrees of freedom
                 consumed by BVLS.")
         modelPv <- calcualtePvalAfterBVLS(OLS, coeffTval, dfBVLS)
     }
 
+    ## adjusting column names of coefficient and p-value data.frame
     if(ncol(modelCoef) == 2){
         formulaOLS <- stats::as.formula(formulaOLS)
         formulaVars <- formula.tools::get.vars(formulaOLS)[
@@ -584,6 +590,7 @@ extractOLS <- function(OLS, formulaOLS, dfBVLS, coeffPval="Pr(>|t|)",
     }
     colnames(modelCoef) <- cols
     colnames(modelPv) <- cols
+
     return(list(modelCoeff=modelCoef, modelPv=modelPv))
 }
 
@@ -601,11 +608,15 @@ calcualtePvalAfterBVLS <- function(LM,coeffTval, dfBVLS){
 
         if(df<1){
             warning("Not enough degrees of freedom to estimate p-values,
-                    model is not reliable!")
+                    model is not reliable! Returning NAs for affected peptides/
+                    proteins.")
             pv <- stats::setNames(rep(NA, nrow(x$coefficients)),
                                   row.names(x$coefficients))
             return(t(pv))
         }
+
+        ## Estimating p-values from t-values of OLS taking degrees of freedom
+        ## used in BVLS into account
         else{
             pv <- sapply(x$coefficients[, coeffTval], function(y){
                 2*stats::pt(abs(y), df, lower.tail=FALSE)
@@ -613,5 +624,6 @@ calcualtePvalAfterBVLS <- function(LM,coeffTval, dfBVLS){
             return(t(pv))
         }
     }))
+
     return(modelPv)
 }
