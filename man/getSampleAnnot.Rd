@@ -13,11 +13,13 @@ contrastCoding="dummyCoding", baseLevel=NULL)
 have been exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{sampleName}{A character string  giving the column in which sample names
-can be found in the Spectronaut report. Set to R.FileName' by default.}
+\item{sampleName}{A character string or numeric giving the column name or
+column number in which sample names are defined in the Spectronaut report.
+Set to R.FileName' by default.}
 
-\item{sampleCondition}{A character string giving the column in which
-conditions can be found in the Spectronaut report. Set to 'R.Condition' by
+\item{sampleCondition}{A character string or numeric giving the column name
+or  column number in which conditions can be found in the Spectronaut report.
+Set to 'R.Condition' by
 default.}
 
 \item{typeCondition}{A character string providing information if condition is

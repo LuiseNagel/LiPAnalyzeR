@@ -16,5 +16,8 @@ Imports:
     wec,
     bvls,
     formula.tools,
-    plyr
+    plyr,
+    grDevices,
+    ggplot2,
+    patchwork
 RoxygenNote: 7.2.3

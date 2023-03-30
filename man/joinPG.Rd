@@ -10,11 +10,13 @@ joinPG(annotPP, iCol, protCol = "Protein")
 \item{annotPP}{A data.frame with peptide and protein annotation.
 Rows are feature and must include a column protein name(s)}
 
-\item{iCol}{A character string defining the column in which features are
-provided. Based on the chosen \code{analysisLvl}.}
+\item{iCol}{A character string or numeric giving the column name or
+column number in which features are provided in the Spectronaut report
+based on the chosen \code{analysisLvl}.}
 
-\item{protCol}{A character string defining column in which protein name(s)
-are provide. Set to 'Protein' by default.}
+\item{protCol}{A character string or numeric giving the column name or
+column number in which protein name(s)  are provide. Set to 'Protein' by
+default.}
 }
 \value{
 A data.frame including all necessary annotation on peptides and

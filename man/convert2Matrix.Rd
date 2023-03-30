@@ -2,7 +2,7 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{convert2Matrix}
 \alias{convert2Matrix}
-\title{Extracting a single peptude/protein matrix from Spectronaut report}
+\title{Extracting a single peptide/protein matrix from Spectronaut report}
 \usage{
 convert2Matrix(spectroOut, values, rows, cols)
 }
@@ -10,19 +10,21 @@ convert2Matrix(spectroOut, values, rows, cols)
 \item{spectroOut}{Spectronaut report exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{values}{A character string defining the column in Spectronaut report
-where quantities to export are located/}
+\item{values}{A character string or numeric giving the column name or
+column number from the Spectronaut report in which quantities that should be
+writen into matrix are located.If there are different quantities for the
+same \code{rows} the mean of these values is used.}
 
-\item{rows}{A character string defining the column in Spectronaut report
-where the names of the quantities to export are located. If there are
-different quantities for the same \code{rows} the mean of these values is
-used.}
+\item{rows}{A character string or numeric giving the column name or
+column number from the  Spectronaut report where the names of the quantities
+writen into matrix are located.}
 
-\item{cols}{A character string defining the column in Spectronaut report
-where the sample or file names are located.}
+\item{cols}{A character string or numeric giving the column name or
+column number from the  Spectronaut report where the sample or file names are
+located.}
 }
 \value{
-Retunr a matrix atrix with quantities, \code{rows} represent features
+Returns a matrix with quantities, \code{rows} represent features
 and \code{cols} refer to the samples.
 }
 \description{

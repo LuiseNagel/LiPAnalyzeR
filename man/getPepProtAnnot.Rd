@@ -23,48 +23,49 @@ report(s) should have been exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
 \item{analysisLvl}{A character string defining the level on which the
-peptide/protein quantities should be exported.
-'Peptide' by default, can alternatively be set to 'ModifiedPeptide' or
-'Precursor'. Should be identical to the \code{analysisLvl} defined in
-\code{ExtractDataFromSpectro}.}
+peptide/protein quantities should be exported. Peptide' by default, can
+alternatively be set to 'ModifiedPeptide' oR Precursor'. Should be identical
+to the \code{analysisLvl} defined in \code{ExtractDataFromSpectro}.}
 
 \item{Precursor}{A character string giving the column name in which
 precursor IDs can be found in the Spectronaut report. Defined as
 'EG.PrecursorId' by default. Only used if \code{analysisLvl} is set to
 'Precursor'.}
 
-\item{modPeptide}{A character strong giving the column in which modified
-peptide sequence can be found in the Spectronaut report. Defined as
-'EG.ModifiedSequence' by default. Only used if \code{analysisLvl} is set to
-'ModifiedPeptide'.}
+\item{modPeptide}{A character string or numeric giving the column name or
+column number in which modified peptide sequence can be found in the
+Spectronaut report. Defined as EG.ModifiedSequence' by default. Only used if
+\code{analysisLvl} is set to 'ModifiedPeptide'.}
 
-\item{Peptide}{A character string giving the column in which peptide
-sequence can be found in the Spectronaut report. Defined as
-'PEP.StrippedSequence' by default.}
+\item{Peptide}{A character string or numeric giving the column name or
+column number in which peptide sequence can be found in the Spectronaut
+report. Defined as PEP.StrippedSequence' by default.}
 
-\item{Protein}{A character string giving the column in which protein names
-can be found in the Spectronaut report. Defined as 'PG.ProteinGroups' by
+\item{Protein}{A character string or numeric giving the column name or
+column number in which protein names can be found in the Spectronaut report.
+Defined as 'PG.ProteinGroups' by default.}
+
+\item{AllProtein}{A character string or numeric giving the column name or
+column number in which all protein names mapping to a peptide sequence can be
+found in the Spectronaut report. Defined as
+'PEP.AllOccurringProteinAccessions' by default.}
+
+\item{NMissedCleavages}{A character string or numeric giving the column name or
+column number in which number of missed cleavages in each peptide can be
+found in the Spectronaut report. Defined as 'PEP.NrOfMissedCleavages' by
 default.}
 
-\item{AllProtein}{A character string giving the column in which all protein
-names mapping to a peptide sequence can be found in the Spectronaut report.
-Defined as 'PEP.AllOccurringProteinAccessions' by default.}
+\item{isProteotypic}{A character string or numeric giving the column name or
+column number in which annotation of the peptide is proteotypic can be found
+in the Spectronaut report. Defined as 'PEP.IsProteotypic' by default.}
 
-\item{NMissedCleavages}{A character string giving the column in which number
-of missed cleavages in each peptide can be found in the Spectronaut report.
-Defined as 'PEP.NrOfMissedCleavages' by default.}
+\item{isTryptic}{A character string or numeric giving the column name or
+column number in which annotation of the digest type can be found in the
+Spectronaut report. Defined as PEP.DigestType....Trypsin.P.' by default.}
 
-\item{isProteotypic}{A character string giving the column in which annotation
-if the peptide is proteotypic can be found in the Spectronaut report.
-Defined as 'PEP.IsProteotypic' by default.}
-
-\item{isTryptic}{A character string giving the column in which annotation of
-the digest type can be found in the Spectronaut report. Defined as
-'PEP.DigestType....Trypsin.P.' by default.}
-
-\item{start}{A character stringgiving the column in which start position of
-each peptide can be found in the Spectronaut report. Defined as
-'PEP.PeptidePosition' by default.
+\item{start}{A character string or numeric giving the column name or
+column number in which start position of each peptide can be found in the
+Spectronaut report. Defined as PEP.PeptidePosition' by default.
 
  @return Returns a data.frame including all necessary annotation on peptides
  and proteins}

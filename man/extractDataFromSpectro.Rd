@@ -21,17 +21,19 @@ have been exported using the Spectronaut schema
 peptide/protein quantities should be exported. Is set to 'Peptide' by d
 efault, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.}
 
-\item{sampleName}{A character string defining the column of the Spectronaut
-report where samples names are provided. Is set to 'R.Filename' by default.}
+\item{sampleName}{A character string or numeric giving the column name or
+column number in which sample names are defined in the Spectronaut report.
+Set to R.FileName' by default.}
 
-\item{valuePep}{A character string defining the column from which
-peptide/precursor quantities should be taken from. Defined as 'NULL' by
-default, resulting in the function automatically setting \code{valuePep}
-based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
+\item{valuePep}{A character string or numeric giving the column name or
+column number from which peptide/precursor quantities should be taken from.
+Defined as 'NULL' by default, resulting in the function automatically setting
+\code{valuePep} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
 'ModifiedPeptide'='FG.Quantity', 'Precursor'='FG.Quantity').}
 
-\item{valueProt}{A character string defining the column from which protein
-quantities should be taken from. Set to 'PG.Quantity' by default.}
+\item{valueProt}{A character string or numeric giving the column name or
+column number from which protein quantities should be taken from. Set to
+'PG.Quantity' by default.}
 
 \item{LiPonly}{A boolean value, set to 'TRUE' if you want to run the LiPonly
 version o the package and not providing trypsin-only data.Default is set to

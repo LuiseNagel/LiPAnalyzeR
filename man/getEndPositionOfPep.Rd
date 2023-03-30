@@ -15,13 +15,14 @@ Different start positions for the same peptide should be separated by ',' for
 peptides mapping to the same protein multiple times and ';' for peptides
 mapping to multiple proteins.}
 
-\item{startCol}{A character string defining column in which start positions
-of peptides are provided
-Defined as 'startPosition' by default.}
+\item{startCol}{A character string or numeric giving the column name or
+column number defining column in which start positions of peptides are
+provided. Defined as 'startPosition' by default.}
 
-\item{pepCol}{A character string defining column in which peptide sequences
-are provide. Peptide sequences have to be provided without modifications
-or charges. Set to 'Peptide' by default.}
+\item{pepCol}{A character string or numeric giving the column name or
+column number defining column in which peptide sequences are provide. Peptide
+sequences have to be provided without modifications or charges. Set to
+'Peptide' by default.}
 }
 \value{
 Returns a character vector with the end positions of all peptides.

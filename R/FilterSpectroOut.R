@@ -18,7 +18,7 @@
 #' @param SpectroList A list of matrices, containing peptides/proteins
 #' quantities. Rows represent features and columns refer to the samples. Can
 #' simply be output from \code{ExtractDataFromSpectro}.
-#' @param QuantityMatrix single matrix with peptide/protein quantities. Rows
+#' @param QuantityMatrix A single matrix with peptide/protein quantities. Rows
 #' represent features and columns refer to the samples.
 #' @param annotPP A data.frame with peptide and protein annotation. Rows are
 #' features and must match to the row.names of SpectroList/QuantityMatrix.
@@ -38,10 +38,10 @@
 #' number of NAs. Default is 'TRUE'.
 #' @param maxNAperCondition A numeric value, defining maximal number of NAs
 #' in an individual feature per condition. Default is '0'.
-#' @param infoCondition A character string providing column name of
-#' \code{annotS} in which condition is provided. Default is 'Condition'. If NA
-#' filtering should not be applied on condition level provide only one value in
-#' \code{infoCondition} in \code{annotS}.
+#' @param infoCondition A character string or numeric giving the column name
+#' or column number of \code{annotS} in which condition is provided. Default is
+#' 'Condition'. If NA filtering should not be applied on condition level provide
+#' only one value in \code{infoCondition} in \code{annotS}.
 #' @param runHT A boolean value defining if the function and further analysis
 #' steps should be run including the half-tryptic LiP peptides. If set to true,
 #' the TrpPep matrix will be removed, resulting in only the LiPPep and TrpProt
@@ -58,15 +58,16 @@
 #' @param filterTryptic A boolean value defining if peptides should be filtered
 #' based digest type. Default is 'TRUE', removing all not fully tryptic peptides
 #' from the data matrices.
-#' @param infoTryptic A character string giving column of \code{annotPP} in
-#' which digest annotation is provided. Default is 'isTryptic'.
-#' @param nameFT A character string defining which peptide in \code{infoTryptic}
-#' should remain in the data. Default is 'Specific'.
+#' @param infoTryptic A character string or numeric giving the column name or
+#' column number of \code{annotPP} in which digest type can be found
+#' Default is 'isTryptic'.
+#' @param nameFT A character string defining which annotation in
+#' \code{infoTryptic} should remain in the data. Default is 'Specific'.
 #' @param filterProteotryptic A boolean value, defining if peptides should be
 #' filtered based on if they are proteotypic. Default is 'FALSE'.
-#' @param infoProteotypic A character string giving column of \code{annotPP} in
-#' which annotation if peptides is proteotypic is provided. Default is
-#' 'isProteotypic'.
+#' @param infoProteotypic A character string or numeric giving the column name
+#' or column number of \code{annotPP} in which annotation if peptides is
+#' proteotypic is provided. Default is 'isProteotypic'.
 #' @param nameProteotypic A character string defining which peptide in
 #' \code{infoProteotypic} is proteotypic and will be filtered out if
 #' \code{filterProteotryptic} is set to 'TRUE'. Default is 'True'.
@@ -75,8 +76,9 @@
 #' @param maxMissedCleave A numeric value, defining maximal number of missed
 #' cleavages allowed per peptide if \code{filterMissedCleaved} is set to 'TRUE'.
 #' Default is '2'.
-#' @param infoMissedCleave a character string giving column of \code{annotPP} in
-#' which number of missed cleavage are provided. Default is 'NMissedCleavages'.
+#' @param infoMissedCleave A character string or numeric giving the column name
+#' or column number of \code{annotPP} in which number of missed cleavage are
+#' provided. Default is 'NMissedCleavages'.
 #'
 #' @return Returns a list of matrices containing preprocessed and filtered
 #' peptide and protein quantities  OR a single matrix containing preprocessed
