@@ -424,8 +424,9 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, showPv, export){
 
     plotName <- plotData$Protein[1]
 
-    plotProt <- ggplot2::ggplot(plotData, aes(x = start, xend = end, y = Coef,
-                                              yend = Coef, col = Color)) +
+    plotProt <- ggplot2::ggplot(plotData, ggplot2::aes(x = start, xend = end,
+                                                       y = Coef, yend = Coef,
+                                                       col = Color)) +
         ggplot2::geom_segment(size = sz) +
         ggplot2::geom_hline(yintercept = 0, size = 1, col = "black") +
         myColor +
@@ -437,8 +438,8 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, showPv, export){
     if(showPv){
         plotProt <- plotProt
         + ggplot2::geom_label(data = plotData, aes(x = start, y = Coef,
-                                          label = round(plotData$Pval, 3)),
-                     show.legend = F)
+                                                   label = round(plotData$Pval, 3)),
+                              show.legend = F)
     }
 
     return(plotProt)
