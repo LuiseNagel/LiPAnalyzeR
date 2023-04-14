@@ -131,7 +131,7 @@ makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
 #' pvalCol="Padj", infoProtein="Protein", infoStart="startPosition",
 #' infoEnd="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
 #' infoTryptic="isTryptic", nameFT=c("Specific"),
-#' nameHT=c("Specific-C", "Specific-N"), protName=NULL,
+#' nameHT=c("Specific-C", "Specific-N"), xlim=NULL, ylim=NULL, protName=NULL,
 #' showPv=FALSE)
 #'
 #' @param sumDf A data.frame containing coefficients and p-values of
@@ -179,6 +179,13 @@ makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
 #' @param nameHT A character vector defining the name of half tryptic peptides
 #' provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
 #' c("Specific-C", "Specific-N").
+#' @param xlim A numeric vector of the length two defining the limits of the
+#' x-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+#' sequence positions of the peptides. Default is set to NULL.
+#'
+#' @param ylim A numeric vector of the length two defining the limits of the
+#' y-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+#' the coefficients of the peptides. Default is set to NULL.
 #' @param protName A character vector giving name of protein to be plotted.
 #' @param showPv A boolean value defining if p-values should be displayed in
 #' plots. Default is set to 'FALSE'.
@@ -194,7 +201,8 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
                                        infoTryptic="isTryptic",
                                        nameFT=c("Specific"),
                                        nameHT=c("Specific-C", "Specific-N"),
-                                       protName=NULL, showPv=FALSE){
+                                       xlim=NULL, ylim=NULL, protName=NULL,
+                                       showPv=FALSE){
 
     ## checking input
     if(length(intersect(row.names(sumDf), row.names(annotPP))) == 0){
@@ -227,8 +235,8 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
     plotData <- plotData[[protName]]
 
     ## creating plot of protein
-    plotProt <- plottingProtein(plotData, deltaColorIsTryptic, showPv,
-                                export = FALSE)
+    plotProt <- plottingProtein(plotData, deltaColorIsTryptic, xlim, ylim,
+                                showPv, export = FALSE)
     return(plotProt)
 }
 
@@ -383,7 +391,8 @@ seperatePeptides <- function(plotData, deltaColorIsTryptic){
     return(plotData)
 }
 
-
+## Function for splitting up IsTryptic information in case peptides map to
+## multiple positions
 addTrypticInfo <- function(pepDf, x, sign){
     pepDf$isTryptic <- if(grepl(sign, x$isTryptic)){
         unlist(strsplit(x$isTryptic, sign))
@@ -394,8 +403,9 @@ addTrypticInfo <- function(pepDf, x, sign){
     return(pepDf)
 }
 
-
-plottingProtein <- function(plotData, deltaColorIsTryptic, showPv, export){
+## Function for plotting wood plot pf single protein
+plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
+                            showPv, export){
 
     ## set sizes of plot based on if it is exported as pdf or not
     if(export){
@@ -424,12 +434,24 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, showPv, export){
 
     plotName <- plotData$Protein[1]
 
+    ## adding xlim and ylim if set to NULL
+    if(is.null(xlim)){
+        xlim <- c(min(stats::na.omit(plotData$start)),
+                  max(stats::na.omit(plotData$end)))
+    }
+    if(is.null(ylim)){
+        ylim <- c(min(stats::na.omit(plotData$Coef)),
+                  max(stats::na.omit(plotData$Coef)))
+    }
+
     plotProt <- ggplot2::ggplot(plotData, ggplot2::aes(x = start, xend = end,
                                                        y = Coef, yend = Coef,
                                                        col = Color)) +
         ggplot2::geom_segment(size = sz) +
         ggplot2::geom_hline(yintercept = 0, size = 1, col = "black") +
         myColor +
+        ggplot2::xlim(xlim) +
+        ggplot2::ylim(ylim) +
         ggplot2::ggtitle(plotName) +
         ggplot2::ylab("Coefficient") +
         ggplot2::xlab("Protein positions") +

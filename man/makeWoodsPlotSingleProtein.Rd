@@ -8,7 +8,7 @@ makeWoodsPlotSingleProtein(sumDf, annotPP, coefCol="Coefficient",
 pvalCol="Padj", infoProtein="Protein", infoStart="startPosition",
 infoEnd="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
 infoTryptic="isTryptic", nameFT=c("Specific"),
-nameHT=c("Specific-C", "Specific-N"), protName=NULL,
+nameHT=c("Specific-C", "Specific-N"), xlim=NULL, ylim=NULL, protName=NULL,
 showPv=FALSE)
 }
 \arguments{
@@ -68,6 +68,14 @@ c("Specific").}
 \item{nameHT}{A character vector defining the name of half tryptic peptides
 provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
 c("Specific-C", "Specific-N").}
+
+\item{xlim}{A numeric vector of the length two defining the limits of the
+x-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+sequence positions of the peptides. Default is set to NULL.}
+
+\item{ylim}{A numeric vector of the length two defining the limits of the
+y-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+the coefficients of the peptides. Default is set to NULL.}
 
 \item{protName}{A character vector giving name of protein to be plotted.}
 
