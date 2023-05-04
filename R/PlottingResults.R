@@ -115,7 +115,8 @@ makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
 
     # creating list of protein plots
     plotList <- lapply(plotData, \(x){
-        plottingProtein(x, deltaColorIsTryptic, showPv, export)
+        plottingProtein(plotData = x, deltaColorIsTryptic = deltaColorIsTryptic,
+                        showPv = showPv, export = export)
     })
 
     ## creating and writing pdf if export = TRUE
