@@ -296,12 +296,13 @@ getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, infoProtein,
             }
         }, character(1))
         plotData$Color <- paste0(plotData$isTryptic, "_",
-                                 ifelse(plotData$Pval <= pvalCutoff,
+                                 ifelse(plotData[, "Pval"] <= pvalCutoff,
                                         "Sig", "nonSig"))
     }
 
     else{
-        plotData$Color <- ifelse(plotData$Pval <= pvalCutoff, "Sig", "nonSig")
+        plotData$Color <- ifelse(plotData[, "Pval"] <= pvalCutoff,
+                                 "Sig", "nonSig")
     }
 
     plotData$start <- as.numeric(plotData$start)
@@ -459,10 +460,10 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
         myTheme
 
     if(showPv){
-        plotProt <- plotProt
-        + ggplot2::geom_label(data = plotData, aes(x = start, y = Coef,
-                                                   label = round(plotData$Pval, 3)),
-                              show.legend = F)
+        plotProt <- plotProt +
+            ggplot2::geom_label(data = plotData, aes(x = start, y = Coef,
+                                                     label = round(plotData[, "Pval"], 3)),
+                                show.legend = F)
     }
 
     return(plotProt)
