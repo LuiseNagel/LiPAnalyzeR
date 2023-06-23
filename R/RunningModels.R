@@ -406,12 +406,14 @@ runModel <- function(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
 
     ## adding models to results if set in function input
     if(returnBVLSmodels){
-        resAll[[length(resAll)+1]] <- list(modelBVLS)
+        names(modelBVLS) <- row.names(resAll$modelCoeff)
+        resAll[[length(resAll)+1]] <- modelBVLS
         names(resAll)[length(resAll)] <- "modelBVLS"
     }
 
     if(returnOLSmodels){
-        resAll[[length(resAll)+1]] <- list(modelOLS)
+        names(modelOLS) <- row.names(resAll$modelCoeff)
+        resAll[[length(resAll)+1]] <- modelOLS
         names(resAll)[length(resAll)] <- "modelOLS"
     }
 
