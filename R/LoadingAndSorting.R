@@ -70,7 +70,7 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
     }
 
     ## Checking AnalysisLvl
-    if(!is.null(rowName) & tolower(analysisLvl) == "individual"){
+    if(is.null(rowName) & tolower(analysisLvl) == "individual"){
         stop("'rowName' is defined but 'analysisLvl' is not set to
              'individual'. Either set rowName to NULL or set 'analysisLvl' to
              'individual'.")
