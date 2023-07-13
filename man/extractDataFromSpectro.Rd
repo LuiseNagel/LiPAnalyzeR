@@ -5,7 +5,7 @@
 \title{Creating peptide and protein matrices from the Spectronaut report.}
 \usage{
 extractDataFromSpectro(spectroLiP, spectroTrp=NULL,
-analysisLvl="Peptide", sampleName="R.FileName", valuePep=NULL,
+analysisLvl="Peptide", rowName=NULL, sampleName="R.FileName", valuePep=NULL,
 valueProt="PG.Quantity", LiPonly=FALSE)
 }
 \arguments{
@@ -18,8 +18,19 @@ have been exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
 \item{analysisLvl}{A character string defining the level on which the
-peptide/protein quantities should be exported. Is set to 'Peptide' by d
-efault, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.}
+peptide/protein quantities should be exported. Is set to 'Peptide' by
+default, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.This
+will define the column which will be converted into row.names of the
+matrices ('Peptide'='PEP.Quantity', ModifiedPeptide'='FG.Quantity',
+'Precursor'='FG.Quantity'). If you are using an alternative input format
+and/or want to choose a different column, please set this variable to
+'individual' and specify the column in the variable \code{rowName}. You then
+also have to define the \code{'valuePep'}.}
+
+\item{rowName}{A character string or numeric giving the column name or column
+number in which the row names of the quantity matrixes are defined. This
+parameter will only be evaluated if \code{analysisLvl} is set to
+individual'.}
 
 \item{sampleName}{A character string or numeric giving the column name or
 column number in which sample names are defined in the Spectronaut report.
