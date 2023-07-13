@@ -58,9 +58,10 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
                                    valueProt="PG.Quantity", LiPonly=FALSE){
 
     ## checking if value of 'AnalysisLvl' is set correctly
-    if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
+    if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor",
+                                    "individual")){
         stop(analysisLvl, " is an unknown input for 'analysisLvl'. Please choose
-             'peptide' or 'modifiedpeptide' or 'precursor'.")
+             'peptide' or 'modifiedpeptide' or 'precursor' or 'individual'.")
     }
 
     ## checking if 'spectroTrp' is provided in case that LiPonly is FALSE
