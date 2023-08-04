@@ -1,4 +1,5 @@
 
+
 #' @title Creating peptide and protein matrices from the Spectronaut report.
 #'
 #' @description This function writes peptide and protein quantities from a
@@ -7,8 +8,8 @@
 #' \code{LiPonly} mode, only requiring LiP data.
 #'
 #' @usage extractDataFromSpectro(spectroLiP, spectroTrp=NULL,
-#' analysisLvl="Peptide", rowName=NULL, sampleName="R.FileName", valuePep=NULL,
-#' valueProt="PG.Quantity", LiPonly=FALSE)
+#' analysisLvl="Peptide", sampleName="R.FileName", quantName=NULL,
+#' quantValue=NULL, protValue="PG.Quantity", LiPonly=FALSE)
 #'
 #' @param spectroLiP Spectronaut report of LiP data. Spectronaut report should
 #' have been exported using the Spectronaut schema
@@ -23,21 +24,21 @@
 #' matrices ('Peptide'='PEP.Quantity', ModifiedPeptide'='FG.Quantity',
 #' 'Precursor'='FG.Quantity'). If you are using an alternative input format
 #' and/or want to choose a different column, please set this variable to
-#' 'individual' and specify the column in the variable \code{rowName}. You then
-#' also have to define the \code{'valuePep'}.
-#' @param rowName A character string or numeric giving the column name or column
-#' number in which the row names of the quantity matrixes are defined. This
-#' parameter will only be evaluated if \code{analysisLvl} is set to
-#' individual'.
+#' 'individual' and specify the column in the variable \code{quantName}. You then
+#' also have to define the \code{'quantValue'}.
 #' @param sampleName A character string or numeric giving the column name or
 #' column number in which sample names are defined in the Spectronaut report.
 #' Set to R.FileName' by default.
-#' @param valuePep A character string or numeric giving the column name or
+#' @param quantName A character string or numeric giving the column name or
+#' column number in which the row names of the quantity matrices are defined.
+#' This parameter will only be evaluated if \code{analysisLvl} is set to
+#' individual'.
+#' @param quantValue A character string or numeric giving the column name or
 #' column number from which peptide/precursor quantities should be taken from.
 #' Defined as 'NULL' by default, resulting in the function automatically setting
-#' \code{valuePep} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
+#' \code{quantValue} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
 #' 'ModifiedPeptide'='FG.Quantity', 'Precursor'='FG.Quantity').
-#' @param valueProt A character string or numeric giving the column name or
+#' @param protValue A character string or numeric giving the column name or
 #' column number from which protein quantities should be taken from. Set to
 #' 'PG.Quantity' by default.
 #' @param LiPonly A boolean value, set to 'TRUE' if you want to run the LiPonly
@@ -53,15 +54,15 @@
 #' @export
 
 extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
-                                   analysisLvl="Peptide", rowName=NULL,
-                                   sampleName="R.FileName", valuePep=NULL,
-                                   valueProt="PG.Quantity", LiPonly=FALSE){
+                                   analysisLvl="Peptide",
+                                   sampleName="R.FileName",
+                                   quantName=NULL, quantValue=NULL,
+                                   protValue="PG.Quantity", LiPonly=FALSE){
 
     ## checking if value of 'AnalysisLvl' is set correctly
-    if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor",
-                                    "individual")){
+    if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
         stop(analysisLvl, " is an unknown input for 'analysisLvl'. Please choose
-             'peptide' or 'modifiedpeptide' or 'precursor' or 'individual'.")
+             'peptide' or 'modifiedpeptide' or 'precursor'.")
     }
 
     ## checking if 'spectroTrp' is provided in case that LiPonly is FALSE
@@ -69,55 +70,94 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
         stop("Please add spectroTrp data or set LiPonly to TRUE.")
     }
 
-    ## Checking AnalysisLvl
-    if(is.null(rowName) & tolower(analysisLvl) == "individual"){
-        stop("'rowName' is defined but 'analysisLvl' is not set to
-             'individual'. Either set rowName to NULL or set 'analysisLvl' to
-             'individual'.")
-        if(is.null(valuePep)){
-            stop("Since you are running the analysis level 'individual',
-                 please define 'valuePep'.")
-        }
-    }
-
     ## defining names feature and quantity columns based on 'AnalysisLvl'
     if(tolower(analysisLvl) == "peptide"){
         rows <- "PEP.StrippedSequence"
-        if(is.null(valuePep)){
-            valuePep <- "PEP.Quantity"
+        if(is.null(quantValue)){
+            quantValue <- "PEP.Quantity"
         }
     }
     else if(tolower(analysisLvl) == "modifiedpeptide"){
         rows <- "EG.ModifiedSequence"
-        if(is.null(valuePep)){
-            valuePep <- "FG.Quantity"
+        if(is.null(quantValue)){
+            quantValue <- "FG.Quantity"
         }
     }
     else if(tolower(analysisLvl) == "precursor"){
         rows <- "EG.PrecursorId"
-        if(is.null(valuePep)){
-            valuePep <- "FG.Quantity"
+        if(is.null(quantValue)){
+            quantValue <- "FG.Quantity"
         }
     }
-    else if(tolower(analysisLvl) == "individual"){
-        rows <- rowName
+
+    ## extracting feature matrices from reports of LiP (and Trp) data
+    listMat <- extractData(spectroLiP, spectroTrp, sampleName, quantName,
+                           quantValue, protValue, LiPonly)
+
+    return(listMat)
+}
+
+#' @title Creating peptide and protein matrices from a XXX report.
+#'
+#' @description This function writes peptide and protein quantities from a
+#' report into quantity matrices.
+#'
+#' @usage extractData(libraryLiP, libraryTrp=NULL, sampleName, quantName,
+#' quantValue, protValue, LiPonly=FALSE)
+#'
+#' @param libraryLiP Exported report of LiP data. Has to include columns with
+#' the name of the samples (\code{sampleName}), name of quantities which will be
+#' the row names of the quantity matrices (e.g. peptide names,
+#' \code{quantName}), quantities matching the \code{quantName} (e.g. peptide
+#' quantities, \code{quantValue}) and the protein quantities (\code{protValue}).
+#' @param libraryTrp Exported report of the Trp data. Has to include the same
+#' columns as the \code{libraryLiP}. Does not have to be included if the LiPonly
+#' mode is run (\code{LiPonly} = TRUE).
+#' @param sampleName A character string or numeric giving the column name or
+#' column number in which sample names are defined in the Spectronaut report.
+#' @param quantName A character string or numeric giving the column name or
+#' column number in which the row names of the quantity matrices created in this
+#' function are defined.
+#' @param quantValue A character string or numeric giving the column name or
+#' column number with quantities to infer structural alterations from (e.g.
+#' peptide quantities), should match the \code{quantName}.
+#' @param protValue A character string or numeric giving the column name or
+#' column number from which protein quantities should be taken from.
+#' @param LiPonly A boolean value, set to 'TRUE' if you want to run the LiPonly
+#' version o the package and not providing trypsin-only data.Default is set to
+#' 'FALSE'.
+#'
+#' @return Per default a list of three matrices is returned, containing the LiP
+#' peptide/precursor, Trp peptide/precursor and Trp protein quantities. If run
+#' in \code{LiPonly} mode will return a list of two matrcies with the LiP
+#' peptide/precursor and Trp protein quantities. Rows represent features and
+#' columns refer to the samples.
+#'
+#' @export
+
+extractData <- function(libraryLiP, libraryTrp=NULL, sampleName, quantName,
+                        quantValue, protValue, LiPonly=FALSE){
+
+    ## checking if 'spectroTrp' is provided in case that LiPonly is FALSE
+    if(!LiPonly & is.null(libraryTrp)){
+        stop("Please add libraryTrp data or set LiPonly to TRUE.")
     }
 
     ## extracting feature matrices for LiP and Trp data
-    message("Creating LiP ", tolower(analysisLvl), " matrix.")
-    LiPPep <- convert2Matrix(spectroLiP, valuePep, rows, sampleName)
+    message("Creating LiP matrix with ", quantValue, ".")
+    LiPPep <- convert2Matrix(libraryLiP, quantValue, quantName, sampleName)
 
     if(LiPonly){
-        message("Creating LiP protein matrix.")
-        LiPProt <- convert2Matrix(spectroLiP, valueProt, rows, sampleName)
+        message("Creating LiP protein matrix with ", protValue, ".")
+        LiPProt <- convert2Matrix(libraryLiP, protValue, quantName, sampleName)
         out <- list(LiPPep=LiPPep, LiPProt=LiPProt)
     }
 
     else{
-        message("Creating Trp ", tolower(analysisLvl), " matrix.")
-        TrpPep <- convert2Matrix(spectroTrp, valuePep, rows, sampleName)
-        message("Creating Trp protein matrix.")
-        TrpProt <- convert2Matrix(spectroTrp, valueProt, rows, sampleName)
+        message("Creating Trp matrix with ", quantValue, ".")
+        TrpPep <- convert2Matrix(libraryTrp, quantValue, quantName, sampleName)
+        message("Creating Trp protein matrix with ", protValue, ".")
+        TrpProt <- convert2Matrix(libraryTrp, protValue, quantName, sampleName)
         out <- list(LiPPep=LiPPep, TrpPep=TrpPep, TrpProt=TrpProt)
     }
 
@@ -131,14 +171,14 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 #' and writes them into a matrix. Rows are peptides/proteins and columns are
 #' samples.
 #'
-#' @usage convert2Matrix(spectroOut, values, rows, cols)
+#' @usage convert2Matrix(spectroOut, quantValue, rows, cols)
 #'
 #' @param spectroOut Spectronaut report exported using the Spectronaut schema
 #' 'SpectroSchema_LiPAnalyzerOut'.
-#' @param values A character string or numeric giving the column name or
+#' @param quantValue A character string or numeric giving the column name or
 #' column number from the Spectronaut report in which quantities that should be
 #' writen into matrix are located.If there are different quantities for the
-#' same \code{rows} the mean of these values is used.
+#' same \code{rows} the mean of these quantValue is used.
 #' @param rows A character string or numeric giving the column name or
 #' column number from the  Spectronaut report where the names of the quantities
 #' writen into matrix are located.
@@ -151,11 +191,11 @@ extractDataFromSpectro <- function(spectroLiP, spectroTrp=NULL,
 #'
 #' @export
 
-convert2Matrix <- function(spectroOut, values, rows, cols){
-    message(values, " used as intensities.")
+convert2Matrix <- function(spectroOut, quantValue, rows, cols){
+    message(quantValue, " used as intensities.")
     myMat <- data.frame(rows=gsub("_", "", spectroOut[, rows]),
                         cols=spectroOut[, cols],
-                        values=spectroOut[, values])
+                        values=spectroOut[, quantValue])
     myMat <- reshape2::dcast(data=myMat,
                              formula=rows ~ cols,
                              fun.aggregate=mean,

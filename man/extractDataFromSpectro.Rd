@@ -5,8 +5,8 @@
 \title{Creating peptide and protein matrices from the Spectronaut report.}
 \usage{
 extractDataFromSpectro(spectroLiP, spectroTrp=NULL,
-analysisLvl="Peptide", rowName=NULL, sampleName="R.FileName", valuePep=NULL,
-valueProt="PG.Quantity", LiPonly=FALSE)
+analysisLvl="Peptide", sampleName="R.FileName", quantName=NULL,
+quantValue=NULL, protValue="PG.Quantity", LiPonly=FALSE)
 }
 \arguments{
 \item{spectroLiP}{Spectronaut report of LiP data. Spectronaut report should
@@ -24,25 +24,25 @@ will define the column which will be converted into row.names of the
 matrices ('Peptide'='PEP.Quantity', ModifiedPeptide'='FG.Quantity',
 'Precursor'='FG.Quantity'). If you are using an alternative input format
 and/or want to choose a different column, please set this variable to
-'individual' and specify the column in the variable \code{rowName}. You then
-also have to define the \code{'valuePep'}.}
-
-\item{rowName}{A character string or numeric giving the column name or column
-number in which the row names of the quantity matrixes are defined. This
-parameter will only be evaluated if \code{analysisLvl} is set to
-individual'.}
+'individual' and specify the column in the variable \code{quantName}. You then
+also have to define the \code{'quantValue'}.}
 
 \item{sampleName}{A character string or numeric giving the column name or
 column number in which sample names are defined in the Spectronaut report.
 Set to R.FileName' by default.}
 
-\item{valuePep}{A character string or numeric giving the column name or
+\item{quantName}{A character string or numeric giving the column name or
+column number in which the row names of the quantity matrices are defined.
+This parameter will only be evaluated if \code{analysisLvl} is set to
+individual'.}
+
+\item{quantValue}{A character string or numeric giving the column name or
 column number from which peptide/precursor quantities should be taken from.
 Defined as 'NULL' by default, resulting in the function automatically setting
-\code{valuePep} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
+\code{quantValue} based on the \code{AnalysisLvl} ('Peptide'='PEP.Quantity',
 'ModifiedPeptide'='FG.Quantity', 'Precursor'='FG.Quantity').}
 
-\item{valueProt}{A character string or numeric giving the column name or
+\item{protValue}{A character string or numeric giving the column name or
 column number from which protein quantities should be taken from. Set to
 'PG.Quantity' by default.}
 

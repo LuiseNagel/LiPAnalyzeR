@@ -4,16 +4,16 @@
 \alias{convert2Matrix}
 \title{Extracting a single peptide/protein matrix from Spectronaut report}
 \usage{
-convert2Matrix(spectroOut, values, rows, cols)
+convert2Matrix(spectroOut, quantValue, rows, cols)
 }
 \arguments{
 \item{spectroOut}{Spectronaut report exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{values}{A character string or numeric giving the column name or
+\item{quantValue}{A character string or numeric giving the column name or
 column number from the Spectronaut report in which quantities that should be
 writen into matrix are located.If there are different quantities for the
-same \code{rows} the mean of these values is used.}
+same \code{rows} the mean of these quantValue is used.}
 
 \item{rows}{A character string or numeric giving the column name or
 column number from the  Spectronaut report where the names of the quantities
