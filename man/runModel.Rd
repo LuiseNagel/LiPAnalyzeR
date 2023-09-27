@@ -4,9 +4,9 @@
 \alias{runModel}
 \title{Fitting models to MS data}
 \usage{
-runModel(spectroList, annotS=NULL, formulaBVLS="Y~XPep+XProt",
-formulaOLS="Y~Condition", lowBVLS=c(-1e9, 0, 0), upBVLS=c(Inf, Inf, Inf),
-addBVLSbounds=FALSE, returnBVLSmodels=FALSE, returnOLSmodels=FALSE,
+runModel(spectroList, annotS=NULL, formulaRUV="Y~XPep+XProt",
+formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
+addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE,
 LiPonly=FALSE, withHT=FALSE)
 }
 \arguments{
@@ -18,41 +18,41 @@ version is run, names should refer to "LiPPep" and "LiPProt").}
 \item{annotS}{A data.frame containing sample annotation. Rows are samples and
 must match to columns of \code{spectroList}.}
 
-\item{formulaBVLS}{A character string or formula defining the bounded
+\item{formulaRUV}{A character string or formula defining the bounded
 variable least square models. Use 'Y' for defining the quantity matrix with
 values to predict. ´ If additional quantity matrices should be used as
 variables in the models, please refer to these as 'XPep' and/or 'XProt'. All
 other variables in the formula should refer to columns in \code{annotS}. If
-BVLS should not be run, set to 'NULL'. Default is defined as 'Y~XPep+XProt'.}
+RUV should not be run, set to 'NULL'. Default is defined as 'Y~XPep+XProt'.}
 
-\item{formulaOLS}{A character string or formula defining the ordinary
+\item{formulaContrast}{A character string or formula defining the ordinary
 variable least square models. Use 'Y' for defining the quantity matrix with
 values to predict. ´If additional quantity matrices should be used as
 variables in the models, please refer to these as 'XPep' and/or 'XProt'.
 All other variables in the formula should refer to columns in \code{annotS}.
-If OLS should not be run, set to 'NULL'. Default is defined as 'Y~Condition'.
-If set to 'NULL', the residuals of the BVLS models will additionally be
-returned.}
+If contrast models should not be run, set to 'NULL'. Default is defined as
+'Y~Condition'. If set to 'NULL', the residuals of the RUV models will
+additionally be returned.}
 
-\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{lowRUV}{A numeric vector defining lower boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(-Inf, 0, 0)'}
 
-\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{upRUV}{A numeric vector defining upper boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(Inf, Inf, Inf)'}
 
-\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
-additionally needed in each BVLS model are added to \code{lowBVLS} and
-\code{upBVLS}. Added boundaries are automatically set to -Inf for
-\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
-are for example also running batch correction in the BVLS model.}
+\item{addRUVbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each RUV model are added to \code{lowRUV} and
+\code{upRUV}. Added boundaries are automatically set to -Inf for
+\code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
+are for example also running batch correction in the RUV model.}
 
-\item{returnBVLSmodels}{A boolean value, set to 'TRUE' if you want the
-function to additionally return all BVLS models.}
+\item{returnRUVmodels}{A boolean value, set to 'TRUE' if you want the
+function to additionally return all RUV models.}
 
-\item{returnOLSmodels}{A boolean value, set to 'TRUE' if you want the
-function to additionally return all OLS models}
+\item{returnContrastmodels}{A boolean value, set to 'TRUE' if you want the
+function to additionally return all contrast models}
 
 \item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
 LiPonly version of the package and not providing trypsin-only data. Default
@@ -62,13 +62,13 @@ is set to 'FALSE'.}
 corrected for TrpProt only. Default is set to 'FALSE'.}
 }
 \value{
-If run with BVLS & OLS or only OLS model it will return a list of two
-data.frames, the first contains the model coefficients of the BVLS & OLS
-model, the second one provides the p-values estimated in the OLS model. If
-only BVLS is run, it will return a list of two data.frame, the first
-containing the residuals of the BVLS model, the second one provides the
-coefficients from the model. If \code{returnOLSmodels} and/or
-\code{returnBVLSmodels} is set to 'TRUE', least square models for each
+If RUV & contrast model or only the contrast model is run, a list of
+two data.frames will be returned. The first contains the model coefficients
+of all models, the second one provides the p-values estimated in the contrast
+model. If only RUV is run, it will return a list of two data.frame, the first
+containing the residuals of the RUV model, the second one provides the
+coefficients from the model. If \code{returnContrastmodels} and/or
+\code{returnRUVmodels} is set to 'TRUE', least square models for each
 peptide will be exported as additional list elements.
 }
 \description{

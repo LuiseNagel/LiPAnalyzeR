@@ -5,8 +5,8 @@
 \title{Fitting model for protein abundance changes}
 \usage{
 analyzeTrpProtData(spectroList, annotS, annotPP,
-infoCondition="Condition", infoProtName="Protein", formulaBVLS=NULL,
-formulaOLS=NULL, lowBVLS=NULL, upBVLS=NULL, addBVLSbounds=FALSE,
+infoCondition="Condition", infoProtName="Protein", formulaRUV=NULL,
+formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE,
 LiPonly=FALSE)
 }
 \arguments{
@@ -27,25 +27,25 @@ features and must match to the row.names of SpectroList/QuantityMatrix.}
 \item{infoProtName}{A character string providing column name of
 \code{annotPP} in which the protein names are provided. Default is 'Protein'.}
 
-\item{formulaBVLS}{A character string or formula defining the BVLS models.
+\item{formulaRUV}{A character string or formula defining the RUV models.
 Default is defined as 'NULL'.}
 
-\item{formulaOLS}{A character string or formula defining the OLS models.
-If 'NULL' will be set to 'Y~\code{infoCondition}}
+\item{formulaContrast}{A character string or formula defining the contrast
+models. If 'NULL' will be set to 'Y~\code{infoCondition}}
 
-\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{lowRUV}{A numeric vector defining lower boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'NULL'.}
 
-\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{upRUV}{A numeric vector defining upper boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'NULL'.}
 
-\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
-additionally needed in each BVLS model are added to \code{lowBVLS} and
-\code{upBVLS}. Added boundaries are automatically set to -Inf for
-\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
-are for example also running batch correction in the BVLS model.}
+\item{addRUVbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each RUV model are added to \code{lowRUV} and
+\code{upRUV}. Added boundaries are automatically set to -Inf for
+\code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
+are for example also running batch correction in the RUV model.}
 
 \item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
 LiPonly version of the package and not providing trypsin-only data.}

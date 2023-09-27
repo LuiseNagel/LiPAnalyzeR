@@ -450,7 +450,7 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
                                                        y = Coef, yend = Coef,
                                                        col = Color)) +
         ggplot2::geom_segment(size = sz) +
-        ggplot2::geom_hline(yintercept = 0, size = 1, col = "black") +
+        ggplot2::geom_hline(yintercept = 0, linewidth = 1, col = "black") +
         myColor +
         ggplot2::xlim(xlim) +
         ggplot2::ylim(ylim) +

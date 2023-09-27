@@ -5,8 +5,8 @@
 \title{Fitting model for PK-independent changes in Trp peptides}
 \usage{
 analyzeTrpPepData(spectroList, annotS, infoCondition="Condition",
-formulaBVLS="Y~XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0),
-upBVLS=c(Inf, Inf), addBVLSbounds=FALSE)
+formulaRUV="Y~XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0),
+upRUV=c(Inf, Inf), addRUVbounds=FALSE)
 }
 \arguments{
 \item{spectroList}{A list of matrices, containing peptide/protein quantities.
@@ -19,25 +19,25 @@ must match to columns of \code{spectroList}.}
 \item{infoCondition}{A character string providing column name of
 \code{annotS} in which condition is provided. Default is 'Condition'.}
 
-\item{formulaBVLS}{A character string or formula defining the BVLS models.
+\item{formulaRUV}{A character string or formula defining the RUV models.
 Default is defined as 'Y~XProt'.}
 
-\item{formulaOLS}{A character string or formula defining the OLS models.
-If 'NULL' will be set to 'Y~\code{infoCondition}.}
+\item{formulaContrast}{A character string or formula defining the contrast
+models. If 'NULL' will be set to 'Y~\code{infoCondition}.}
 
-\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{lowRUV}{A numeric vector defining lower boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(-Inf, 0)'.}
 
-\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{upRUV}{A numeric vector defining upper boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(Inf, Inf)'.}
 
-\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
-additionally needed in each BVLS model are added to \code{lowBVLS} and
-\code{upBVLS}. Added boundaries are automatically set to -Inf for
-\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
-are for example also running batch correction in the BVLS model.}
+\item{addRUVbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each RUV model are added to \code{lowRUV} and
+\code{upRUV}. Added boundaries are automatically set to -Inf for
+\code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
+are for example also running batch correction in the RUV model.}
 }
 \description{
 Function to build linear regression models for fitting MS data

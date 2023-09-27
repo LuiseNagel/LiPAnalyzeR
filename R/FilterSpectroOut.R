@@ -8,9 +8,9 @@
 #' @usage preprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
 #' annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
 #' thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
-#' infoCondition="Condition", runHT = FALSE, namePepQuant = "Peptide",
-#' nameProtQuant = "Protein", filterTryptic=TRUE, infoTryptic="isTryptic",
-#' nameFT="Specific", filterProteotryptic=FALSE,
+#' infoCondition="Condition", runHT = FALSE,  runHTonly = FALSE,
+#' namePepQuant = "Peptide", nameProtQuant = "Protein", filterTryptic=TRUE,
+#' infoTryptic="isTryptic", nameFT="Specific", filterProteotryptic=FALSE,
 #' infoProteotypic="isProteotypic", nameProteotypic="True",
 #' filterMissedCleaved=FALSE, maxMissedCleave=2,
 #' infoMissedCleave="NMissedCleavages")
@@ -49,6 +49,7 @@
 #' set to 'FALSE'. Need to provide \code{annotPP} to match protein quantities to
 #' half-tryptic peptides in LiP data. \code{runHT} is set to 'FALSE' per
 #' default.
+#' @param runHTonly have to add description
 #' @param namePepQuant A character string giving column of \code{annotPP} which
 #' matches to the row.names of the peptide quantities.
 #' Set to 'Peptide' by default.
@@ -92,7 +93,8 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
                                      thresholdMinLogQuant=10, filterNA=TRUE,
                                      maxNAperCondition=0,
                                      infoCondition="Condition",
-                                     runHT = FALSE, namePepQuant = "Peptide",
+                                     runHT = FALSE, runHTonly = FALSE,
+                                     namePepQuant = "Peptide",
                                      nameProtQuant = "Protein",
                                      filterTryptic=TRUE,
                                      infoTryptic="isTryptic", nameFT="Specific",
@@ -126,7 +128,7 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
     }
 
     ## removing TrpPep and mapping TrpProt to HT peptides in case the function
-    ## is run in runHT mode
+    ## is run in 'runHT' mode
     if(runHT){
         filterTryptic <- FALSE
         if(paste(names(SpectroList), collapse = "") ==
@@ -140,6 +142,35 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
                  three matrices defined as 'LiPPep', 'TrpPep' and 'TrpProt' or a
                  list with three matrices defined as 'LiPPep' and 'LiPProt'.")
         }
+    }
+
+    ## Optionally perfrom log2 transformation and set very low peptide
+    ## quantities to NA
+    SpectroList <- lapply(SpectroList, function(x){
+        if(logT){
+            x <- log2(x)
+        }
+        if(filterMinLogQuant){
+            x[x<thresholdMinLogQuant] <- NA
+        }
+        return(x)
+    })
+
+    ## getting most correlated TrpPep and mapping TrpProt to HT peptides,
+    ## in case the functio is run in 'runHTonly' mode
+    if(runHTonly){
+        filterTryptic <- FALSE
+        if(paste(names(SpectroList), collapse = "") != c("LiPPepTrpPepTrpProt")){
+            stop("Function is run in 'runHTonly' mode and names of the
+                 SpectroList do not meet the expectations. Please provide a list
+                 with three matrices defined as 'LiPPep', 'TrpPep' and
+                 'TrpProt'.")
+        }
+        SpectroList <- filterForRunHTonly(SpectroList, annotPP, annotS,
+                                          filterNA, maxNAperCondition,
+                                          infoCondition, namePepQuant,
+                                          nameProtQuant, infoTryptic, nameFT)
+
     }
 
     ## adjusting peptides and samples to be identical in all data
@@ -158,12 +189,6 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
 
     ## filter FT, proteotypic and missed cleavages
     SpectroList <- lapply(SpectroList, function(x){
-        if(logT){
-            x <- log2(x)
-        }
-        if(filterMinLogQuant){
-            x[x<thresholdMinLogQuant] <- NA
-        }
         if(filterTryptic){
             x <- x[annotPP[, infoTryptic] == nameFT, ]
         }
@@ -178,6 +203,9 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
 
     ## filter NAs
     if(filterNA){
+        if(length(SpectroList)==1){
+            SpectroList <- SpectroList[[1]]
+        }
         SpectroList <- filterNAsFromList(SpectroList, annotS, infoCondition,
                                          maxNAperCondition)
     }
@@ -185,6 +213,7 @@ preprocessQuantityMatrix <- function(SpectroList=NULL, QuantityMatrix=NULL,
     if(is.null(SpectroList)){
         SpectroList <- unlist(SpectroList)
     }
+
     return(SpectroList)
 }
 
@@ -235,6 +264,121 @@ filterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
     return(SpectroList)
 }
 
+#' @title Filtering data for running runHTonly mode of package
+#'
+#' @description Function for preprocessing data before fitting models.
+#' Filtering can be applied based on different features such as digest type,
+#' proteotypic or number of missed cleavages.
+#'
+#' @param SpectroList A list of matrices, containing peptides/proteins
+#' quantities. Rows represent features and columns refer to the samples. Can
+#' simply be output from \code{ExtractDataFromSpectro}.
+#' @param annotPP A data.frame with peptide and protein annotation. Rows are
+#' features and must match to the row.names of SpectroList/QuantityMatrix.
+#' Must include all columns needed for filtering of data.
+#' @param filterNA A boolean value defining peptides should be filtered based on
+#' number of NAs. Default is 'TRUE'.
+#' @param maxNAperCondition A numeric value, defining maximal number of NAs
+#' in an individual feature per condition. Default is '0'.
+#' @param infoCondition A character string or numeric giving the column name
+#' or column number of \code{annotS} in which condition is provided. Default is
+#' 'Condition'. If NA filtering should not be applied on condition level provide
+#' only one value in \code{infoCondition} in \code{annotS}.
+#' @param annotS A data.frame object containing sample annotation. Rows are
+#' samples and must match to columns of \code{SpectroList}. If \code{filterNA}
+#' is set to 'TRUE', it needs to contain column about different
+#' conditions/groups.
+#' @param namePepQuant A character string giving column of \code{annotPP} which
+#' matches to the row.names of the peptide quantities.
+#' Set to 'Peptide' by default.
+#' @param nameProtQuant A character string giving column of \code{annotPP} which
+#' matches to the row.names of the protein quantities.
+#' Set to 'Protein' by default.
+#' @param infoTryptic A character string or numeric giving the column name or
+#' column number of \code{annotPP} in which digest type can be found
+#' Default is 'isTryptic'.
+#' @param nameFT A character string defining which annotation in
+#' \code{infoTryptic} should remain in the data. Default is 'Specific'.
+#'
+#' @return A list containing LiPPep and TrpProt quantities
+
+filterForRunHTonly <- function(SpectroList, annotPP, annotS, filterNA,
+                               maxNAperCondition, infoCondition, namePepQuant,
+                               nameProtQuant, infoTryptic, nameFT){
+
+    message("Running function in 'runHTonly' mode, finding full-tryptic TrpPep
+matching half-tryptic LiP peptides - this step might take a bit.")
+
+    ## match sample names
+    samples <- Reduce(intersect, lapply(SpectroList, colnames))
+    SpectroList <- lapply(SpectroList, \(x){
+        x[, samples]
+        return(x)
+    })
+
+    ## Filtering LiP and Trp peptide matrix
+    LiPPep <- filterNAsFromList(SpectroList$LiPPep, annotS, infoCondition,
+                                maxNAperCondition)
+    TrpPep <- filterNAsFromList(SpectroList$TrpPep, annotS, infoCondition,
+                                maxNAperCondition)
+
+    ## annotation files for LiP and Trp data seperated
+    LiPPP <- annotPP[match(row.names(LiPPep),
+                           annotPP[, namePepQuant]),]
+    LiPPP <- LiPPP[LiPPP[, infoTryptic] != nameFT, ] ## Keeping only HT
+    TrpPP <- annotPP[match(row.names(TrpPep),
+                           annotPP[, namePepQuant]), ]
+
+    ## Getting List of TrpPep matrices, every element holds all peptides
+    ## present in a specific protein (not protein group)
+    TrpPP <- do.call(rbind, apply(TrpPP, 1, \(x){
+        if(grepl(";", x[nameProtQuant])){
+            allProts <- unlist(strsplit(x[nameProtQuant], ";" ))
+            extendPP <- as.data.frame(t(replicate(length(allProts), x)))
+            extendPP[, nameProtQuant] <- allProts
+        }
+        else{
+            extendPP <- as.data.frame(t(x))
+        }
+        return(extendPP)
+    }))
+    TrpPP <- split(TrpPP, TrpPP[, nameProtQuant])
+
+    ## Finding TrpPep with the best correlation to the HT LiPPep from the
+    ## matching protein(s)
+    myTrpPep <- sapply(row.names(LiPPP), \(x){
+        myLiPPP <- LiPPP[LiPPP[, namePepQuant]==x,]
+        myProts <- unlist(strsplit(myLiPPP[, nameProtQuant], ";" ))
+        myTrpOpt <- do.call(rbind, TrpPP[myProts])
+        if(is.null(myTrpOpt)){
+            return(NA) # return NA if no matching Trp peptide
+        }
+        else{myTrpOpt <- myTrpOpt[!duplicated(myTrpOpt[, namePepQuant]),]
+        myTrpCor <- sapply(myTrpOpt[, namePepQuant], \(y){
+            stats::cor(as.numeric(LiPPep[x,]), as.numeric(TrpPep[y,]),
+                       use = "pairwise.complete.obs")
+        })
+        myHighCor <- names(myTrpCor)[unname(myTrpCor==max(myTrpCor))][1]
+        return(myHighCor)}
+    })
+
+    ## removing peptides with no matching Trp peptide
+    myTrpPep <- myTrpPep[!is.na(myTrpPep)]
+
+    ## Filtering data
+    LiPPep <- LiPPep[names(myTrpPep),]
+    TrpPep <- TrpPep[unname(myTrpPep),]
+    TrpProt <- SpectroList$TrpProt[unname(myTrpPep),]
+
+    row.names(TrpPep) <- row.names(LiPPep)
+    row.names(TrpProt) <- row.names(LiPPep)
+
+    SpectroList <- list(LiPPep = LiPPep,
+                        TrpPep = TrpPep,
+                        TrpProt = TrpProt)
+    return(SpectroList)
+}
+
 
 #' @title Filtering peptide and protein quantities based on NAs
 #'
@@ -258,8 +402,20 @@ filterForRunHT <- function(SpectroList, annotPP, namePepQuant, nameProtQuant){
 #'
 filterNAsFromList <- function(SpectroList, annotS, infoCondition,
                               maxNAperCondition){
-    ## add matrices together to get NA if any of them is NA
-    matNA <- Reduce('+', SpectroList)
+
+    ## if list input matrices together to get NA if any of them is NA
+    ## else set matNA to be the input matrix
+    if(inherits(SpectroList, "list")){
+        matNA <- Reduce('+', SpectroList)
+    }
+    else if(inherits(SpectroList, "data.frame")|inherits(SpectroList, "matrix")){
+        matNA <- SpectroList
+    }
+    else{
+        stop("Wrong input format. Expecting list, data.frame or matrix as
+'SpectroList' input.")
+    }
+
     if(maxNAperCondition == 0){
         matNA <- !is.na(rowSums(matNA))
     }
@@ -275,8 +431,17 @@ filterNAsFromList <- function(SpectroList, annotS, infoCondition,
         matNA <- Reduce("&", matNA)
     }
 
-    SpectroList <- lapply(SpectroList, function(x){
-        x <- x[matNA,]
-    })
+    ## Filter rows with to many NAs
+    if(inherits(SpectroList, "list")){
+        SpectroList <- lapply(SpectroList, function(x){
+            x <- x[matNA,]
+        })
+    }
+    else{
+        SpectroList <- SpectroList[matNA,]
+    }
+
     return(SpectroList)
 }
+
+

@@ -4,7 +4,7 @@
 \alias{summarizeModelResults}
 \title{Extracting model results and performing FDR correction on p-values.}
 \usage{
-summarizeModelResults(resModel, evalCovariable="Condition_OLS",
+summarizeModelResults(resModel, evalCovariable="Condition_Contrast",
 correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="Peptide",
 infoProtein="Protein")
 }
@@ -14,7 +14,7 @@ infoProtein="Protein")
 
 \item{evalCovariable}{A character string giving name of columns in which
 coefficients and p-values of the variable of interest can be found. Default
-is set to 'Condition_OLS'.}
+is set to 'Condition_Contrast'.}
 
 \item{correctPval}{A character string defining how p-values should be
 adjusted. Per default all p-values are corrected together, and it is set to

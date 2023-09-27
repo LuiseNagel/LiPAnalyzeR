@@ -7,9 +7,9 @@
 preprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
 annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
 thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
-infoCondition="Condition", runHT = FALSE, namePepQuant = "Peptide",
-nameProtQuant = "Protein", filterTryptic=TRUE, infoTryptic="isTryptic",
-nameFT="Specific", filterProteotryptic=FALSE,
+infoCondition="Condition", runHT = FALSE,  runHTonly = FALSE,
+namePepQuant = "Peptide", nameProtQuant = "Protein", filterTryptic=TRUE,
+infoTryptic="isTryptic", nameFT="Specific", filterProteotryptic=FALSE,
 infoProteotypic="isProteotypic", nameProteotypic="True",
 filterMissedCleaved=FALSE, maxMissedCleave=2,
 infoMissedCleave="NMissedCleavages")
@@ -59,6 +59,8 @@ matrices remaining in the data and \code{filterTryptic} will automatically be
 set to 'FALSE'. Need to provide \code{annotPP} to match protein quantities to
 half-tryptic peptides in LiP data. \code{runHT} is set to 'FALSE' per
 default.}
+
+\item{runHTonly}{have to add description}
 
 \item{namePepQuant}{A character string giving column of \code{annotPP} which
 matches to the row.names of the peptide quantities.

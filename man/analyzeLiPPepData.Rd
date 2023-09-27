@@ -5,8 +5,8 @@
 \title{Fitting model for accessibility changes in LiP peptides.}
 \usage{
 analyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
-formulaBVLS="Y~XPep+XProt", formulaOLS=NULL, lowBVLS=c(-1e9, 0, 0),
-upBVLS=c(Inf, Inf, Inf), addBVLSbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
+formulaRUV="Y~XPep+XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0, 0),
+upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
 }
 \arguments{
 \item{spectroList}{A list of matrices, containing peptide/protein quantities.
@@ -20,38 +20,38 @@ must match to columns of \code{spectroList}.}
 \item{infoCondition}{A character string providing column name of
 \code{annotS} in which condition is provided. Default is 'Condition'.}
 
-\item{formulaBVLS}{A character string or formula defining the BVLS models.
+\item{formulaRUV}{A character string or formula defining the RUV models.
 Default is defined as 'Y~XPep+XProt'.}
 
-\item{formulaOLS}{A character string or formula defining the OLS models.
-If 'NULL' will be set to 'Y~\code{infoCondition}.}
+\item{formulaContrast}{A character string or formula defining the contrast
+models. If 'NULL' will be set to 'Y~\code{infoCondition}.}
 
-\item{lowBVLS}{A numeric vector defining lower boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{lowRUV}{A numeric vector defining lower boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(-Inf, 0, 0)'.}
 
-\item{upBVLS}{A numeric vector defining upper boundaries of the coefficients
-of the BVLS models. Elements refer to definition of \code{formulaBVLS}.
+\item{upRUV}{A numeric vector defining upper boundaries of the coefficients
+of the RUV models. Elements refer to definition of \code{formulaRUV}.
 Default is defined as 'c(Inf, Inf, Inf)'.}
 
-\item{addBVLSbounds}{A boolean value, if set to 'TRUE' as many bounds as
-additionally needed in each BVLS model are added to \code{lowBVLS} and
-\code{upBVLS}. Added boundaries are automatically set to -Inf for
-\code{lowBVLS} and Inf for \code{upBVLS}. Important to set to 'TRUE', if you
-are for example also running batch correction in the BVLS model.}
+\item{addRUVbounds}{A boolean value, if set to 'TRUE' as many bounds as
+additionally needed in each RUV model are added to \code{lowRUV} and
+\code{upRUV}. Added boundaries are automatically set to -Inf for
+\code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
+are for example also running batch correction in the RUV model.}
 
 \item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
 LiPonly version of the package and not providing trypsin-only data. If set
-to TRUE' BVLS boundaries will be adjusted, \code{lowBVLS} will be set to
-c(-1e9, 0) and \code{BVLS} will be set to c(Inf, Inf). Additionally,
-\code{formulaBVLS} will be adjusted. In case you want to add further
+to TRUE' RUV boundaries will be adjusted, \code{lowRUV} will be set to
+c(-1e9, 0) and \code{RUV} will be set to c(Inf, Inf). Additionally,
+\code{formulaRUV} will be adjusted. In case you want to add further
 variables to the models, please use the \code{runModel} function. Default is
 'FALSE'.}
 
 \item{withHT}{A boolean value to set to 'TRUE' if LiPPep should only be
-corrected for TrpProt only. If set to TRUE' BVLS boundaries will be adjusted,
-\code{lowBVLS} will be set to c(-1e9, 0) and \code{BVLS} will be set to
-c(Inf, Inf). Additionally, \code{formulaBVLS} will be adjusted. In case you
+corrected for TrpProt only. If set to TRUE' RUV boundaries will be adjusted,
+\code{lowRUV} will be set to c(-1e9, 0) and \code{RUV} will be set to
+c(Inf, Inf). Additionally, \code{formulaRUV} will be adjusted. In case you
 want to add further variables to the models, please use the \code{runModel}
 function. Default is 'FALSE'.}
 }

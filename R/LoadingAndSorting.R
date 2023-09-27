@@ -289,7 +289,7 @@ getPepProtAnnot <- function(spectroOut,
     ## checking if value of AnalysisLvl is set correctly
     if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
         stop(analysisLvl, " is an unknown input for 'analysisLvl'. Please choose
-             'peptide' or 'modifiedpeptide' or 'precursor'.")
+'peptide' or 'modifiedpeptide' or 'precursor'.")
     }
 
     ## join Spectronaut reports if two are provided
