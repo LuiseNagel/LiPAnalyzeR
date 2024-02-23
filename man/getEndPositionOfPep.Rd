@@ -4,25 +4,26 @@
 \alias{getEndPositionOfPep}
 \title{Estimating end position of peptide sequences}
 \usage{
-getEndPositionOfPep(annotPP, startCol="startPosition",
+getEndPositionOfPep(annotPP, startPosition="startPosition",
 pepCol="Peptide")
 }
 \arguments{
-\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
-features. The Data.frame must include a column providing the start position
-of each peptide in the proteins and one containing the peptide sequences.
-Different start positions for the same peptide should be separated by ',' for
-peptides mapping to the same protein multiple times and ';' for peptides
-mapping to multiple proteins.}
+\item{annotPP}{A data.frame with peptide and protein annotation were rows are
+features. The data.frame must include a column providing the peptide
+sequences and one providing the start position the peptide has in protein
+sequence. Different start positions for the same peptide should be separated
+by ',' for peptides mapping to the same protein multiple times and ';' for
+peptides mapping to multiple proteins.}
 
-\item{startCol}{A character string or numeric giving the column name or
+\item{startPosition}{A character string or numeric giving the column name or
 column number defining column in which start positions of peptides are
-provided. Defined as 'startPosition' by default.}
+provided.
+Default is 'startPosition'.}
 
 \item{pepCol}{A character string or numeric giving the column name or
 column number defining column in which peptide sequences are provide. Peptide
-sequences have to be provided without modifications or charges. Set to
-'Peptide' by default.}
+sequences have to be provided without modifications or charges.
+Default is 'Peptide'.}
 }
 \value{
 Returns a character vector with the end positions of all peptides.

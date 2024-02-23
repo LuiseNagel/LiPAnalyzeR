@@ -2,48 +2,54 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{getSampleAnnot}
 \alias{getSampleAnnot}
-\title{Creating data.frame with sample annotation from Spectronaut report}
+\title{Creates data.frame with sample annotation from MS report}
 \usage{
-getSampleAnnot(spectroOut, sampleName="R.FileName",
+getSampleAnnot(reportOut, sampleName="R.FileName",
 sampleCondition="R.Condition", typeCondition="factor",
 contrastCoding="dummyCoding", baseLevel=NULL)
 }
 \arguments{
-\item{spectroOut}{Spectronaut report of MS data. Spectronaut report should
+\item{reportOut}{Spectronaut report of MS data. Spectronaut report should
 have been exported using the Spectronaut schema
 'SpectroSchema_LiPAnalyzerOut'.}
 
 \item{sampleName}{A character string or numeric giving the column name or
-column number in which sample names are defined in the Spectronaut report.
-Set to R.FileName' by default.}
+column number providing the sample names in the MS report.
+Default is 'R.FileName'.}
 
 \item{sampleCondition}{A character string or numeric giving the column name
-or  column number in which conditions can be found in the Spectronaut report.
-Set to 'R.Condition' by
-default.}
+or column number providing sample conditions in the MS report.
+Default is 'R.Condition'.}
 
 \item{typeCondition}{A character string providing information if condition is
-a factor or continuous variable If condition is continuous it has to be
-provided as numeric in the Spectronaut report. Defined as ' 'factor' is
-default, alternatively set to 'continuous'/}
+a 'factor' or 'continuous' variable. If condition is 'continuous', the column
+containing the condition in the MS report has to be numeric variable. If
+the condition is a 'factor', contrast coding for later models is defined
+within this function.
+Default is 'factor'.}
 
 \item{contrastCoding}{A character string providing information which type of
-contrast coding to use if condition is a factor. Defined as 'dummyCoding' by
-default. Alternatively, 'sumCoding' or 'wecCoding' can be chosen. Can be set
-to NULL to not define contrast coding automatically in case you want to
-defined it yourself.}
+contrast coding to use if \code{typeCondition} is 'factor'. Can be set to
+'dummyCoding', 'sumCoding' or 'wecCoding'. If you do not want to define
+the contrast coding method within this function set to NULL and subsequently
+define it before running the contrast model.
+Default is 'dummyCoding'.}
 
 \item{baseLevel}{A character strong giving name of reference level if
 \code{typeCondition} is a factor. If not provided the function will choose
-the first condition in Spectronaut report as the reference level.}
+the first occurring condition in the MS report as the reference level.}
 }
 \value{
-Returns a data.frame containing sample and condition annotation.
-Rows are samples.
+Returns a data.frame containing sample and condition annotation were
+rows are samples.
 }
 \description{
-Creates an annotation file on samples including information on
+Create an annotation file on samples including information on
 the conditions of samples. This function only runs, if all the annotations
-were added to the Spectronaut report, else please create the sample
-annotation file yourself.
+were added to the MS report, else please create the sample annotation file
+yourself. The file should include all variables which should be used in the
+LiPAnalyzeR models. Rows should be samples, with row names having the
+matching row.names to the column names in the quantity matrices. Columns
+should contain the necessary sample information, for example a 'Condition'
+column providing the sample-specific condition or a 'Batch' column.
 }
