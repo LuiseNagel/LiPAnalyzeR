@@ -10,14 +10,14 @@ test_that("extractMSData function returns expected output", {
                             PepQuant = c(1, 2),
                             ProtQuant = c(10, 20))
 
-    reportTrp <- data.frame(SampleName = c("S1", "S2"),
+    reportTrP <- data.frame(SampleName = c("S1", "S2"),
                             Peptide = c("Pep3", "Pep4"),
                             PepQuant = c(3, 4),
                             ProtQuant = c(30, 40))
 
     # Test with LiPonly = FALSE
     result <- extractMSData(reportLiP = reportLiP,
-                            reportTrp = reportTrp,
+                            reportTrP = reportTrP,
                             sampleName = "SampleName",
                             quantName = "Peptide",
                             quantValue = "PepQuant",
@@ -89,12 +89,15 @@ test_that("getSampleAnnot function returns expected output", {
                              sampleName = "SampleName",
                              sampleCondition = "ConditionFactor",
                              typeCondition = "factor",
-                             baseLevel = "CY")
+                             baseLevel = "CY",
+                             contrastCoding = NULL)
+
     lm <- lm(report$ConditionContinuous ~ result$Condition)
 
     # Check resulting structure and used reference level in lm
     expect_equal(dim(result), c(4,2))
     expect_false("resultCondition2" %in% names(lm$coefficients))
+    expect_equal(class(result$Condition), "factor")
 
     # Test default settings (first condition is reference, wec coding)
     result <- getSampleAnnot(report,
@@ -113,5 +116,5 @@ test_that("getSampleAnnot function returns expected output", {
                              typeCondition = "continuous")
 
     # Check that variable is continuous
-    expect_type(result$Condition, "numeric")
+    expect_type(result$Condition, "double")
 })

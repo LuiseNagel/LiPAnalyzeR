@@ -5,7 +5,7 @@ globalVariables(names = "quantName")
 #' @description Extract the quantity of interest, e.g. peptide intensities, and
 #' protein quantities from a MS report/ MS reports.
 #'
-#' @usage extractMSData(reportLiP, reportTrp=NULL, sampleName, quantName,
+#' @usage extractMSData(reportLiP, reportTrP=NULL, sampleName, quantName,
 #' quantValue, protValue, LiPonly=FALSE)
 #'
 #' @param reportLiP MS report of LiP data. Has to include columns with
@@ -13,9 +13,9 @@ globalVariables(names = "quantName")
 #' the row names of the quantity matrices (e.g. peptide names,
 #' \code{quantName}), quantities matching the \code{quantName} (e.g. peptide
 #' quantities, \code{quantValue}) and the protein quantities (\code{protValue}).
-#' @param reportTrp MS report of the Trp data. Has to include the same
+#' @param reportTrP MS report of the TrP data. Has to include the same
 #' columns as the \code{reportLiP}. Does not have to be provided if the LiPonly
-#' mode is run. For this set (\code{LiPonly} = TRUE). If LiP and Trp data were
+#' mode is run. For this set (\code{LiPonly} = TRUE). If LiP and TrP data were
 #' processed together, please separate them into two input files.
 #' @param sampleName A character string or numeric giving the column name or
 #' column number in which sample names are provided in the MS report.
@@ -38,10 +38,10 @@ globalVariables(names = "quantName")
 #'   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
 #'   peptide/ precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item 'TrpPep': Trp peptide quantities (or alternatively the modified
+#'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
 #'   peptide/precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item Trp protein quantities
+#'   \item TrP protein quantities
 #'   }
 #'
 #' If run in \code{LiPonly} mode, a list of two matrices is returned:
@@ -57,12 +57,12 @@ globalVariables(names = "quantName")
 #'
 #' @export
 
-extractMSData <- function(reportLiP, reportTrp=NULL, sampleName, quantName,
+extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
                           quantValue, protValue, LiPonly=FALSE){
 
-    ## checking if 'reportTrp' is provided in case that LiPonly is FALSE
-    if(!LiPonly & is.null(reportTrp)){
-        stop("Please provide 'reportTrp' data or set LiPonly to 'TRUE'.")
+    ## checking if 'reportTrP' is provided in case that LiPonly is FALSE
+    if(!LiPonly & is.null(reportTrP)){
+        stop("Please provide 'reportTrP' data or set LiPonly to 'TRUE'.")
     }
 
     ## extracting feature matrix for LiP quantities of interest
@@ -76,13 +76,13 @@ extractMSData <- function(reportLiP, reportTrp=NULL, sampleName, quantName,
         out <- list(LiPPep=LiPPep, LiPProt=LiPProt)
     }
 
-    ## extracting feature matrix for Trp quantities
+    ## extracting feature matrix for TrP quantities
     else{
-        message("Creating Trp matrix with '", quantValue, "'.")
-        TrpPep <- convert2Matrix(reportTrp, quantValue, quantName, sampleName)
-        message("Creating Trp protein matrix with '", protValue, "'.")
-        TrpProt <- convert2Matrix(reportTrp, protValue, quantName, sampleName)
-        out <- list(LiPPep=LiPPep, TrpPep=TrpPep, TrpProt=TrpProt)
+        message("Creating TrP matrix with '", quantValue, "'.")
+        TrPPep <- convert2Matrix(reportTrP, quantValue, quantName, sampleName)
+        message("Creating TrP protein matrix with '", protValue, "'.")
+        TrPProt <- convert2Matrix(reportTrP, protValue, quantName, sampleName)
+        out <- list(LiPPep=LiPPep, TrPPep=TrPPep, TrPProt=TrPProt)
     }
     return(out)
 }
@@ -95,14 +95,14 @@ extractMSData <- function(reportLiP, reportTrp=NULL, sampleName, quantName,
 #' 'SpectroSchema_LiPAnalyzerOut', else, please use the function
 #' /code{extractMSData}.
 #'
-#' @usage extractSpectroData(spectroLiP, spectroTrp=NULL, analysisLvl="Peptide",
+#' @usage extractSpectroData(spectroLiP, spectroTrP=NULL, analysisLvl="Peptide",
 #' sampleName="R.FileName", LiPonly=FALSE)
 #'
 #' @param spectroLiP Spectronaut report of LiP data. Spectronaut report has to
 #' be exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut'.
-#' @param spectroTrp Spectronaut report of Trp data. Spectronaut report has to
+#' @param spectroTrP Spectronaut report of TrP data. Spectronaut report has to
 #' be exported using the Spectronaut schema 'SpectroSchema_LiPAnalyzerOut'.
-#' If LiP and Trp data were processed together in Spectronaut, please separate
+#' If LiP and TrP data were processed together in Spectronaut, please separate
 #' them into two input files.
 #' @param analysisLvl A character string defining the level on which the
 #' peptide/protein quantities should be exported. Is set to 'Peptide' by
@@ -124,10 +124,10 @@ extractMSData <- function(reportLiP, reportTrp=NULL, sampleName, quantName,
 #'   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
 #'   peptide/ precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item 'TrpPep': Trp peptide quantities (or alternatively the modified
+#'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
 #'   peptide/precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item Trp protein quantities
+#'   \item TrP protein quantities
 #'   }
 #'
 #' If run in \code{LiPonly} mode, a list of two matrices is returned:
@@ -142,7 +142,7 @@ extractMSData <- function(reportLiP, reportTrp=NULL, sampleName, quantName,
 #'
 #' @export
 
-extractSpectroData <- function(spectroLiP, spectroTrp=NULL,
+extractSpectroData <- function(spectroLiP, spectroTrP=NULL,
                                analysisLvl="Peptide", sampleName="R.FileName",
                                LiPonly=FALSE){
 
@@ -173,8 +173,8 @@ extractSpectroData <- function(spectroLiP, spectroTrp=NULL,
     }
     protValue <- "PG.Quantity"
 
-    ## extracting feature matrices from reports of LiP (and Trp) data
-    listMat <- extractMSData(spectroLiP, spectroTrp, sampleName, quantName,
+    ## extracting feature matrices from reports of LiP (and TrP) data
+    listMat <- extractMSData(spectroLiP, spectroTrP, sampleName, quantName,
                             quantValue, protValue, LiPonly)
 
     return(listMat)
@@ -267,7 +267,7 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #' column number in which the row names of value used in the quantity matrices
 #' are provided. This  These variable should be identical to the
 #' \code{quantName} provided in \code{extractMSData} and therefore match the
-#' row.names of the LiP and/or Trp data matrices.
+#' row.names of the LiP and/or TrP data matrices.
 #' @param pepName A character string or numeric giving the column name or
 #' column number in which peptide names (i.e., AA sequences) are provided.
 #' @param protName A character string or numeric giving the column name or
@@ -551,10 +551,14 @@ getSampleAnnot <- function(reportOut,
     }
 
     ## check if contrastCoding input is as expected
-    if(!tolower(contrastCoding) %in% c("dummycoding", "sumcoding",
-                                       "weccoding")|is.null(contrastCoding)){
-        stop("Please set 'contrastCoding' to 'dummycoding', 'sumcoding' or
+
+    if(!is.null(contrastCoding)){
+        if(!tolower(contrastCoding) %in% c("dummycoding", "sumcoding",
+                                           "weccoding")){
+            stop("Please set 'contrastCoding' to 'dummycoding', 'sumcoding' or
 'weccoding'. If you do not want to set the contrast method yet, set to 'NULL'.")
+        }
+
     }
 
     ## Factorial condition settings
