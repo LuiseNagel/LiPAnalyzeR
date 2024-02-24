@@ -2,25 +2,25 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{convert2Matrix}
 \alias{convert2Matrix}
-\title{Extracting a single peptide/protein matrix from Spectronaut report}
+\title{Extracting a single peptide/protein matrix from a MS report.}
 \usage{
-convert2Matrix(spectroOut, quantValue, rows, cols)
+convert2Matrix(reportOut, quantValue, rows, cols)
 }
 \arguments{
-\item{spectroOut}{Spectronaut report exported using the Spectronaut schema
-'SpectroSchema_LiPAnalyzerOut'.}
+\item{reportOut}{MS report exported including sample and quantity
+information, e.g. Spectronaut report.}
 
-\item{quantValue}{A character string or numeric giving the column name or
-column number from the Spectronaut report in which quantities that should be
-writen into matrix are located.If there are different quantities for the
-same \code{rows} the mean of these quantValue is used.}
+\item{quantValue}{A character string or numeric variable referring to the
+column name or column number from the MS report in which quantities or
+interest are provided. If there are multiple quantities referring to the same
+\code{rows}, the mean of these quantValue will be estimated and returned.}
 
 \item{rows}{A character string or numeric giving the column name or
 column number from the  Spectronaut report where the names of the quantities
 writen into matrix are located.}
 
 \item{cols}{A character string or numeric giving the column name or
-column number from the  Spectronaut report where the sample or file names are
+column number from the  Spectronaut report where the sample orneues massspek file names are
 located.}
 }
 \value{
@@ -28,7 +28,6 @@ Returns a matrix with quantities, \code{rows} represent features
 and \code{cols} refer to the samples.
 }
 \description{
-This function exports quantities from the Spectronaut report
-and writes them into a matrix. Rows are peptides/proteins and columns are
-samples.
+Export quantities from the MS report, writing them into a
+matrix were rows represent features and columns samples.
 }

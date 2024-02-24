@@ -2,27 +2,34 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{joinPG}
 \alias{joinPG}
-\title{Combining protein names of identical peptides}
+\title{Combining protein names of identical peptides in the peptide and
+protein annotation data.frame.}
 \usage{
 joinPG(annotPP, iCol, protCol = "Protein")
 }
 \arguments{
-\item{annotPP}{A data.frame with peptide and protein annotation.
-Rows are feature and must include a column protein name(s)}
+\item{annotPP}{data.frame with peptide and protein annotation were rows are
+features. The data.frame must include a column with the identifiers for the
+quantity of interest, which should be unique after this function is run, e.g.
+peptide, modified peptide or precursor ID. It mus additionally include a
+column providing the matching protein names. Protein names for the same
+peptide should be separated by ',' if a peptide maps to the same protein
+multiple times and ';' if a peptide maps to multiple proteins.}
 
 \item{iCol}{A character string or numeric giving the column name or
-column number in which features are provided in the Spectronaut report
-based on the chosen \code{analysisLvl}.}
+column number containing the identifiers for the quantity of interest.}
 
 \item{protCol}{A character string or numeric giving the column name or
-column number in which protein name(s)  are provide. Set to 'Protein' by
+column number in which protein names  are provide. Set to 'Protein' by
 default.}
 }
 \value{
-A data.frame including all necessary annotation on peptides and
-proteins with joined protein names.
+A data.frame were the chosen quantity of interest, e.g. peptide,
+modified peptide or precursor ID, is unique.
 }
 \description{
-Joining protein names together if a peptide was matched to
-different PG groups in different Spectronaut reports.
+Joining protein names together in the respective column in the
+peptide and protein annotation data.frame in cases were a peptide was matched
+to different PG groups in different MS reports. Only relevant if two MS
+reports are used to create the annotation data.frame.
 }

@@ -2,75 +2,79 @@
 % Please edit documentation in R/LoadingAndSorting.R
 \name{getPepProtAnnot}
 \alias{getPepProtAnnot}
-\title{Creating a data.frame with peptide and protein annotation.}
+\title{Creating an annotation data.frame with important peptide and protein
+features.}
 \usage{
-getPepProtAnnot(spectroOut, spectroOut2=NULL,analysisLvl="Peptide",
-Precursor="EG.PrecursorId", modPeptide="EG.ModifiedSequence",
-Peptide="PEP.StrippedSequence", Protein="PG.ProteinGroups",
-AllProtein="PEP.AllOccurringProteinAccessions",
-NMissedCleavages="PEP.NrOfMissedCleavages",
-isProteotypic="PEP.IsProteotypic", isTryptic="PEP.DigestType....Trypsin.P.",
-start="PEP.PeptidePosition")
+getPepProtAnnot(reportOut, reportOut2=NULL, quantName, pepName,
+protName, isTryptic, startPosition, allProtName=NULL, NMissedCleavages=NULL,
+isProteotypic=NULL)
 }
 \arguments{
-\item{spectroOut}{Spectronaut report of MS data. Spectronaut report should
-have been exported using the Spectronaut schema
-'SpectroSchema_LiPAnalyzerOut'.}
+\item{reportOut}{MS report exported including sample and quantity
+information, e.g. Spectronaut report.
+The MS report has to include the following columns:
+\itemize{
+  \item names/identifiers of the quantity to be analyzes (e.g. peptide,
+  modified peptide, precursor)
+  \item the peptide names (i.e., AS sequence). This may be identical to the
+  names/identifiers of the quantity to be analyzed.
+  \item the matching protein names
+  \item the information the peptide is full- or half-tryptic
+  \item the start position of the peptide in the protein sequence
+}
+Optional columns to include are:
+\itemize{
+  \item all proteins matching the sequence
+  \item number of missed cleavages
+  \item proteotypic state
+  }}
 
-\item{spectroOut2}{An optional additional Spectronaut report, default is
-'NULL', assuming only one Spectronaut report is present. Spectronaut
-report(s) should have been exported using the Spectronaut schema
-'SpectroSchema_LiPAnalyzerOut'.}
+\item{reportOut2}{Optional additional MS report including sample and
+quantity information, e.g. Spectronaut report. \code{reportOut2} should
+contain the same columns as \code{reportOut}. If \code{reportOut2} is added,
+the peptide & protein annotation file will also include quantities uniquely
+measured in \code{reportOut}. Default is 'NULL', assuming only one MS report
+being presented.}
 
-\item{analysisLvl}{A character string defining the level on which the
-peptide/protein quantities should be exported. Peptide' by default, can
-alternatively be set to 'ModifiedPeptide' oR Precursor'. Should be identical
-to the \code{analysisLvl} defined in \code{ExtractDataFromSpectro}.}
+\item{quantName}{A character string or numeric giving the column name or
+column number in which the row names of value used in the quantity matrices
+are provided. This  These variable should be identical to the
+\code{quantName} provided in \code{extractMSData} and therefore match the
+row.names of the LiP and/or Trp data matrices.}
 
-\item{Precursor}{A character string giving the column name in which
-precursor IDs can be found in the Spectronaut report. Defined as
-'EG.PrecursorId' by default. Only used if \code{analysisLvl} is set to
-'Precursor'.}
+\item{pepName}{A character string or numeric giving the column name or
+column number in which peptide names (i.e., AA sequences) are provided.}
 
-\item{modPeptide}{A character string or numeric giving the column name or
-column number in which modified peptide sequence can be found in the
-Spectronaut report. Defined as EG.ModifiedSequence' by default. Only used if
-\code{analysisLvl} is set to 'ModifiedPeptide'.}
-
-\item{Peptide}{A character string or numeric giving the column name or
-column number in which peptide sequence can be found in the Spectronaut
-report. Defined as PEP.StrippedSequence' by default.}
-
-\item{Protein}{A character string or numeric giving the column name or
-column number in which protein names can be found in the Spectronaut report.
-Defined as 'PG.ProteinGroups' by default.}
-
-\item{AllProtein}{A character string or numeric giving the column name or
-column number in which all protein names mapping to a peptide sequence can be
-found in the Spectronaut report. Defined as
-'PEP.AllOccurringProteinAccessions' by default.}
-
-\item{NMissedCleavages}{A character string or numeric giving the column name or
-column number in which number of missed cleavages in each peptide can be
-found in the Spectronaut report. Defined as 'PEP.NrOfMissedCleavages' by
-default.}
-
-\item{isProteotypic}{A character string or numeric giving the column name or
-column number in which annotation of the peptide is proteotypic can be found
-in the Spectronaut report. Defined as 'PEP.IsProteotypic' by default.}
+\item{protName}{A character string or numeric giving the column name or
+column number in which protein names are provided.}
 
 \item{isTryptic}{A character string or numeric giving the column name or
-column number in which annotation of the digest type can be found in the
-Spectronaut report. Defined as PEP.DigestType....Trypsin.P.' by default.}
+column number in which annotation of the digest type are provided.}
 
-\item{start}{A character string or numeric giving the column name or
-column number in which start position of each peptide can be found in the
-Spectronaut report. Defined as PEP.PeptidePosition' by default.
+\item{startPosition}{A character string or numeric giving the column name or
+column number in which start position from each peptide in its protein
+sequence are provided. Different start positions for the same peptide should
+be separated by ',' for peptides mapping to the same protein multiple times
+and ';' for peptides mapping to multiple proteins.}
 
- @return Returns a data.frame including all necessary annotation on peptides
- and proteins}
+\item{allProtName}{A character string or numeric giving the column name or
+column number in which all protein names mapping to a peptide sequence are
+provided.}
+
+\item{NMissedCleavages}{A character string or numeric giving the column name
+or column number in which number of missed cleavages in each peptide are
+provided.}
+
+\item{isProteotypic}{A character string or numeric giving the column name or
+column number in which annotation of the peptide is proteotypic are provided.}
+}
+\value{
+Returns a data.frame including all necessary annotation on peptides
+(or precursors) and the matching proteins.
 }
 \description{
-Creates an annotation file on the peptides and proteins in the
-Spectronaut report.
+Create an annotation data.frame for the quantities from a MS
+report/MS reports. This annotation file is needed for further downstream
+analysis and provides a structured overview about peptide and protein
+features.
 }
