@@ -13,15 +13,13 @@ information, e.g. Spectronaut report.}
 \item{quantValue}{A character string or numeric variable referring to the
 column name or column number from the MS report in which quantities or
 interest are provided. If there are multiple quantities referring to the same
-\code{rows}, the mean of these quantValue will be estimated and returned.}
+\code{rows}, the mean of these will be estimated and returned.}
 
-\item{rows}{A character string or numeric giving the column name or
-column number from the  Spectronaut report where the names of the quantities
-writen into matrix are located.}
+\item{rows}{A character string or numeric giving the column name or column
+number in the  MS report where quantity IDs are provided.}
 
-\item{cols}{A character string or numeric giving the column name or
-column number from the  Spectronaut report where the sample orneues massspek file names are
-located.}
+\item{cols}{A character string or numeric giving the column name or column
+number in the MS report where sample names are provided.}
 }
 \value{
 Returns a matrix with quantities, \code{rows} represent features

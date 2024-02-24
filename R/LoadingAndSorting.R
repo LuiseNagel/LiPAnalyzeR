@@ -119,7 +119,7 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
 #' 'FALSE'.
 #'
 #' @return
-#' If run in default mode, a list of three matrices is returned:
+#' If run in default, a list of three matrices is returned ('quantityList'):
 #' \itemize{
 #'   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
 #'   peptide/ precursor/other quantities, dependent on \code{quantName} and
@@ -169,10 +169,10 @@ extractSpectroData <- function(spectroLiP, spectroTrP=NULL,
     protValue <- "PG.Quantity"
 
     ## extracting feature matrices from reports of LiP (and TrP) data
-    listMat <- extractMSData(spectroLiP, spectroTrP, sampleName, quantName,
-                            quantValue, protValue, LiPonly)
+    quantityList <- extractMSData(spectroLiP, spectroTrP, sampleName, quantName,
+                                  quantValue, protValue, LiPonly)
 
-    return(listMat)
+    return(quantityList)
 }
 
 
@@ -306,12 +306,11 @@ getPepProtAnnot <- function(reportOut,
     annotPP <- data.frame(quantID=gsub(" ", "", reportOut[, quantName]),
                           Peptide=gsub(" ", "", reportOut[, pepName]),
                           Protein=gsub(" ", "", reportOut[, protName]),
-                          isTryptic=reportOut[, isTryptic],
-                          startPosition=reportOut[, startPosition])
+                          isTryptic=reportOut[, isTryptic])
 
     if(!is.null(allProtName)){
         annotPP$AllProtein <- reportOut[, allProtName]
-        annotPP <- annotPP[, c(1,2,3,6,4,5)]
+        annotPP <- annotPP[, c(1,2,3,5,4)]
     }
     if(!is.null(NMissedCleavages)){
         annotPP$NMissedCleavages <- reportOut[, NMissedCleavages]
@@ -320,6 +319,7 @@ getPepProtAnnot <- function(reportOut,
         annotPP$isProteotypic <- reportOut[, isProteotypic]
     }
 
+    annotPP$startPosition <- reportOut[, startPosition]
     annotPP <- unique(annotPP) ## removing all duplicated rows from data.frame
 
     ## join protein names if quantity of interest was matched to different PG groups in

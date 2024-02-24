@@ -69,7 +69,8 @@ provided.}
 column number in which annotation of the peptide is proteotypic are provided.}
 }
 \value{
-Returns a data.frame including all necessary annotation on peptides#' (or precursors) and the matching proteins.
+Returns a data.frame including all necessary annotation on peptides
+(or precursors) and the matching proteins.
 }
 \description{
 Create an annotation data.frame for the quantities from a MS

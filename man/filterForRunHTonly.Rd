@@ -58,7 +58,7 @@ Default is 'isTryptic'.}
 \code{infoTryptic} should remain in the data. Default is 'Specific'.}
 }
 \value{
-A list containing LiPPep and TrpProt quantities
+A list containing LiPPep and TrPProt quantities
 }
 \description{
 Function for preprocessing data before fitting models.

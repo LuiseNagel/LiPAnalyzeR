@@ -24,7 +24,7 @@ matches to the row.names of the protein quantities.
 Set to 'Protein' by default.}
 }
 \value{
-A list containing LiPPep and TrpProt quantities
+A list containing LiPPep and TrPProt quantities
 }
 \description{
 Function for preprocessing data before fitting models.
