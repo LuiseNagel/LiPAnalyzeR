@@ -4,7 +4,7 @@
 \alias{extractMSData}
 \title{Creating quantity matrices from a MS report.}
 \usage{
-extractMSData(reportLiP, reportTrp=NULL, sampleName, quantName,
+extractMSData(reportLiP, reportTrP=NULL, sampleName, quantName,
 quantValue, protValue, LiPonly=FALSE)
 }
 \arguments{
@@ -14,9 +14,9 @@ the row names of the quantity matrices (e.g. peptide names,
 \code{quantName}), quantities matching the \code{quantName} (e.g. peptide
 quantities, \code{quantValue}) and the protein quantities (\code{protValue}).}
 
-\item{reportTrp}{MS report of the Trp data. Has to include the same
+\item{reportTrP}{MS report of the TrP data. Has to include the same
 columns as the \code{reportLiP}. Does not have to be provided if the LiPonly
-mode is run. For this set (\code{LiPonly} = TRUE). If LiP and Trp data were
+mode is run. For this set (\code{LiPonly} = TRUE). If LiP and TrP data were
 processed together, please separate them into two input files.}
 
 \item{sampleName}{A character string or numeric giving the column name or
@@ -44,10 +44,10 @@ If run in default mode, a list of three matrices is returned:
   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
   peptide/ precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item 'TrpPep': Trp peptide quantities (or alternatively the modified
+  \item 'TrPPep': TrP peptide quantities (or alternatively the modified
   peptide/precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item Trp protein quantities
+  \item TrP protein quantities
   }
 
 If run in \code{LiPonly} mode, a list of two matrices is returned:

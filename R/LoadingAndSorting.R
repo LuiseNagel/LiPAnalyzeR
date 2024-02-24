@@ -66,19 +66,19 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
     }
 
     ## extracting feature matrix for LiP quantities of interest
-    message("Creating LiP matrix with '", quantValue, "'.")
+    message("Creating LiP matrix with '", quantName, "'.")
     LiPPep <- convert2Matrix(reportLiP, quantValue, quantName, sampleName)
 
     ## extracting feature matrix of the LiP proteins if LiPonly mode is run
     if(LiPonly){
-        message("Creating LiP protein matrix with '", protValue, "'.")
+        message("Creating LiP protein matrix with '", quantName, "'.")
         LiPProt <- convert2Matrix(reportLiP, protValue, quantName, sampleName)
         out <- list(LiPPep=LiPPep, LiPProt=LiPProt)
     }
 
     ## extracting feature matrix for TrP quantities
     else{
-        message("Creating TrP matrix with '", quantValue, "'.")
+        message("Creating TrP matrix with '", quantName, "'.")
         TrPPep <- convert2Matrix(reportTrP, quantValue, quantName, sampleName)
         message("Creating TrP protein matrix with '", protValue, "'.")
         TrPProt <- convert2Matrix(reportTrP, protValue, quantName, sampleName)
@@ -153,23 +153,18 @@ extractSpectroData <- function(spectroLiP, spectroTrP=NULL,
     }
 
     ## defining names feature and quantity columns based on 'AnalysisLvl'
+
     if(tolower(analysisLvl) == "peptide"){
-        rows <- "PEP.StrippedSequence"
-        if(is.null(quantValue)){
-            quantValue <- "PEP.Quantity"
-        }
+        quantName <- "PEP.StrippedSequence"
+        quantValue <- "PEP.Quantity"
     }
     else if(tolower(analysisLvl) == "modifiedpeptide"){
-        rows <- "EG.ModifiedSequence"
-        if(is.null(quantValue)){
-            quantValue <- "FG.Quantity"
-        }
+        quantName <- "EG.ModifiedSequence"
+        quantValue <- "FG.Quantity"
     }
     else if(tolower(analysisLvl) == "precursor"){
-        rows <- "EG.PrecursorId"
-        if(is.null(quantValue)){
-            quantValue <- "FG.Quantity"
-        }
+        quantName <- "EG.PrecursorId"
+        quantValue <- "FG.Quantity"
     }
     protValue <- "PG.Quantity"
 
@@ -193,13 +188,11 @@ extractSpectroData <- function(spectroLiP, spectroTrP=NULL,
 #' @param quantValue A character string or numeric variable referring to the
 #' column name or column number from the MS report in which quantities or
 #' interest are provided. If there are multiple quantities referring to the same
-#' \code{rows}, the mean of these quantValue will be estimated and returned.
-#' @param rows A character string or numeric giving the column name or
-#' column number from the  Spectronaut report where the names of the quantities
-#' writen into matrix are located.
-#' @param cols A character string or numeric giving the column name or
-#' column number from the  Spectronaut report where the sample orneues massspek file names are
-#' located.
+#' \code{rows}, the mean of these will be estimated and returned.
+#' @param rows A character string or numeric giving the column name or column
+#' number in the  MS report where quantity IDs are provided.
+#' @param cols A character string or numeric giving the column name or column
+#' number in the MS report where sample names are provided.
 #'
 #' @return Returns a matrix with quantities, \code{rows} represent features
 #' and \code{cols} refer to the samples.
@@ -288,7 +281,8 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #' @param isProteotypic A character string or numeric giving the column name or
 #' column number in which annotation of the peptide is proteotypic are provided.
 #'
-#' @return Returns a data.frame including all necessary annotation on peptides#' (or precursors) and the matching proteins.
+#' @return Returns a data.frame including all necessary annotation on peptides
+#' (or precursors) and the matching proteins.
 #'
 #' @export
 

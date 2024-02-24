@@ -40,7 +40,7 @@ being presented.}
 column number in which the row names of value used in the quantity matrices
 are provided. This  These variable should be identical to the
 \code{quantName} provided in \code{extractMSData} and therefore match the
-row.names of the LiP and/or Trp data matrices.}
+row.names of the LiP and/or TrP data matrices.}
 
 \item{pepName}{A character string or numeric giving the column name or
 column number in which peptide names (i.e., AA sequences) are provided.}
@@ -69,8 +69,7 @@ provided.}
 column number in which annotation of the peptide is proteotypic are provided.}
 }
 \value{
-Returns a data.frame including all necessary annotation on peptides
-(or precursors) and the matching proteins.
+Returns a data.frame including all necessary annotation on peptides#' (or precursors) and the matching proteins.
 }
 \description{
 Create an annotation data.frame for the quantities from a MS

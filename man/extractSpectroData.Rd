@@ -4,16 +4,16 @@
 \alias{extractSpectroData}
 \title{Creating quantity matrices from a Spectronaut report.}
 \usage{
-extractSpectroData(spectroLiP, spectroTrp=NULL, analysisLvl="Peptide",
+extractSpectroData(spectroLiP, spectroTrP=NULL, analysisLvl="Peptide",
 sampleName="R.FileName", LiPonly=FALSE)
 }
 \arguments{
 \item{spectroLiP}{Spectronaut report of LiP data. Spectronaut report has to
 be exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut'.}
 
-\item{spectroTrp}{Spectronaut report of Trp data. Spectronaut report has to
+\item{spectroTrP}{Spectronaut report of TrP data. Spectronaut report has to
 be exported using the Spectronaut schema 'SpectroSchema_LiPAnalyzerOut'.
-If LiP and Trp data were processed together in Spectronaut, please separate
+If LiP and TrP data were processed together in Spectronaut, please separate
 them into two input files.}
 
 \item{analysisLvl}{A character string defining the level on which the
@@ -38,10 +38,10 @@ If run in default mode, a list of three matrices is returned:
   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
   peptide/ precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item 'TrpPep': Trp peptide quantities (or alternatively the modified
+  \item 'TrPPep': TrP peptide quantities (or alternatively the modified
   peptide/precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item Trp protein quantities
+  \item TrP protein quantities
   }
 
 If run in \code{LiPonly} mode, a list of two matrices is returned:
