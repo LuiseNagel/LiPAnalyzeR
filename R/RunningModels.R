@@ -6,16 +6,17 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving structural variation between different conditions.
 #'
-#' @usage  analyzeLiPPepData(spectroList, annotS, infoCondition="Condition",
+#' @usage  analyzeLiPPepData(quantityList, annotS, infoCondition="Condition",
 #' formulaRUV="Y~XPep+XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0, 0),
 #' upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
 #'
-#' @param spectroList A list of matrices, containing peptide/protein quantities.
+#' @param quantityList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
 #' items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
 #' version is run, names should refer to "LiPPep" and "LiPProt").
-#' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{spectroList}.
+#' @param annotS A data.frame containing sample annotation. Must contain all
+#' columns required for the RUV and contrast models. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} in which condition is provided. Default is 'Condition'.
 #' @param formulaRUV A character string or formula defining the RUV models.
@@ -49,7 +50,7 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #'
 #'
 #' @export
-analyzeLiPPepData <- function(spectroList, annotS, infoCondition="Condition",
+analyzeLiPPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XPep+XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
                               addRUVbounds=FALSE, LiPonly=FALSE, withHT=FALSE){
@@ -72,7 +73,7 @@ function.")
         upRUV <- c(1e9, 1e9)
     }
 
-    LiPOut <- runModel(spectroList=spectroList,
+    LiPOut <- runModel(quantityList=quantityList,
                        annotS=annotS,
                        formulaRUV=formulaRUV,
                        formulaContrast=formulaContrast,
@@ -89,15 +90,15 @@ function.")
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving PK-independent peptide variation between different conditions.
 #'
-#' @usage analyzeTrpPepData(spectroList, annotS, infoCondition="Condition",
+#' @usage analyzeTrpPepData(quantityList, annotS, infoCondition="Condition",
 #' formulaRUV="Y~XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0),
 #' upRUV=c(Inf, Inf), addRUVbounds=FALSE)
 #'
-#' @param spectroList A list of matrices, containing peptide/protein quantities.
+#' @param quantityList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
 #' items should be set to "LiPPep", "TrpPep" and "TrpProt".
 #' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{spectroList}.
+#' must match to columns of \code{quantityList}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} in which condition is provided. Default is 'Condition'.
 #' @param formulaRUV A character string or formula defining the RUV models.
@@ -117,15 +118,15 @@ function.")
 #' are for example also running batch correction in the RUV model.
 #'
 #' @export
-analyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
+analyzeTrpPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0), upRUV=c(Inf, Inf),
                               addRUVbounds=FALSE){
     if(is.null(formulaContrast)){
         formulaContrast <- paste0("Y~", infoCondition)
     }
-    spectroList <- list(Y=spectroList$TrpPep, XProt=spectroList$TrpProt)
-    TrpOut <- runModel(spectroList=spectroList,
+    quantityList <- list(Y=quantityList$TrpPep, XProt=quantityList$TrpProt)
+    TrpOut <- runModel(quantityList=quantityList,
                        annotS=annotS,
                        formulaRUV=formulaRUV,
                        formulaContrast=formulaContrast,
@@ -141,19 +142,19 @@ analyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving protein abundance variation between different conditions.
 #'
-#' @usage analyzeTrpProtData(spectroList, annotS, annotPP,
+#' @usage analyzeTrpProtData(quantityList, annotS, annotPP,
 #' infoCondition="Condition", infoProtName="Protein", formulaRUV=NULL,
 #' formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE,
 #' LiPonly=FALSE)
 #'
-#' @param spectroList A list of matrices, containing peptide/protein quantities.
+#' @param quantityList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
 #' items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
 #' version is run, names should refer to "LiPPep" and "LiPProt").
 #' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{spectroList}.
+#' must match to columns of \code{quantityList}.
 #' @param annotPP A data.frame with peptide and protein annotatioon. Rows are
-#' features and must match to the row.names of SpectroList/QuantityMatrix.
+#' features and must match to the row.names of quantityList/QuantityMatrix.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} in which condition is provided. Default is 'Condition'.
 #' @param infoProtName A character string providing column name of
@@ -178,7 +179,7 @@ analyzeTrpPepData <- function(spectroList, annotS, infoCondition="Condition",
 
 #'
 #' @export
-analyzeTrpProtData <- function(spectroList, annotS, annotPP,
+analyzeTrpProtData <- function(quantityList, annotS, annotPP,
                                infoCondition="Condition",
                                infoProtName="Protein", formulaRUV=NULL,
                                formulaContrast=NULL, lowRUV=NULL, upRUV=NULL,
@@ -189,19 +190,19 @@ analyzeTrpProtData <- function(spectroList, annotS, annotPP,
 
     ## map peptides to proteins
     if(!LiPonly){
-        protData <- spectroList$TrpProt
+        protData <- quantityList$TrpProt
     }
     else{
-        protData <- spectroList$LiPProt
+        protData <- quantityList$LiPProt
     }
     Peps2Prots <- split(row.names(protData), annotPP[row.names(protData),
                                                      infoProtName])
     Peps2Prots <- unlist(lapply(Peps2Prots, \(x) (x[1])))
-    spectroList <- list(Y=protData[Peps2Prots,])
-    row.names(spectroList$Y) <- names(Peps2Prots)
+    quantityList <- list(Y=protData[Peps2Prots,])
+    row.names(quantityList$Y) <- names(Peps2Prots)
 
     ## running models on protein data
-    ProtOut <- runModel(spectroList=spectroList,
+    ProtOut <- runModel(quantityList=quantityList,
                         annotS=annotS,
                         formulaRUV=formulaRUV,
                         formulaContrast=formulaContrast,
@@ -213,21 +214,39 @@ analyzeTrpProtData <- function(spectroList, annotS, annotPP,
 }
 
 
-#' @title Fitting models to MS data
+#' @title Fitting linear regression models to MS data
 
-#' @description Function to build linear regression models for fitting MS data.
+#' @description Function to build linear regression models to
+#' \enumerate{
+#'    \item remove unwanted variation from MS data (RUV step)
+#'    \item estimate effect sizes and corresponding p-values for a condition of
+#'    interest (contrast modeling step)
+#'    }
 #'
-#' @usage runModel(spectroList, annotS=NULL, formulaRUV="Y~XPep+XProt",
+#' @usage runModel(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
 #' formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
 #' addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE,
 #' LiPonly=FALSE, withHT=FALSE)
 #'
-#' @param spectroList A list of matrices, containing peptide/protein quantities.
-#' Rows represent features and columns refer to the samples. Names of the list
-#' items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
-#' version is run, names should refer to "LiPPep" and "LiPProt").
-#' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{spectroList}.
+#' @param quantityList A list of preprocessed matrices, containing quantities of
+#' interest(e.g. peptide, modified peptide, precursor) and protein abundances.
+#' Rows represent features and columns samples and should match between the
+#' different matrices contained in the list.
+#' Output from \code{preprocessQuantityMatrix} is in the correct format.
+#' \code{quantityList} may include the following matrices
+#' \itemize{
+#'   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
+#'   peptide/ precursor/other quantities, dependent on \code{quantName} and
+#'   \code{quantValue})
+#'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
+#'   peptide/precursor/other quantities, dependent on \code{quantName} and
+#'   \code{quantValue})
+#'   \item 'TrPProt': TrP protein quantities
+#'   \item 'LiPProt': LiP protein quantities
+#'   }
+#' @param annotS A data.frame containing sample annotation. Must contain all
+#' columns required for the RUV and contrast models. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}.
 #' @param formulaRUV A character string or formula defining the bounded
 #' variable least square models. Use 'Y' for defining the quantity matrix with
 #' values to predict. ´ If additional quantity matrices should be used as
@@ -273,7 +292,7 @@ analyzeTrpProtData <- function(spectroList, annotS, annotPP,
 #' peptide will be exported as additional list elements.
 #'
 #' @export
-runModel <- function(spectroList, annotS=NULL, formulaRUV="Y~XPep+XProt",
+runModel <- function(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
                      formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0),
                      upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE,
                      returnRUVmodels=FALSE, returnContrastmodels=FALSE,
@@ -316,19 +335,19 @@ XPep. Please adjust 'formulaRUV'.")
         }
     }
 
-    ## adjusting names of SpectroList matrices
-    if(paste(names(spectroList), collapse="") == c("LiPPepTrpPepTrpProt")){
-        names(spectroList) <- c("Y", "XPep", "XProt")
+    ## adjusting names of quantityList matrices
+    if(paste(names(quantityList), collapse="") == c("LiPPepTrpPepTrpProt")){
+        names(quantityList) <- c("Y", "XPep", "XProt")
     }
 
-    else if(paste(names(spectroList), collapse="") == c("LiPPepLiPProt")|
-            paste(names(spectroList), collapse="") == c("LiPPepTrpProt")){
-        names(spectroList) <- c("Y", "XProt")
+    else if(paste(names(quantityList), collapse="") == c("LiPPepLiPProt")|
+            paste(names(quantityList), collapse="") == c("LiPPepTrpProt")){
+        names(quantityList) <- c("Y", "XProt")
     }
 
     ## assuring row.names and colnames fit over all input data
-    feat <- Reduce(intersect, lapply(spectroList, row.names))
-    samples <- Reduce(intersect, lapply(spectroList, colnames))
+    feat <- Reduce(intersect, lapply(quantityList, row.names))
+    samples <- Reduce(intersect, lapply(quantityList, colnames))
 
     if(!is.null(annotS)){
         samples <- intersect(row.names(annotS), samples)
@@ -340,7 +359,7 @@ provided data." )
     }
     message("Using ", length(feat), " peptides/proteins and ", length(samples),
             " samples.")
-    spectroList <- lapply(spectroList, function(x){
+    quantityList <- lapply(quantityList, function(x){
         x[feat, samples]
     })
     if(!is.null(annotS)){
@@ -357,7 +376,7 @@ of them to define the model(s) you want to run.")
     ## running RUV models
     if(!is.null(formulaRUV)){
         message("Running bounded variable least square models.")
-        modelMat <- createModelMatrix(spectroList, formulaRUV, annotS, samples)
+        modelMat <- createModelMatrix(quantityList, formulaRUV, annotS, samples)
         modelRUV <- runRUV(formulaRUV, modelMat, lowRUV, upRUV,
                              addRUVbounds)
         resRUV <- extractRUV(modelRUV, samples)
@@ -367,7 +386,7 @@ of them to define the model(s) you want to run.")
                     coefficients.")
         }
         dfRUV <- ncol(resRUV[[2]])-1
-        spectroList[["Y"]] <- resRUV[[1]]
+        quantityList[["Y"]] <- resRUV[[1]]
     }
     else{
         dfRUV <- NULL
@@ -376,7 +395,7 @@ of them to define the model(s) you want to run.")
     ## running contrast models
     if(!is.null(formulaContrast)){
         message("Running ordinary least square models.")
-        modelMat <- createModelMatrix(spectroList, formulaContrast, annotS,
+        modelMat <- createModelMatrix(quantityList, formulaContrast, annotS,
                                       samples)
         modelContrast <- runContrast(modelMat)
         resContrast <- extractContrast(modelContrast, formulaContrast, dfRUV)
@@ -429,9 +448,9 @@ of them to define the model(s) you want to run.")
 ## into the RUV or contrast model function afterwards
 ##
 ## @return list with matrices for linear modelling
-createModelMatrix <- function(spectroList, formula, annotS, samples){
+createModelMatrix <- function(quantityList, formula, annotS, samples){
 
-    list2env(spectroList, envir=environment()) ## write matrices to environment
+    list2env(quantityList, envir=environment()) ## write matrices to environment
     modelMat <- lapply(as.list(seq(1, nrow(Y))), function(i){
         Y <- as.numeric(Y[i, ])
         formula <- stats::as.formula(formula)

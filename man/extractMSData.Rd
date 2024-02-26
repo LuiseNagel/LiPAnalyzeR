@@ -32,7 +32,10 @@ peptide quantities, modified peptide quantities, precursors). These have to
 match to the ID provided in \code{quantName}.}
 
 \item{protValue}{A character string or numeric giving the column name or
-column number were protein quantities are provided.}
+column number were protein quantities are provided. If a peptides matches to
+the same protein several times, the protein name should be provided each
+time, separated by ','. If a peptide maps to the multiple proteins, these
+different proteins can be provided by separating them by ';'.}
 
 \item{LiPonly}{A boolean value, set to 'TRUE' if you want to run the LiPonly
 version o the package and not use trypsin-only data. Default is set to
@@ -47,7 +50,7 @@ If run in default mode, a list of three matrices is returned:
   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
   peptide/precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item TrP protein quantities
+  \item 'TrpProt': TrP protein quantities
   }
 
 If run in \code{LiPonly} mode, a list of two matrices is returned:

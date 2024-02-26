@@ -27,7 +27,10 @@ globalVariables(names = "quantName")
 #' peptide quantities, modified peptide quantities, precursors). These have to
 #' match to the ID provided in \code{quantName}.
 #' @param protValue A character string or numeric giving the column name or
-#' column number were protein quantities are provided.
+#' column number were protein quantities are provided. If a peptides matches to
+#' the same protein several times, the protein name should be provided each
+#' time, separated by ','. If a peptide maps to the multiple proteins, these
+#' different proteins can be provided by separating them by ';'.
 #' @param LiPonly A boolean value, set to 'TRUE' if you want to run the LiPonly
 #' version o the package and not use trypsin-only data. Default is set to
 #' 'FALSE'.
@@ -41,7 +44,7 @@ globalVariables(names = "quantName")
 #'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
 #'   peptide/precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item TrP protein quantities
+#'   \item 'TrpProt': TrP protein quantities
 #'   }
 #'
 #' If run in \code{LiPonly} mode, a list of two matrices is returned:
@@ -127,7 +130,7 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
 #'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
 #'   peptide/precursor/other quantities, dependent on \code{quantName} and
 #'   \code{quantValue})
-#'   \item TrP protein quantities
+#'   \item 'TrpProt': TrP protein quantities
 #'   }
 #'
 #' If run in \code{LiPonly} mode, a list of two matrices is returned:
@@ -264,17 +267,24 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #' @param pepName A character string or numeric giving the column name or
 #' column number in which peptide names (i.e., AA sequences) are provided.
 #' @param protName A character string or numeric giving the column name or
-#' column number in which protein names are provided.
+#' column number in which protein names are provided. If a peptides matches to
+#' the same protein several times, the protein name should be provided each
+#' time, separated by ','. If a peptide maps to the multiple proteins, these
+#' different proteins can be provided by separating them by ';'.
 #' @param isTryptic A character string or numeric giving the column name or
 #' column number in which annotation of the digest type are provided.
 #' @param startPosition A character string or numeric giving the column name or
 #' column number in which start position from each peptide in its protein
-#' sequence are provided. Different start positions for the same peptide should
-#' be separated by ',' for peptides mapping to the same protein multiple times
-#' and ';' for peptides mapping to multiple proteins.
+#' sequence are provided. If a peptides matches to the same protein several
+#' times, different start positions should be separated by ','. If a peptide
+#' maps to the multiple proteins, the start positions should be separated
+#' with ';'.
 #' @param allProtName A character string or numeric giving the column name or
 #' column number in which all protein names mapping to a peptide sequence are
-#' provided.
+#' provided. If a peptides matches to the same protein several times, the
+#' protein name should be provided each time, separated by ','. If a peptide
+#' maps to the multiple proteins, these different proteins can be provided by
+#' separating them by ';'.
 #' @param NMissedCleavages A character string or numeric giving the column name
 #' or column number in which number of missed cleavages in each peptide are
 #' provided.
@@ -282,7 +292,7 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #' column number in which annotation of the peptide is proteotypic are provided.
 #'
 #' @return Returns a data.frame including all necessary annotation on peptides
-#' (or precursors) and the matching proteins.
+#' (/modified peptides/precursors) and the matching proteins.
 #'
 #' @export
 
@@ -458,15 +468,18 @@ getEndPositionOfPep <- function(annotPP, startPosition="startPosition",
 #' @param annotPP data.frame with peptide and protein annotation were rows are
 #' features. The data.frame must include a column with the identifiers for the
 #' quantity of interest, which should be unique after this function is run, e.g.
-#' peptide, modified peptide or precursor ID. It mus additionally include a
+#' peptide, modified peptide or precursor ID. It must additionally include a
 #' column providing the matching protein names. Protein names for the same
 #' peptide should be separated by ',' if a peptide maps to the same protein
 #' multiple times and ';' if a peptide maps to multiple proteins.
 #' @param iCol A character string or numeric giving the column name or
 #' column number containing the identifiers for the quantity of interest.
 #' @param protCol A character string or numeric giving the column name or
-#' column number in which protein names  are provide. Set to 'Protein' by
-#' default.
+#' column number in which protein names  are provide. If a peptides matches to
+#' the same protein several times, the protein name should be provided each
+#' time, separated by ','. If a peptide maps to the multiple proteins, these
+#' different proteins can be provided by separating them by ';'.
+#' Default is 'Protein'.
 #'
 #' @return A data.frame were the chosen quantity of interest, e.g. peptide,
 #' modified peptide or precursor ID, is unique.
@@ -498,7 +511,7 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' column providing the sample-specific condition or a 'Batch' column.
 #'
 #' @usage getSampleAnnot(reportOut, sampleName="R.FileName",
-#' sampleCondition="R.Condition", typeCondition="factor",
+#' sampleCondition="R.Condition", typeCondition="categorical",
 #' contrastCoding="dummyCoding", baseLevel=NULL)
 #'
 #' @param reportOut Spectronaut report of MS data. Spectronaut report should
@@ -511,20 +524,21 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' or column number providing sample conditions in the MS report.
 #' Default is 'R.Condition'.
 #' @param typeCondition A character string providing information if condition is
-#' a 'factor' or 'continuous' variable. If condition is 'continuous', the column
+#' a 'categorical' or 'continuous' variable. If condition is 'continuous', the column
 #' containing the condition in the MS report has to be numeric variable. If
-#' the condition is a 'factor', contrast coding for later models is defined
+#' the condition is a 'categorical', contrast coding for later models is defined
 #' within this function.
-#' Default is 'factor'.
+#' Default is 'categorical'.
 #' @param contrastCoding A character string providing information which type of
-#' contrast coding to use if \code{typeCondition} is 'factor'. Can be set to
-#' 'dummyCoding', 'sumCoding' or 'wecCoding'. If you do not want to define
+#' contrast coding to use if \code{typeCondition} is 'categorical'. Can be set
+#' to dummyCoding', 'sumCoding' or 'wecCoding'. If you do not want to define
 #' the contrast coding method within this function set to NULL and subsequently
 #' define it before running the contrast model.
 #' Default is 'dummyCoding'.
 #' @param baseLevel A character strong giving name of reference level if
-#' \code{typeCondition} is a factor. If not provided the function will choose
-#' the first occurring condition in the MS report as the reference level.
+#' \code{typeCondition} is a categorical variable. If not provided the function
+#' will choose the first occurring condition in the MS report as the reference
+#' level.
 #'
 #' @return Returns a data.frame containing sample and condition annotation were
 #' rows are samples.
@@ -534,13 +548,13 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 getSampleAnnot <- function(reportOut,
                            sampleName="R.FileName",
                            sampleCondition="R.Condition",
-                           typeCondition="factor",
+                           typeCondition="categorical",
                            contrastCoding="dummyCoding",
                            baseLevel=NULL){
 
     ## check if typeCondition input is as expected
-    if(!tolower(typeCondition) %in% c("factor", "continuous")){
-        stop("Please set 'typeCondition' to 'factor' or 'continuous.")
+    if(!tolower(typeCondition) %in% c("categorical", "continuous")){
+        stop("Please set 'typeCondition' to 'categorical' or 'continuous.")
     }
 
     ## check if contrastCoding input is as expected
@@ -554,9 +568,9 @@ getSampleAnnot <- function(reportOut,
 
     }
 
-    ## Factorial condition settings
-    if(tolower(typeCondition) == "factor"){
-        message("Setting condition variable to a factor variable.")
+    ## categorical condition settings
+    if(tolower(typeCondition) == "categorical"){
+        message("Setting condition variable to a categorical variable.")
         Condition <- as.factor(as.character(reportOut[, sampleCondition]))
 
         if(is.null(contrastCoding)){
@@ -566,7 +580,7 @@ automatically choose dummy coding and the condition first in the alphabetical
 order as the reference level.")
         }
 
-        ## Applying coding methods to factorial condition
+        ## Applying coding methods to categorical condition
         else{
             if(is.null(baseLevel)){
                 message("No 'baseLevel' provided, choosing the first occuring

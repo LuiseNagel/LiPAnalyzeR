@@ -88,7 +88,7 @@ test_that("getSampleAnnot function returns expected output", {
     result <- getSampleAnnot(report,
                              sampleName = "SampleName",
                              sampleCondition = "ConditionFactor",
-                             typeCondition = "factor",
+                             typeCondition = "categorical",
                              baseLevel = "CY",
                              contrastCoding = NULL)
 
@@ -103,7 +103,7 @@ test_that("getSampleAnnot function returns expected output", {
     result <- getSampleAnnot(report,
                              sampleName = "SampleName",
                              sampleCondition = "ConditionFactor",
-                             typeCondition = "factor",
+                             typeCondition = "categorical",
                              contrastCoding = "weccoding")
 
     # Check that wec coding worked as expected

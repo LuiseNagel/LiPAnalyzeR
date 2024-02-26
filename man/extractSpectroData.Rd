@@ -33,7 +33,7 @@ version o the package and not use trypsin-only data. Default is set to
 'FALSE'.}
 }
 \value{
-If run in default mode, a list of three matrices is returned:
+If run in default, a list of three matrices is returned ('quantityList'):
 \itemize{
   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
   peptide/ precursor/other quantities, dependent on \code{quantName} and
@@ -41,7 +41,7 @@ If run in default mode, a list of three matrices is returned:
   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
   peptide/precursor/other quantities, dependent on \code{quantName} and
   \code{quantValue})
-  \item TrP protein quantities
+  \item 'TrpProt': TrP protein quantities
   }
 
 If run in \code{LiPonly} mode, a list of two matrices is returned:

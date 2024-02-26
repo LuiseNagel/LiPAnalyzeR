@@ -11,7 +11,7 @@ joinPG(annotPP, iCol, protCol = "Protein")
 \item{annotPP}{data.frame with peptide and protein annotation were rows are
 features. The data.frame must include a column with the identifiers for the
 quantity of interest, which should be unique after this function is run, e.g.
-peptide, modified peptide or precursor ID. It mus additionally include a
+peptide, modified peptide or precursor ID. It must additionally include a
 column providing the matching protein names. Protein names for the same
 peptide should be separated by ',' if a peptide maps to the same protein
 multiple times and ';' if a peptide maps to multiple proteins.}
@@ -20,8 +20,11 @@ multiple times and ';' if a peptide maps to multiple proteins.}
 column number containing the identifiers for the quantity of interest.}
 
 \item{protCol}{A character string or numeric giving the column name or
-column number in which protein names  are provide. Set to 'Protein' by
-default.}
+column number in which protein names  are provide. If a peptides matches to
+the same protein several times, the protein name should be provided each
+time, separated by ','. If a peptide maps to the multiple proteins, these
+different proteins can be provided by separating them by ';'.
+Default is 'Protein'.}
 }
 \value{
 A data.frame were the chosen quantity of interest, e.g. peptide,

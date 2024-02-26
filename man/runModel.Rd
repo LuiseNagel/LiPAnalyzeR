@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunningModels.R
 \name{runModel}
 \alias{runModel}
-\title{Fitting models to MS data}
+\title{Fitting linear regression models to MS data}
 \usage{
 runModel(spectroList, annotS=NULL, formulaRUV="Y~XPep+XProt",
 formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
@@ -72,5 +72,10 @@ coefficients from the model. If \code{returnContrastmodels} and/or
 peptide will be exported as additional list elements.
 }
 \description{
-Function to build linear regression models for fitting MS data.
+Function to build linear regression models to
+\enumerate{
+   \item RUV model: remove unwanted variation from MS data
+   \item contrast model: estimate effect sizes and corresponding p-values for
+   a condition of interest
+   }
 }

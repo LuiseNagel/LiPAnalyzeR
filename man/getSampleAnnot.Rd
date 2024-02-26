@@ -5,7 +5,7 @@
 \title{Creates data.frame with sample annotation from MS report}
 \usage{
 getSampleAnnot(reportOut, sampleName="R.FileName",
-sampleCondition="R.Condition", typeCondition="factor",
+sampleCondition="R.Condition", typeCondition="categorical",
 contrastCoding="dummyCoding", baseLevel=NULL)
 }
 \arguments{
@@ -22,22 +22,23 @@ or column number providing sample conditions in the MS report.
 Default is 'R.Condition'.}
 
 \item{typeCondition}{A character string providing information if condition is
-a 'factor' or 'continuous' variable. If condition is 'continuous', the column
+a 'categorical' or 'continuous' variable. If condition is 'continuous', the column
 containing the condition in the MS report has to be numeric variable. If
-the condition is a 'factor', contrast coding for later models is defined
+the condition is a 'categorical', contrast coding for later models is defined
 within this function.
-Default is 'factor'.}
+Default is 'categorical'.}
 
 \item{contrastCoding}{A character string providing information which type of
-contrast coding to use if \code{typeCondition} is 'factor'. Can be set to
-'dummyCoding', 'sumCoding' or 'wecCoding'. If you do not want to define
+contrast coding to use if \code{typeCondition} is 'categorical'. Can be set
+to dummyCoding', 'sumCoding' or 'wecCoding'. If you do not want to define
 the contrast coding method within this function set to NULL and subsequently
 define it before running the contrast model.
 Default is 'dummyCoding'.}
 
 \item{baseLevel}{A character strong giving name of reference level if
-\code{typeCondition} is a factor. If not provided the function will choose
-the first occurring condition in the MS report as the reference level.}
+\code{typeCondition} is a categorical variable. If not provided the function
+will choose the first occurring condition in the MS report as the reference
+level.}
 }
 \value{
 Returns a data.frame containing sample and condition annotation were

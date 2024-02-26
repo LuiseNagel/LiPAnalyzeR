@@ -46,20 +46,27 @@ row.names of the LiP and/or TrP data matrices.}
 column number in which peptide names (i.e., AA sequences) are provided.}
 
 \item{protName}{A character string or numeric giving the column name or
-column number in which protein names are provided.}
+column number in which protein names are provided. If a peptides matches to
+the same protein several times, the protein name should be provided each
+time, separated by ','. If a peptide maps to the multiple proteins, these
+different proteins can be provided by separating them by ';'.}
 
 \item{isTryptic}{A character string or numeric giving the column name or
 column number in which annotation of the digest type are provided.}
 
 \item{startPosition}{A character string or numeric giving the column name or
 column number in which start position from each peptide in its protein
-sequence are provided. Different start positions for the same peptide should
-be separated by ',' for peptides mapping to the same protein multiple times
-and ';' for peptides mapping to multiple proteins.}
+sequence are provided. If a peptides matches to the same protein several
+times, different start positions should be separated by ','. If a peptide
+maps to the multiple proteins, the start positions should be separated
+with ';'.}
 
 \item{allProtName}{A character string or numeric giving the column name or
 column number in which all protein names mapping to a peptide sequence are
-provided.}
+provided. If a peptides matches to the same protein several times, the
+protein name should be provided each time, separated by ','. If a peptide
+maps to the multiple proteins, these different proteins can be provided by
+separating them by ';'.}
 
 \item{NMissedCleavages}{A character string or numeric giving the column name
 or column number in which number of missed cleavages in each peptide are
@@ -70,7 +77,7 @@ column number in which annotation of the peptide is proteotypic are provided.}
 }
 \value{
 Returns a data.frame including all necessary annotation on peptides
-(or precursors) and the matching proteins.
+(/modified peptides/precursors) and the matching proteins.
 }
 \description{
 Create an annotation data.frame for the quantities from a MS

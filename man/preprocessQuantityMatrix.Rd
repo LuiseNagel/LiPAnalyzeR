@@ -2,98 +2,154 @@
 % Please edit documentation in R/FilterSpectroOut.R
 \name{preprocessQuantityMatrix}
 \alias{preprocessQuantityMatrix}
-\title{Preprocessing peptide and protein quantities}
+\title{Preprocessing quantity matrices}
 \usage{
-preprocessQuantityMatrix(SpectroList=NULL, QuantityMatrix=NULL,
-annotPP=NULL, annotS=NULL, logT=TRUE, filterMinLogQuant=TRUE,
-thresholdMinLogQuant=10, filterNA=TRUE, maxNAperCondition=0,
-infoCondition="Condition", runHT = FALSE,  runHTonly = FALSE,
-namePepQuant = "Peptide", nameProtQuant = "Protein", filterTryptic=TRUE,
+preprocessQuantityMatrix(quantityList=NULL, quantityMatrix=NULL,
+annotPP=NULL, annotS=NULL, mode="default", logT=TRUE, filterMinLogQuant=TRUE,
+thresholdMinLogQuant=10, filterNA="all", maxNAs=0, infoCondition="Condition",
+nameIDQuant="quantID", nameProtQuant="Protein", filterTryptic=TRUE,
 infoTryptic="isTryptic", nameFT="Specific", filterProteotryptic=FALSE,
 infoProteotypic="isProteotypic", nameProteotypic="True",
 filterMissedCleaved=FALSE, maxMissedCleave=2,
 infoMissedCleave="NMissedCleavages")
 }
 \arguments{
-\item{SpectroList}{A list of matrices, containing peptides/proteins
-quantities. Rows represent features and columns refer to the samples. Can
-simply be output from \code{ExtractDataFromSpectro}.}
+\item{quantityList}{A list of matrices, containing quantities of interest
+(e.g. peptide, modified peptide, precursor) and protein abundances. Rows
+represent features and columns samples. Sample names between the different
+matrices contained in the list should match. Not matching samples will be
+removed.
+Output from \code{extractMSData} or \code{extractSpectroData} is in
+the correct format (except of potentially not matching sample names, then
+these need to be adjusted manually.)
+\code{quantityList} may include the following matrices
+\itemize{
+  \item 'LiPPep': LiP peptide quantities (or alternatively the modified
+  peptide/ precursor/other quantities, dependent on \code{quantName} and
+  \code{quantValue})
+  \item 'TrPPep': TrP peptide quantities (or alternatively the modified
+  peptide/precursor/other quantities, dependent on \code{quantName} and
+  \code{quantValue})
+  \item 'TrPProt': TrP protein quantities
+  \item 'LiPProt': LiP protein quantities
+  }}
 
-\item{QuantityMatrix}{A single matrix with peptide/protein quantities. Rows
-represent features and columns refer to the samples.}
+\item{quantityMatrix}{A single matrix with peptide/protein quantities. Rows
+represent features and columns refer to the samples. Single matrix filtering
+can only be run in \code{mode='default'}. Do not provide \code{quantityList}
+if you want to filter \code{quantityMatrix}}
 
-\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
-features and must match to the row.names of SpectroList/QuantityMatrix.
-Must include all columns needed for filtering of data.}
+\item{annotPP}{A data.frame with peptides (/modified peptides/precursors) and
+protein annotation. Rows are features and must match to the row.names of
+quantityList/quantityMatrix. Must include all columns required for filtering
+data according to settings provided to this function. Per default, the output
+from \code{getPepProtAnnot} can be given here.}
 
 \item{annotS}{A data.frame object containing sample annotation. Rows are
-samples and must match to columns of \code{SpectroList}. If \code{filterNA}
-is set to 'TRUE', it needs to contain column about different
+samples and must match to columns of \code{quantityList}.
+If \code{filterNA='byCondition'} it needs to contain column providing the
 conditions/groups.}
 
+\item{mode}{A character variable defining mode in which function is run. Can
+be set to c('default', 'HTonly', 'FTHTjoin' or 'LiPonly').
+\itemize{
+  \item 'default': Filtering all matrices to contain the same quantity IDs
+  in rows, e.g. peptide names. If no HT peptides are quantified in the TrP
+  data, all HT peptides will be removed.
+  \item 'HTonly': Full-tryptic (FT) LiP peptides will be removed from the
+  data. All half-tryptic (HT) LiP peptides will be matched to the best
+  correlating FT TrP peptide from the same protein. All other FT TrP peptides
+  will be removed from the data. The row names of the TrP data will
+  subsequently be adjusted to the IDs of the half-tryptic LiP quantites, such
+  as half-tryptic AA sequences.
+  \item 'FTHTjoin': The TrPPep matrix will be removed from the data,
+  matching all FT and HT LiP peptides to the matching TrPProt quantities.
+  \code{filterTryptic} will automatically be set to 'FALSE'. \code{annotPP}
+  need to be provided to match TrP protein quantities to half-tryptic
+  peptides in LiP data.
+  \item 'LiPonly': Filtering all matrices to contain the same quantity IDs
+  in rows, e.g. peptide names. If you which to retain half-tryptic peptides
+  in the data, please set  \code{filterTryptic} to 'FALSE'.
+  }}
+
 \item{logT}{A boolean value defining if data should be log-transformed.
+Default is 'TRUE', meaning the data will be log2 transforming.}
+
+\item{filterMinLogQuant}{A boolean value defining if small quantities should
+be set to NA.
 Default is 'TRUE'.}
 
-\item{filterMinLogQuant}{A boolean value defining small quantities should be
-set to NA. Default is 'TRUE'.}
-
 \item{thresholdMinLogQuant}{A numeric value, quantities below this threshold
-will be set to NA if \code{filterMinLogQuant} is 'TRUE'. Default is set to
-10. Setting it to 12 would be an optional stricter choice.}
+will be set to NA if \code{filterMinLogQuant} is 'TRUE'.
+Default is set to 10. Setting it to 12 would be an optional stricter choice.}
 
-\item{filterNA}{A boolean value defining peptides should be filtered based on
-number of NAs. Default is 'TRUE'.}
+\item{filterNA}{A character variable defining type of NA filtering applied.
+Can be set to c('all', 'byCondition' or 'none').
+\itemize{
+  \item 'all': Filtering of NAs will be applied on all samples, independent
+  of their condition. \code{maxNA} defines the number of NAs allowed per
+  quantity over all samples.
+  \item 'byCondition': Filtering of NAs will be applied on samples based on
+  their condition.  \code{maxNA} defines the number of NAs allowed per
+  quantity over all samples of each individual condition. It is advised to
+  only use 'byCondition', if the condition you are providing is a
+  categorical variable and not continuous.
+  \item 'none': No NA filtering will be applied. This my cause issues if
+  running RUV and/or contrast models subsequently.
+  }
+Default is 'all'.}
 
-\item{maxNAperCondition}{A numeric value, defining maximal number of NAs
-in an individual feature per condition. Default is '0'.}
+\item{maxNAs}{A numeric value, defining maximal number of NAs allowed.
+Default is '0'.}
 
 \item{infoCondition}{A character string or numeric giving the column name
-or column number of \code{annotS} in which condition is provided. Default is
-'Condition'. If NA filtering should not be applied on condition level provide
-only one value in \code{infoCondition} in \code{annotS}.}
+or column number of \code{annotS} in which condition is provided. Required,
+if \code{filterNA = 'byCondition'}.
+Default is 'Condition'.}
 
-\item{runHT}{A boolean value defining if the function and further analysis
-steps should be run including the half-tryptic LiP peptides. If set to true,
-the TrpPep matrix will be removed, resulting in only the LiPPep and TrpProt
-matrices remaining in the data and \code{filterTryptic} will automatically be
-set to 'FALSE'. Need to provide \code{annotPP} to match protein quantities to
-half-tryptic peptides in LiP data. \code{runHT} is set to 'FALSE' per
-default.}
-
-\item{runHTonly}{have to add description}
-
-\item{namePepQuant}{A character string giving column of \code{annotPP} which
-matches to the row.names of the peptide quantities.
-Set to 'Peptide' by default.}
+\item{nameIDQuant}{A character string giving column of \code{annotPP} which
+matches to the row.names of \code{quantityList} or \code{quantityMatrix}.
+Defailt is 'quantID'.}
 
 \item{nameProtQuant}{A character string giving column of \code{annotPP} which
-matches to the row.names of the protein quantities.
-Set to 'Protein' by default.}
+protein names are provided. If a peptides matches to the same protein several
+times, the protein name should be provided each time, separated by ','. If a
+peptide maps to the multiple proteins, these different proteins can be
+provided by separating them with ';'.
+Default is 'Protein'.}
 
 \item{filterTryptic}{A boolean value defining if peptides should be filtered
-based digest type. Default is 'TRUE', removing all not fully tryptic peptides
-from the data matrices.}
+based digest type.
+Default is 'TRUE', keeping only full-tryptic peptides in data matrices.}
 
 \item{infoTryptic}{A character string or numeric giving the column name or
-column number of \code{annotPP} in which digest type can be found
+column number of \code{annotPP} in which digest type is provided.
 Default is 'isTryptic'.}
 
-\item{nameFT}{A character string defining which annotation in
-\code{infoTryptic} should remain in the data. Default is 'Specific'.}
+\item{nameFT}{A character string defining how full-tryptic peptides are
+annotated in the \code{infoTryptic} colunm in \code{annotPP}. Only peptides
+annotated accordingly will remain in the data if \code{filterTryptic} is set
+to 'TRUE'.
+Default is 'Specific'.}
 
 \item{filterProteotryptic}{A boolean value, defining if peptides should be
-filtered based on if they are proteotypic. Default is 'FALSE'.}
+filtered based on if they are proteotypic.
+Default is 'FALSE'.}
 
 \item{infoProteotypic}{A character string or numeric giving the column name
-or column number of \code{annotPP} in which annotation if peptides is
-proteotypic is provided. Default is 'isProteotypic'.}
+or column number of \code{annotPP} in which annotation which peptides are
+proteotypic is provided.
+Default is 'isProteotypic'.}
 
-\item{nameProteotypic}{A character string defining which peptide in
-\code{infoProteotypic} is proteotypic and will be filtered out if
-\code{filterProteotryptic} is set to 'TRUE'. Default is 'True'.}
+\item{nameProteotypic}{A character string defining proteotypic peptides are
+annotated in the \code{infoProteotypic} colunm in \code{annotPP}. Onl
+peptides annotated accordingly will remain in the data if
+\code{filterProteotryptic} is set to 'TRUE'.
+Default is 'True'.}
 
 \item{filterMissedCleaved}{A boolean value defining if peptides should be
-filtered based on number of missed cleavages. Default is 'FALSE'.}
+filtered based on the number of missed cleavages.
+Default is 'FALSE'.}
 
 \item{maxMissedCleave}{A numeric value, defining maximal number of missed
 cleavages allowed per peptide if \code{filterMissedCleaved} is set to 'TRUE'.
@@ -101,16 +157,28 @@ Default is '2'.}
 
 \item{infoMissedCleave}{A character string or numeric giving the column name
 or column number of \code{annotPP} in which number of missed cleavage are
-provided. Default is 'NMissedCleavages'.}
+provided.
+Default is 'NMissedCleavages'.}
 }
 \value{
 Returns a list of matrices containing preprocessed and filtered
-peptide and protein quantities  OR a single matrix containing preprocessed
-and filtered peptide or protein quantities. Rows represent features and
-columns refer to the samples.
+quantities of interest(e.g. peptide, modified peptide, precursor) and protein
+quantities (OR a single matrix containing preprocessed quantities of interest
+if a 'quantityMatrix' was provided. Feature and samples names (i.e., row and
+column names) of the different matrices in the list match.
+
+If a "quantityMatrix' is provided the function returns a single matrix
+containing preprocessed quantities of interest.
+
+Rows represent features and columns samples.
 }
 \description{
-Function for preprocessing data before fitting models. Different
-filtering can be applied based on various features such as digest type,
-proteotypic status or number of missed cleavages.
+Function for preprocessing quantity matrices before fitting RUV
+and/or contrast models. Samples and quantity IDs (e.g. peptide
+names/sequences) between different matrices in the quantityList are matched.
+Samples or quantity IDs no present in all matrices will be removed. Data is
+log-transformed, filtered for NAs and based on settings various properties
+such as digest type, number of missed cleavages or proteotypic state may also
+be used for further filtering the data. If run in HTonly mode, half-tryptic
+LiP peptides are matched to full-tryptic TrP peptides based on correlation.
 }
