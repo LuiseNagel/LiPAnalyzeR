@@ -4,62 +4,70 @@
 \alias{runModel}
 \title{Fitting linear regression models to MS data}
 \usage{
-runModel(spectroList, annotS=NULL, formulaRUV="Y~XPep+XProt",
+runModel(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
 formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
-addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE,
-LiPonly=FALSE, withHT=FALSE)
+addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE)
 }
 \arguments{
-\item{spectroList}{A list of matrices, containing peptide/protein quantities.
-Rows represent features and columns refer to the samples. Names of the list
-items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
-version is run, names should refer to "LiPPep" and "LiPProt").}
+\item{quantityList}{A list of preprocessed matrices, containing quantities of
+interest(e.g. peptide, modified peptide, precursor) and protein abundances.
+Rows represent features and columns samples and should match between the
+different matrices contained in the list.
+Output from \code{preprocessQuantityMatrix} is in the correct format.
+The matrices of \code{quantityList} may have the following names
+\itemize{
+  \item c('LiPPep', 'TrPPep', 'TrPProt')
+  \item c('LiPPep', 'TrPPep')
+  \item c('LiPPep', 'TrPProt')
+  \item c('LiPPep', 'LiPProt')
+  or use the variable naming 'Y', 'XPep' and 'XProt'.
+  }}
 
-\item{annotS}{A data.frame containing sample annotation. Rows are samples and
-must match to columns of \code{spectroList}.}
+\item{annotS}{A data.frame containing sample annotation. Must contain all
+columns included in the RUV and contrast models. Rows are samples and must
+match to columns of the matrices in \code{quantityList}.}
 
-\item{formulaRUV}{A character string or formula defining the bounded
-variable least square models. Use 'Y' for defining the quantity matrix with
-values to predict. ´ If additional quantity matrices should be used as
-variables in the models, please refer to these as 'XPep' and/or 'XProt'. All
-other variables in the formula should refer to columns in \code{annotS}. If
-RUV should not be run, set to 'NULL'. Default is defined as 'Y~XPep+XProt'.}
+\item{formulaRUV}{A character string or formula defining the RUV models
+performing bounded variable least square regression. Use 'Y' for defining the
+quantity matrix with values to predict. If additional quantity matrices
+should be used as variables in the models, please refer to these as 'XPep'
+and/or 'XProt'. All other variables in the formula should refer to columns in
+\code{annotS}. If RUV should not be run, set to 'NULL'.
+Default is 'Y~XPep+XProt'.}
 
-\item{formulaContrast}{A character string or formula defining the ordinary
-variable least square models. Use 'Y' for defining the quantity matrix with
-values to predict. ´If additional quantity matrices should be used as
-variables in the models, please refer to these as 'XPep' and/or 'XProt'.
-All other variables in the formula should refer to columns in \code{annotS}.
-If contrast models should not be run, set to 'NULL'. Default is defined as
-'Y~Condition'. If set to 'NULL', the residuals of the RUV models will
-additionally be returned.}
+\item{formulaContrast}{A character string or formula defining the contrast
+models performing ordinary variable least square models. Use 'Y' for defining
+the quantity matrix with values to predict. ´If additional quantity matrices
+should be used as variables in the models, please refer to these as 'XPep'
+and/or 'XProt'. All other variables in the formula should refer to columns in
+\code{annotS}.If contrast models should not be run, set to 'NULL'. If set to
+'NULL', the residuals of the RUV models will additionally be returned.
+Default is Y~Condition'.}
 
 \item{lowRUV}{A numeric vector defining lower boundaries of the coefficients
 of the RUV models. Elements refer to definition of \code{formulaRUV}.
-Default is defined as 'c(-Inf, 0, 0)'}
+Default is defined as 'c(-Inf, 0, 0)'.}
 
 \item{upRUV}{A numeric vector defining upper boundaries of the coefficients
 of the RUV models. Elements refer to definition of \code{formulaRUV}.
-Default is defined as 'c(Inf, Inf, Inf)'}
+Default is defined as 'c(Inf, Inf, Inf)'.}
 
 \item{addRUVbounds}{A boolean value, if set to 'TRUE' as many bounds as
-additionally needed in each RUV model are added to \code{lowRUV} and
-\code{upRUV}. Added boundaries are automatically set to -Inf for
-\code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
-are for example also running batch correction in the RUV model.}
+additionally needed based on \code{formulaRUV} in each RUV model are added to
+\code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+\code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+you have categories with multiple levels in the RUV model and did not adjust
+the RUV boundaries based in the number of levels. This might be the case if
+you have more than two batches you aim to account for in the RUV model.
+Default is 'FALSE'.}
 
-\item{returnRUVmodels}{A boolean value, set to 'TRUE' if you want the
-function to additionally return all RUV models.}
+\item{returnRUVmodels}{A boolean value, set to 'TRUE' the function will
+additionally return all RUV models.
+Default is 'FALSE'.}
 
-\item{returnContrastmodels}{A boolean value, set to 'TRUE' if you want the
-function to additionally return all contrast models}
-
-\item{LiPonly}{A boolean value to set to 'TRUE' if you are running the
-LiPonly version of the package and not providing trypsin-only data. Default
-is set to 'FALSE'.}
-
-\item{withHT}{A boolean value to set to 'TRUE' if LiPPep should only be
-corrected for TrpProt only. Default is set to 'FALSE'.}
+\item{returnContrastmodels}{A boolean value, set to 'TRUE' the function will
+additionally return all contrast models
+Default is 'FALSE'.}
 }
 \value{
 If RUV & contrast model or only the contrast model is run, a list of
@@ -74,8 +82,8 @@ peptide will be exported as additional list elements.
 \description{
 Function to build linear regression models to
 \enumerate{
-   \item RUV model: remove unwanted variation from MS data
-   \item contrast model: estimate effect sizes and corresponding p-values for
-   a condition of interest
+   \item remove unwanted variation from MS data (RUV step)
+   \item estimate effect sizes and corresponding p-values for a condition of
+   interest (contrast modeling step)
    }
 }

@@ -1,202 +1,309 @@
 ##matrixStats
 globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 
-#' @title Fitting model for accessibility changes in LiP peptides.
+#' @title Fitting model to quantify  accessibility changes in LiP quantities
 #'
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving structural variation between different conditions.
 #'
 #' @usage  analyzeLiPPepData(quantityList, annotS, infoCondition="Condition",
-#' formulaRUV="Y~XPep+XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0, 0),
-#' upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE, LiPonly=FALSE, withHT=FALSE)
+#' formulaRUV="Y~XPep+XProt", formulaContrast, lowRUV=c(-1e9,0,0),
+#' upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE, mode="default")
 #'
-#' @param quantityList A list of matrices, containing peptide/protein quantities.
-#' Rows represent features and columns refer to the samples. Names of the list
-#' items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
-#' version is run, names should refer to "LiPPep" and "LiPProt").
+#' @param quantityList A list of preprocessed matrices, containing quantities of
+#' interest(e.g. peptide, modified peptide, precursor) and protein abundances.
+#' Rows represent features and columns samples and should match between the
+#' different matrices contained in the list.
+#' Output from \code{preprocessQuantityMatrix} is in the correct format.
+#' The matrices of \code{quantityList} may have the following names
+#' \itemize{
+#'   \item c('LiPPep', 'TrPPep', 'TrPProt') for
+#'   \code{mode = c("default", "HTonly")}
+#'   \item c('LiPPep', 'TrPProt') for \code{mode = "FTHTjoin"}
+#'   \item c('LiPPep', 'LiPProt') for \code{mode = "LiPonly"}
+#'   }
 #' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns required for the RUV and contrast models. Rows are samples and
-#' must match to columns of the matrices in \code{quantityList}.
+#' columns included in the RUV and contrast models. Rows are samples and must
+#' match to columns of the matrices in \code{quantityList}.
 #' @param infoCondition A character string providing column name of
-#' \code{annotS} in which condition is provided. Default is 'Condition'.
+#' \code{annotS} were condition to fit in the contrast model is provided.
+#' Default is 'Condition'.
 #' @param formulaRUV A character string or formula defining the RUV models.
-#' Default is defined as 'Y~XPep+XProt'.
+#' Default is 'Y~XPep+XProt'.
 #' @param formulaContrast A character string or formula defining the contrast
-#' models. If 'NULL' will be set to 'Y~\code{infoCondition}.
+#' models.
+#' Default is 'NULL', causing the function to set \code{formulaContrast} to
+#' 'Y~\code{infoCondition}.
 #' @param lowRUV A numeric vector defining lower boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(-Inf, 0, 0)'.
-#'@param upRUV A numeric vector defining upper boundaries of the coefficients
+#' Default is 'c(-Inf, 0, 0)'.
+#' @param upRUV A numeric vector defining upper boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(Inf, Inf, Inf)'.
+#' Default is 'c(Inf, Inf, Inf)'.
 #' @param addRUVbounds A boolean value, if set to 'TRUE' as many bounds as
-#' additionally needed in each RUV model are added to \code{lowRUV} and
-#' \code{upRUV}. Added boundaries are automatically set to -Inf for
-#' \code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
-#' are for example also running batch correction in the RUV model.
-#' @param LiPonly A boolean value to set to 'TRUE' if you are running the
-#' LiPonly version of the package and not providing trypsin-only data. If set
-#' to TRUE' RUV boundaries will be adjusted, \code{lowRUV} will be set to
-#' c(-1e9, 0) and \code{RUV} will be set to c(Inf, Inf). Additionally,
-#' \code{formulaRUV} will be adjusted. In case you want to add further
-#' variables to the models, please use the \code{runModel} function. Default is
-#' 'FALSE'.
-#' @param withHT A boolean value to set to 'TRUE' if LiPPep should only be
-#' corrected for TrpProt only. If set to TRUE' RUV boundaries will be adjusted,
-#' \code{lowRUV} will be set to c(-1e9, 0) and \code{RUV} will be set to
-#' c(Inf, Inf). Additionally, \code{formulaRUV} will be adjusted. In case you
-#' want to add further variables to the models, please use the \code{runModel}
-#' function. Default is 'FALSE'.
+#' additionally needed based on \code{formulaRUV} in each RUV model are added to
+#' \code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+#' \code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+#' you have categories with multiple levels in the RUV model and did not adjust
+#' the RUV boundaries based in the number of levels. This might be the case if
+#' you have more than two batches you aim to account for in the RUV model.
+#' Default is 'FALSE'.
+#' @param mode A character variable defining mode in which function is run. Can
+#' be set to c('default', 'HTonly', 'FTHTjoin' or 'LiPonly').
+#' \itemize{
+#'   \item 'default': Correcting full-tryptic LiP quantities (e.g. peptides) for
+#'   TrP peptide and protein quantities.
+#'   \item 'HTonly': Correcting half-tryptic LiP quantities (e.g. peptides) for
+#'   best matching TrP peptide and the corresponding protein quantities. Please
+#'   run \code{preprocessQuantityMatrix} with \code{mode = 'HTonly'} to
+#'   preprocess the \code{quantityList} prior to running the models.
+#'   \item 'FTHTjoin': Correcting full-tryptic and half-tryptic LiP quantities
+#'   (e.g. peptides) for TrP protein quantities. Please run
+#'   \code{preprocessQuantityMatrix} with \code{mode = 'FTHTjoin'} to
+#'   preprocess the \code{quantityList} prior to running the models.
+#'   \item 'LiPonly': Correcting LiP quantities (e.g. peptides) for LiP protein
+#'   quantities.
+#'   }
+#' When aiming to run different corrections (e.g. correct LiP peptide for TrP
+#' peptide quantities) please use \code{runModel} instead. This function allows
+#' for more concrete settings.
 #'
+#' @result add Result
 #'
 #' @export
 analyzeLiPPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XPep+XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
-                              addRUVbounds=FALSE, LiPonly=FALSE, withHT=FALSE){
+                              addRUVbounds=FALSE, mode="default"){
+
+    ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
+        message("'formulaContrast' is set to 'NULL', function is setting
+formulaContrast to Y ~ 'infoCondition'.")
+        if(!infoCondition %in% colnames(annotS)){
+            stop("'infoCondition' is not a column provided in 'annotS'.")
+        }
         formulaContrast <- paste0("Y~", infoCondition)
     }
-    if(LiPonly|withHT){
-        if(LiPonly){
-            message("Running 'LiPonly' mode, performing RUV only with LiPProt.
-If you want to add further variables to the RUV model please use the 'runModel'
-function.")
+
+    ## Checking input based on mode setting
+    if(tolower(mode) == "default"|tolower(mode) == "htonly"){
+        if(paste(names(quantityList), collapse="") != c("LiPPepTrPPepTrPProt")){
+            stop(paste0("Running mode ='", mode, "', 'forumlaRUV' does not
+include 'XPep' AND 'XProt. Please adjust 'formulaRUV'." ))
         }
-        else if(withHT){
-            message("Running 'withHT' mode, performing RUV only with TrpProt.
-If you want to add further variables to the RUV model please use the 'runModel'
-function.")
+        if(!(grepl("XPep", as.character(formulaRUV))&
+             grepl("XProt", as.character(formulaRUV)))){
+            stop(paste0("Running mode ='", mode, "'. Names of
+                 'quantityList' do
+            not meet expectation to be 'LiPPep', 'TrpPep 'TrPProt'."))
         }
-        formulaRUV <- "Y~XProt"
-        lowRUV <- c(-1e9, 0)
-        upRUV <- c(1e9, 1e9)
     }
 
-    LiPOut <- runModel(quantityList=quantityList,
-                       annotS=annotS,
-                       formulaRUV=formulaRUV,
-                       formulaContrast=formulaContrast,
-                       lowRUV=lowRUV,
-                       upRUV=upRUV,
-                       addRUVbounds=addRUVbounds,
-                       LiPonly=LiPonly,
-                       withHT=withHT)
+    if(tolower(mode) == "fthtjoin"){
+        if(paste(names(quantityList), collapse="") != c("LiPPepTrPProt")){
+            stop("Running mode = 'FTHTjoin'. Names of 'quantityList' do not meet
+expectation to be 'LiPPep' and 'TrPProt'.")
+        }
+        if(grepl("XPep", as.character(formulaRUV))){
+            stop("Function is run in 'FTHTjoin' mode, but 'formulaRUV' includes
+XPep. Please adjust 'formulaRUV'.")
+        }
+    }
+
+    if(tolower(mode) == "liponly"){
+        if(paste(names(quantityList), collapse="") != c("LiPPepLiPProt")){
+            stop("Running mode = 'LiPonly'. Names of 'quantityList' do not meet
+expectation to be 'LiPPep' and 'LiPProt'.")
+        }
+        if(grepl("XPep", as.character(formulaRUV))){
+            stop("Function is run in 'LiPonly' mode, but 'formulaRUV' includes
+XPep. Please adjust 'formulaRUV'.")
+        }
+    }
+
+        LiPOut <- runModel(quantityList=quantityList,
+                           annotS=annotS,
+                           formulaRUV=formulaRUV,
+                           formulaContrast=formulaContrast,
+                           lowRUV=lowRUV,
+                           upRUV=upRUV,
+                           addRUVbounds=addRUVbounds)
     return(LiPOut)
 }
 
-#' @title Fitting model for PK-independent changes in Trp peptides
+#' @title Fitting model to quantify PK-independent changes in TrP peptides
 
 #' @description Function to build linear regression models for fitting MS data
-#' and retrieving PK-independent peptide variation between different conditions.
+#' and retrieving PK-independent peptide variations between different
+#' conditions.
 #'
-#' @usage analyzeTrpPepData(quantityList, annotS, infoCondition="Condition",
+#' @usage analyzeTrPPepData(quantityList, annotS, infoCondition="Condition",
 #' formulaRUV="Y~XProt", formulaContrast=NULL, lowRUV=c(-1e9, 0),
 #' upRUV=c(Inf, Inf), addRUVbounds=FALSE)
 #'
-#' @param quantityList A list of matrices, containing peptide/protein quantities.
-#' Rows represent features and columns refer to the samples. Names of the list
-#' items should be set to "LiPPep", "TrpPep" and "TrpProt".
-#' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{quantityList}.
+#' @param quantityList A list of preprocessed matrices, containing quantities of
+#' interest(e.g. peptide, modified peptide, precursor) and protein abundances.
+#' Rows represent features and columns samples and should match between the
+#' different matrices contained in the list.
+#' Output from \code{preprocessQuantityMatrix} is in the correct format.
+#' The matrices of \code{quantityList} may have the following names
+#' \itemize{
+#'   \item c('LiPPep', 'TrPPep', 'TrPProt') - in this case, 'LiPPep' will not
+#'   be taken into account.
+#'   \item c('TrPPep', 'TrPProt)
+#'   }
+#' @param annotS A data.frame containing sample annotation. Must contain all
+#' columns included in the RUV and contrast models. Rows are samples and must
+#' match to columns of the matrices in \code{quantityList}.
 #' @param infoCondition A character string providing column name of
-#' \code{annotS} in which condition is provided. Default is 'Condition'.
+#' \code{annotS} were condition to fit in the contrast model is provided.
+#' Default is 'Condition'.
 #' @param formulaRUV A character string or formula defining the RUV models.
 #' Default is defined as 'Y~XProt'.
 #' @param formulaContrast A character string or formula defining the contrast
-#' models. If 'NULL' will be set to 'Y~\code{infoCondition}.
+#' models.
+#' Default is 'NULL', causing the function to set \code{formulaContrast} to
+#' 'Y~\code{infoCondition}.
 #' @param lowRUV A numeric vector defining lower boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(-Inf, 0)'.
+#' Default is 'c(-Inf, 0)'.
 #'@param upRUV A numeric vector defining upper boundaries of the coefficients
 #'of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(Inf, Inf)'.
+#' Default is 'c(Inf, Inf)'.
 #' @param addRUVbounds A boolean value, if set to 'TRUE' as many bounds as
-#' additionally needed in each RUV model are added to \code{lowRUV} and
-#' \code{upRUV}. Added boundaries are automatically set to -Inf for
-#' \code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
-#' are for example also running batch correction in the RUV model.
+#' additionally needed based on \code{formulaRUV} in each RUV model are added to
+#' \code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+#' \code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+#' you have categories with multiple levels in the RUV model and did not adjust
+#' the RUV boundaries based in the number of levels. This might be the case if
+#' you have more than two batches you aim to account for in the RUV model.
+#' Default is 'FALSE'.
 #'
 #' @export
-analyzeTrpPepData <- function(quantityList, annotS, infoCondition="Condition",
+analyzeTrPPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0), upRUV=c(Inf, Inf),
                               addRUVbounds=FALSE){
+
+    ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
+        message("'formulaContrast' is set to 'NULL', function is setting
+formulaContrast to Y ~ 'infoCondition'.")
+        if(!infoCondition %in% colnames(annotS)){
+            stop("'infoCondition' is not a column provided in 'annotS'.")
+        }
         formulaContrast <- paste0("Y~", infoCondition)
     }
-    quantityList <- list(Y=quantityList$TrpPep, XProt=quantityList$TrpProt)
-    TrpOut <- runModel(quantityList=quantityList,
+
+    ## Checking names of quantityList
+    if(paste(names(quantityList), collapse="") != c("LiPPepTrPPepTrPProt") &
+       paste(names(quantityList), collapse="") != c("TrPPepTrPProt")){
+        stop("Aiming to analyze 'TrPPep' data. Names of 'quantityList' do not
+meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
+    }
+
+    ## Running models
+    quantityList <- list(Y=quantityList$TrPPep, XProt=quantityList$TrPProt)
+    TrPOut <- runModel(quantityList=quantityList,
                        annotS=annotS,
                        formulaRUV=formulaRUV,
                        formulaContrast=formulaContrast,
                        lowRUV=lowRUV,
                        upRUV=upRUV,
                        addRUVbounds=addRUVbounds)
-    colnames(TrpOut$modelCoeff)[2] <- c("TrpProt_RUV")
-    return(TrpOut)
+
+    return(TrPOut)
 }
 
-#' @title Fitting model for protein abundance changes
+#' @title Fitting model to quantify protein abundance changes
 
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving protein abundance variation between different conditions.
 #'
-#' @usage analyzeTrpProtData(quantityList, annotS, annotPP,
-#' infoCondition="Condition", infoProtName="Protein", formulaRUV=NULL,
-#' formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE,
-#' LiPonly=FALSE)
+#' @usage analyzeTrPProtData(quantityList, annotS, annotPP,
+#' infoCondition="Condition", nameProtQuant="Protein", formulaRUV=NULL,
+#' formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE)
 #'
 #' @param quantityList A list of matrices, containing peptide/protein quantities.
 #' Rows represent features and columns refer to the samples. Names of the list
-#' items should be set to "LiPPep", "TrpPep" and "TrpProt" (if the LiP only
+#' items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the LiP only
 #' version is run, names should refer to "LiPPep" and "LiPProt").
-#' @param annotS A data.frame containing sample annotation. Rows are samples and
-#' must match to columns of \code{quantityList}.
-#' @param annotPP A data.frame with peptide and protein annotatioon. Rows are
-#' features and must match to the row.names of quantityList/QuantityMatrix.
+#' @param annotS A data.frame containing sample annotation. Must contain all
+#' columns included in the RUV and contrast models. Rows are samples and must
+#' match to columns of the matrices in \code{quantityList}.
+#' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
+#' protein annotation. Rows are features and must match to the row.names of the
+#' quantityList. Must include a column named \code{nameProtQuant} providing
+#' protein (group) names. Per default, the output from \code{getPepProtAnnot}
+#' can be given here.
 #' @param infoCondition A character string providing column name of
-#' \code{annotS} in which condition is provided. Default is 'Condition'.
-#' @param infoProtName A character string providing column name of
-#' \code{annotPP} in which the protein names are provided. Default is 'Protein'.
+#' \code{annotS} were condition to fit in the contrast model is provided.
+#' Default is 'Condition'.
+#' @param nameProtQuant A character string giving column of \code{annotPP} were
+#' protein names are provided..
+#' Default is 'Protein'.
 #' @param formulaRUV A character string or formula defining the RUV models.
 #' Default is defined as 'NULL'.
 #' @param formulaContrast A character string or formula defining the contrast
-#' models. If 'NULL' will be set to 'Y~\code{infoCondition}
+#' models.
+#' Default is 'NULL', causing the function to set \code{formulaContrast} to
+#' 'Y~\code{infoCondition}.
 #' @param lowRUV A numeric vector defining lower boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'NULL'.
+#' Default is 'NULL'.
 #' @param upRUV A numeric vector defining upper boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'NULL'.
+#' Default is 'NULL'.
 #' @param addRUVbounds A boolean value, if set to 'TRUE' as many bounds as
-#' additionally needed in each RUV model are added to \code{lowRUV} and
-#' \code{upRUV}. Added boundaries are automatically set to -Inf for
-#' \code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
-#' are for example also running batch correction in the RUV model.
-#' @param LiPonly A boolean value to set to 'TRUE' if you are running the
-#' LiPonly version of the package and not providing trypsin-only data.
-
+#' additionally needed based on \code{formulaRUV} in each RUV model are added to
+#' \code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+#' \code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+#' you have categories with multiple levels in the RUV model and did not adjust
+#' the RUV boundaries based in the number of levels. This might be the case if
+#' you have more than two batches you aim to account for in the RUV model.
+#' Default is 'FALSE'.
 #'
 #' @export
-analyzeTrpProtData <- function(quantityList, annotS, annotPP,
+analyzeTrPProtData <- function(quantityList, annotS, annotPP,
                                infoCondition="Condition",
-                               infoProtName="Protein", formulaRUV=NULL,
+                               nameProtQuant="Protein", formulaRUV=NULL,
                                formulaContrast=NULL, lowRUV=NULL, upRUV=NULL,
-                               addRUVbounds=FALSE, LiPonly=FALSE){
+                               addRUVbounds=FALSE){
+
+    ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
+        message("'formulaContrast' is set to 'NULL', function is setting
+formulaContrast to Y ~ 'infoCondition'.")
+        if(!infoCondition %in% colnames(annotS)){
+            stop("'infoCondition' is not a column provided in 'annotS'.")
+        }
         formulaContrast <- paste0("Y~", infoCondition)
     }
 
-    ## map peptides to proteins
-    if(!LiPonly){
-        protData <- quantityList$TrpProt
+    ## check quantityList input
+    if(sum(names(quantityList) %in% c("LiPProt", "TrPProt"))>1){
+        stop("Providing more than one protein matrix in 'quantityList', please
+provide only one matrix (either 'TrPProt' or 'LiPProt'.")
     }
-    else{
+
+    if(sum("TrPProt" %in% names(quantityList)) == 1){
+        message("Analyzing TrPProt data.")
+        protData <- quantityList$TrPProt
+    }
+
+    else if(sum("LiPProt" %in% names(quantityList)) == 1){
+        message("Analyzing LiPProt data.")
         protData <- quantityList$LiPProt
     }
+    else{
+        stop("No protein matrix provided in  'quantityList Please provide a
+matrix in list names either 'TrPProt' or 'LiPProt'.")
+    }
+
+    ## map peptides to proteins
     Peps2Prots <- split(row.names(protData), annotPP[row.names(protData),
-                                                     infoProtName])
+                                                     nameProtQuant])
     Peps2Prots <- unlist(lapply(Peps2Prots, \(x) (x[1])))
     quantityList <- list(Y=protData[Peps2Prots,])
     row.names(quantityList$Y) <- names(Peps2Prots)
@@ -208,8 +315,7 @@ analyzeTrpProtData <- function(quantityList, annotS, annotPP,
                         formulaContrast=formulaContrast,
                         lowRUV=lowRUV,
                         upRUV=upRUV,
-                        addRUVbounds=addRUVbounds,
-                        LiPonly=LiPonly)
+                        addRUVbounds=addRUVbounds)
     return(ProtOut)
 }
 
@@ -225,62 +331,59 @@ analyzeTrpProtData <- function(quantityList, annotS, annotPP,
 #'
 #' @usage runModel(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
 #' formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
-#' addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE,
-#' LiPonly=FALSE, withHT=FALSE)
+#' addRUVbounds=FALSE, returnRUVmodels=FALSE, returnContrastmodels=FALSE)
 #'
 #' @param quantityList A list of preprocessed matrices, containing quantities of
 #' interest(e.g. peptide, modified peptide, precursor) and protein abundances.
 #' Rows represent features and columns samples and should match between the
 #' different matrices contained in the list.
 #' Output from \code{preprocessQuantityMatrix} is in the correct format.
-#' \code{quantityList} may include the following matrices
+#' The matrices of \code{quantityList} may have the following names
 #' \itemize{
-#'   \item 'LiPPep': LiP peptide quantities (or alternatively the modified
-#'   peptide/ precursor/other quantities, dependent on \code{quantName} and
-#'   \code{quantValue})
-#'   \item 'TrPPep': TrP peptide quantities (or alternatively the modified
-#'   peptide/precursor/other quantities, dependent on \code{quantName} and
-#'   \code{quantValue})
-#'   \item 'TrPProt': TrP protein quantities
-#'   \item 'LiPProt': LiP protein quantities
+#'   \item c('LiPPep', 'TrPPep', 'TrPProt')
+#'   \item c('LiPPep', 'TrPPep')
+#'   \item c('LiPPep', 'TrPProt')
+#'   \item c('LiPPep', 'LiPProt')
+#'   or use the variable naming 'Y', 'XPep' and 'XProt'.
 #'   }
 #' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns required for the RUV and contrast models. Rows are samples and
-#' must match to columns of the matrices in \code{quantityList}.
-#' @param formulaRUV A character string or formula defining the bounded
-#' variable least square models. Use 'Y' for defining the quantity matrix with
-#' values to predict. ´ If additional quantity matrices should be used as
-#' variables in the models, please refer to these as 'XPep' and/or 'XProt'. All
-#' other variables in the formula should refer to columns in \code{annotS}. If
-#' RUV should not be run, set to 'NULL'. Default is defined as 'Y~XPep+XProt'.
-#' @param formulaContrast A character string or formula defining the ordinary
-#' variable least square models. Use 'Y' for defining the quantity matrix with
-#' values to predict. ´If additional quantity matrices should be used as
-#' variables in the models, please refer to these as 'XPep' and/or 'XProt'.
-#' All other variables in the formula should refer to columns in \code{annotS}.
-#' If contrast models should not be run, set to 'NULL'. Default is defined as
-#' 'Y~Condition'. If set to 'NULL', the residuals of the RUV models will
-#' additionally be returned.
+#' columns included in the RUV and contrast models. Rows are samples and must
+#' match to columns of the matrices in \code{quantityList}.
+#' @param formulaRUV A character string or formula defining the RUV models
+#' performing bounded variable least square regression. Use 'Y' for defining the
+#' quantity matrix with values to predict. If additional quantity matrices
+#' should be used as variables in the models, please refer to these as 'XPep'
+#' and/or 'XProt'. All other variables in the formula should refer to columns in
+#' \code{annotS}. If RUV should not be run, set to 'NULL'.
+#' Default is 'Y~XPep+XProt'.
+#' @param formulaContrast A character string or formula defining the contrast
+#' models performing ordinary variable least square models. Use 'Y' for defining
+#' the quantity matrix with values to predict. ´If additional quantity matrices
+#' should be used as variables in the models, please refer to these as 'XPep'
+#' and/or 'XProt'. All other variables in the formula should refer to columns in
+#' \code{annotS}.If contrast models should not be run, set to 'NULL'. If set to
+#' 'NULL', the residuals of the RUV models will additionally be returned.
+#' Default is Y~Condition'.
 #' @param lowRUV A numeric vector defining lower boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(-Inf, 0, 0)'
+#' Default is defined as 'c(-Inf, 0, 0)'.
 #' @param upRUV A numeric vector defining upper boundaries of the coefficients
 #' of the RUV models. Elements refer to definition of \code{formulaRUV}.
-#' Default is defined as 'c(Inf, Inf, Inf)'
+#' Default is defined as 'c(Inf, Inf, Inf)'.
 #' @param addRUVbounds A boolean value, if set to 'TRUE' as many bounds as
-#' additionally needed in each RUV model are added to \code{lowRUV} and
-#' \code{upRUV}. Added boundaries are automatically set to -Inf for
-#' \code{lowRUV} and Inf for \code{upRUV}. Important to set to 'TRUE', if you
-#' are for example also running batch correction in the RUV model.
-#' @param returnRUVmodels A boolean value, set to 'TRUE' if you want the
-#' function to additionally return all RUV models.
-#' @param returnContrastmodels A boolean value, set to 'TRUE' if you want the
-#' function to additionally return all contrast models
-#' @param LiPonly A boolean value to set to 'TRUE' if you are running the
-#' LiPonly version of the package and not providing trypsin-only data. Default
-#' is set to 'FALSE'.
-#' @param withHT A boolean value to set to 'TRUE' if LiPPep should only be
-#' corrected for TrpProt only. Default is set to 'FALSE'.
+#' additionally needed based on \code{formulaRUV} in each RUV model are added to
+#' \code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+#' \code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+#' you have categories with multiple levels in the RUV model and did not adjust
+#' the RUV boundaries based in the number of levels. This might be the case if
+#' you have more than two batches you aim to account for in the RUV model.
+#' Default is 'FALSE'.
+#' @param returnRUVmodels A boolean value, set to 'TRUE' the function will
+#' additionally return all RUV models.
+#' Default is 'FALSE'.
+#' @param returnContrastmodels A boolean value, set to 'TRUE' the function will
+#' additionally return all contrast models
+#' Default is 'FALSE'.
 #'
 #' @return If RUV & contrast model or only the contrast model is run, a list of
 #' two data.frames will be returned. The first contains the model coefficients
@@ -295,8 +398,7 @@ analyzeTrpProtData <- function(quantityList, annotS, annotPP,
 runModel <- function(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
                      formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0),
                      upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE,
-                     returnRUVmodels=FALSE, returnContrastmodels=FALSE,
-                     LiPonly=FALSE, withHT=FALSE){
+                     returnRUVmodels=FALSE, returnContrastmodels=FALSE){
 
     ## if necessary transforming formulas into character
     ## remove spaces in formula
@@ -316,33 +418,50 @@ runModel <- function(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
     ## check input format of formulas
     if(!(is.null(formulaRUV)|is.character(formulaRUV))&
        (is.null(formulaContrast)|is.character(formulaContrast))){
-        stop("Please provide 'formula' in the correct class. Use 'character' or
-'formula'.")
+        stop("Please provide 'formulaRUV' and 'formulaConstrast' in the correct
+class. Use 'character' or 'formula'.")
+    }
+    ## stop if no formulas are provided
+    if(is.null(formulaRUV) & is.null(formulaContrast)){
+        stop("No RUV or contrast formula provided. Please provide at least one
+of them for running models.")
+    }
+    resAll <- NULL
+
+    ## checking and potentially changing names of quantityList matrices
+    if(sum(!names(quantityList) %in% c("LiPPep", "TrPPep", "TrPProt", "LiPProt",
+                                       "Y", "XPep", "XProt"))>0){
+        stop("Names of matrices in 'quantityList' not permitted. Please change
+accordingly.")
     }
 
-    ## checking if 'formulaRUV' contains unexpected variables
-    if(LiPonly){
-        if(grepl("XPep", as.character(formulaRUV))){
-            stop("Function is run in 'LiPonly' mode, but 'formulaRUV' includes
-XPep. Please adjust 'formulaRUV'.")
-        }
-    }
-
-    if(withHT){
-        if(grepl("XPep", as.character(formulaRUV))){
-            stop("Function is run in 'withHT' mode, but 'formulaRUV' includes
-XPep. Please adjust 'formulaRUV'.")
-        }
-    }
-
-    ## adjusting names of quantityList matrices
-    if(paste(names(quantityList), collapse="") == c("LiPPepTrpPepTrpProt")){
+    if(paste(names(quantityList), collapse="") == c("LiPPepTrPPepTrPProt")){
         names(quantityList) <- c("Y", "XPep", "XProt")
     }
 
+    if(paste(names(quantityList), collapse="") == c("LiPPepTrPPep")){
+        names(quantityList) <- c("Y", "XPep")
+    }
+
     else if(paste(names(quantityList), collapse="") == c("LiPPepLiPProt")|
-            paste(names(quantityList), collapse="") == c("LiPPepTrpProt")){
+            paste(names(quantityList), collapse="") == c("LiPPepTrPProt")){
         names(quantityList) <- c("Y", "XProt")
+    }
+
+    ## checking that max 1 Y, XPep and XProt are provided in quantityList
+    if(sum(duplicated(names(quantityList)))>0){
+        if(sum(grepl("Y", names(quantityList)))>1){
+            stop("Multiple 'LiPPep'/'Y' matrices provided in the quantityList.
+Please only povide one.")
+        }
+        if(sum(grepl("XPep", names(quantityList)))>1){
+            stop("Multiple 'TrPPep'/'XPep' matrices provided in the
+quantityList. Please only povide one.")
+        }
+        if(sum(grepl("XPep", names(quantityList)))>1){
+            stop("Multiple 'TrPProt'/'LiPProt'/'XProt' matrices provided in the
+quantityList. Please only povide one.")
+        }
     }
 
     ## assuring row.names and colnames fit over all input data
@@ -357,8 +476,8 @@ XPep. Please adjust 'formulaRUV'.")
 detected.\nPlease check your input as well as column and row names of all
 provided data." )
     }
-    message("Using ", length(feat), " peptides/proteins and ", length(samples),
-            " samples.")
+    message(length(feat), " quantities and ", length(samples),
+            " samples used in models.")
     quantityList <- lapply(quantityList, function(x){
         x[feat, samples]
     })
@@ -366,16 +485,9 @@ provided data." )
         annotS <- annotS[samples, ]
     }
 
-    ## stop if no formulas are provided
-    if(is.null(formulaRUV) & is.null(formulaContrast)){
-        stop("No RUV or contrast formula provided. Please provide at least one
-of them to define the model(s) you want to run.")
-    }
-    resAll <- NULL
-
     ## running RUV models
     if(!is.null(formulaRUV)){
-        message("Running bounded variable least square models.")
+        message("Running RUV models.")
         modelMat <- createModelMatrix(quantityList, formulaRUV, annotS, samples)
         modelRUV <- runRUV(formulaRUV, modelMat, lowRUV, upRUV,
                              addRUVbounds)
@@ -383,7 +495,7 @@ of them to define the model(s) you want to run.")
         if(is.null(formulaContrast)){
             resAll <- resRUV
             message("Returning RUV results including residuals and estimated
-                    coefficients.")
+coefficients.")
         }
         dfRUV <- ncol(resRUV[[2]])-1
         quantityList[["Y"]] <- resRUV[[1]]
@@ -394,7 +506,7 @@ of them to define the model(s) you want to run.")
 
     ## running contrast models
     if(!is.null(formulaContrast)){
-        message("Running ordinary least square models.")
+        message("Running contrast models.")
         modelMat <- createModelMatrix(quantityList, formulaContrast, annotS,
                                       samples)
         modelContrast <- runContrast(modelMat)
@@ -412,16 +524,16 @@ of them to define the model(s) you want to run.")
         return(as.data.frame(x))
     })
 
-    ## add message if there TrpPep or TrpProt coefficients are very high
+    ## add message if there TrPPep or TrPProt coefficients are very high
     if(any(grepl("XPep|XProt", colnames(resAll[[1]])))){
         coeffPepProt <- unlist(c(resAll[[1]][, grepl("XPep",
                                                      colnames(resAll[[1]]))],
                                  resAll[[1]][, grepl("XProt",
                                                      colnames(resAll[[1]]))]))
         if(max(stats::na.omit(coeffPepProt))>5){
-            message("At least one peptide/protein coefficient is higher than 5,
-                     please check the results of the effected peptides for
-                     plausibility.")
+            message("At least one peptide/protein coefficient estiamted is
+higher than 5, please manually check the results of the respective peptides for
+plausibility.")
         }
     }
 
@@ -595,7 +707,7 @@ extractContrast <- function(mContrast, formulaContrast, dfRUV,
     ## used in RUV models into account
     else{
         message("Estimating p-values while removing degrees of freedom
-                consumed by RUV.")
+previously used in the RUV models.")
         modelPv <- calcualtePvalAfterRUV(mContrast, coeffTval, dfRUV)
     }
 
@@ -631,9 +743,8 @@ calcualtePvalAfterRUV <- function(LM,coeffTval, dfRUV){
         df <- x$df[2] - dfRUV
 
         if(df<1){
-            warning("Not enough degrees of freedom to estimate p-values,
-                    model is not reliable! Returning NAs for affected peptides/
-                    proteins.")
+            warning("Not enough degrees of freedom to estimate p-values, model
+is not reliable! Returning NAs for affected quantity.")
             pv <- stats::setNames(rep(NA, nrow(x$coefficients)),
                                   row.names(x$coefficients))
             return(t(pv))

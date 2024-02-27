@@ -5,7 +5,7 @@
 \title{Extracting model results and performing FDR correction on p-values.}
 \usage{
 summarizeModelResults(resModel, evalCovariable="Condition_Contrast",
-correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="Peptide",
+correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="quantID",
 infoProtein="Protein")
 }
 \arguments{

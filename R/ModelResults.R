@@ -8,7 +8,7 @@ globalVariables(names=c("Pval", "Yaxis", "aes",  "start", "end"))
 #' peptides/proteins or over all peptides of each protein individually
 #'
 #' @usage summarizeModelResults(resModel, evalCovariable="Condition_Contrast",
-#' correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="Peptide",
+#' correctPval="all", pAdjust="fdr", annotPP=NULL, infoFeature="quantID",
 #' infoProtein="Protein")
 #'
 #' @param resModel A list object, output from \code{runModel} or
@@ -41,7 +41,7 @@ globalVariables(names=c("Pval", "Yaxis", "aes",  "start", "end"))
 #'
 summarizeModelResults <- function(resModel, evalCovariable="Condition_Contrast",
                                   correctPval="all", pAdjust="fdr",
-                                  annotPP=NULL, infoFeature="Peptide",
+                                  annotPP=NULL, infoFeature="quantID",
                                   infoProtein="Protein"){
     modelCoef <- stats::setNames(resModel[[1]][, evalCovariable],
                                  row.names(resModel[[1]]))
