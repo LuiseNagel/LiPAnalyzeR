@@ -1,4 +1,3 @@
-
 #' @title Preprocessing quantity matrices
 #'
 #' @description Function for preprocessing quantity matrices before fitting RUV
@@ -44,9 +43,9 @@
 #' if you want to filter \code{quantityMatrix}
 #' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
 #' protein annotation. Rows are features and must match to the row.names of
-#' quantityList/quantityMatrix. Must include all columns required for filtering
-#' data according to settings provided to this function. Per default, the output
-#' from \code{getPepProtAnnot} can be given here.
+#' \code{quantityList} or \code{quantityMatrix}. Must include all columns
+#' required for filtering data according to settings provided to this function.
+#' The output from \code{getPepProtAnnot} can be given here.
 #' @param annotS A data.frame object containing sample annotation. Rows are
 #' samples and must match to columns of \code{quantityList}.
 #' If \code{filterNA='byCondition'} it needs to contain column providing the
@@ -344,9 +343,10 @@ matrices named 'LiPPep', 'TrPPep' and 'TrPProt'.")
 #'   \item 'TrPProt': TrP protein quantities
 #'   }
 #' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
-#' protein annotation. Rows are features and must match to the row names of
-#' \code{quantityList}. Must contain columns providing the \code{nameIDQuant}
-#' and matching protein names.
+#' protein annotation. Rows are features and should be the same identifiers as
+#' in the row names of the \code{quantityList}. Data.frame must contain columns
+#' providing the \code{nameIDQuant} and matching protein names in
+#' \code{nameProtQuant}.
 #' @param nameIDQuant A character string giving column of \code{annotPP} which
 #' matches to the row.names of \code{quantityList} or \code{quantityMatrix}.
 #' Default is 'quantID'.
@@ -420,9 +420,9 @@ matching TrPProt data to all FT and HT LiP peptides.")
 #'   }
 #' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
 #' protein annotation. Rows are features and must match to the row.names of
-#' quantityList. Must include all columns required for filtering
-#' data according to settings provided to this function. Per default, the output
-#' from \code{getPepProtAnnot} can be given here.
+#' \code{quantityList}. Must include all columns required for filtering
+#' data according to settings provided to this function. The output from
+#' \code{getPepProtAnnot} can be given here.
 #' @param annotS A data.frame object containing sample annotation. Rows are
 #' samples and must match to columns of \code{quantityList}.
 #' If \code{filterNA='byCondition'} it needs to contain column providing the

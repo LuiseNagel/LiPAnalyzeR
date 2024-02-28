@@ -2,90 +2,110 @@
 % Please edit documentation in R/PlottingResults.R
 \name{makeWoodsPlotProteinList}
 \alias{makeWoodsPlotProteinList}
-\title{Creating wood plots over multiple proteins}
+\title{Creating wood plots for multiple proteins}
 \usage{
 makeWoodsPlotProteinList(sumDf, annotPP, coefCol="Coefficient",
-pvalCol="Padj", infoProtein="Protein", infoStart="startPosition",
-infoEnd="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
-infoTryptic="isTryptic", nameFT=c("Specific"),
-nameHT=c("Specific-C", "Specific-N"), sigProt=TRUE, protList=NULL,
+pvalCol="Padj", nameProtQuant="Protein", startPosition="startPosition",
+endPosition="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
+isTryptic="isTryptic", nameFT=c("Specific"),
+nameHT=c("Specific-C", "Specific-N"), sigProt=TRUE, protVector=NULL,
 showPv=FALSE, export=FALSE, file=NULL)
 }
 \arguments{
-\item{sumDf}{A data.frame containing coefficients and p-values of
-peptides, with rows corresponding to the peptides. Can be the output of
-\code{summarizeModelResults}}
+\item{sumDf}{A data.frame containing coefficients and p-values of the
+condition of interest were rows corresponding to the quantity of interest
+(e.g. peptides). Can be the output of \code{summarizeModelResults}.}
 
-\item{annotPP}{A data.frame with peptide and protein annotation. Rows are
-peptides and must match to the row.names of \code{sumDf}. Can be output of
-\code{getPepProtAnnot}.Must include all columns needed for plotting the data
-(Protein name, start and stop position if each peptide, if
-\code{deltaColorIsTryptic} is set to TRUE, information if each peptide is
-full or half tryptic).}
+\item{annotPP}{A data.frame with peptides (/modified peptides/precursors) and
+protein annotation. Rows are features and must contain the row names of
+\code{sumDf}. Can be output of \code{getPepProtAnnot}. Must include all
+columns needed for plotting the data:
+\itemize{
+  \item \code{nameProtQuant} protein IDs
+  \item \code{startPosition} AA positions were peptides (/modified peptides
+  /precursors) start in protein
+  \item \code{endPosition} AA positions were peptides (/modified peptides
+  /precursors) end in protein
+  \item \code{isTryptic} optional column providing information if peptide is
+  full-tryptic or half-tryptic, only needed if
+  \code{deltaColorIsTryptic = 'TRUE'}
+}}
 
 \item{coefCol}{A character vector or numeric value defining column of
-\code{sumDf} in which coefficients of the peptides are provided. Set to
-'Coefficient' per default.}
+\code{sumDf} were coefficients of the quantity of interest (e.g. peptides)
+are provided.
+Default is 'Coefficient'.}
 
 \item{pvalCol}{A character vector or numeric value defining column of
-\code{sumDf} in which p-values of the peptides are provided. Set to
-'Padj' per default.}
+\code{sumDf} were (adjusted) p-values  of the quantity of interest
+(e.g. peptides) are provided.
+Default is 'Padj'.}
 
-\item{infoProtein}{A character vector or numeric value defining column of
-\code{annotPP} in which the protein name of the peptides are provided. Set to
-'Protein' per default. If a peptide is mapped and should be plotted to
-multiple proteins, these should be seperated within the column by ';'.}
+\item{nameProtQuant}{A character string giving column of \code{annotPP} which
+protein names are provided. If a peptides matches to the same protein several
+times, the protein name should be provided each time, separated by ','. If a
+peptide maps to the multiple proteins, these different proteins can be
+provided by separating them with ';'.
+Default is 'Protein'.}
 
-\item{infoStart}{A character vector or numeric value defining column of
-\code{annotPP} in which the start position the peptides are provided. Set to
-'startPosition' per default. If a peptide is mapped and should be plotted to
-multiple proteins, these should be seperated within the column by ';'. If a
-peptide matches to multiple positions within the same protein, seperate by
-','.}
+\item{startPosition}{A character string or numeric giving the column name or
+column number in which start position from each peptide in its protein
+sequence are provided in \code{annotPP}. If a peptides matches to the sam
+protein several times, different start positions should be separated by ','.
+If a peptide maps to the multiple proteins, the start positions should be
+separated with ';'.
+Default is 'startPosition'.}
 
-\item{infoEnd}{A character vector or numeric value defining column of
-\code{annotPP} in which the end position the peptides are provided. Set to
-'startPosition' per default. If a peptide is mapped and should be plotted to
-multiple proteins, these should be seperated within the column by ';'. If a
-peptide matches to multiple positions within the same protein, seperate by
-','.}
+\item{endPosition}{A character string or numeric giving the column name or
+column number in which end position from each peptide in its protein
+sequence are provided in \code{annotPP}. If a peptides matches to the sam
+protein several times, different start positions should be separated by ','.
+If a peptide maps to the multiple proteins, the start positions should be
+separated with ';'.
+Default is 'endPosition'.}
 
 \item{pvalCutoff}{A numeric value, peptides with p-values below this cut-off
-are considered to be significant. Default is set to '0.05'.}
+are considered significant.
+Default is '0.05'.}
 
-\item{deltaColorIsTryptic}{A boolean variable, if set to 'TRUE', full and
-half tryptic peptides will be plotted in different colors. Default is
-'FALSE'.}
+\item{deltaColorIsTryptic}{A boolean variable, if set to 'TRUE', full-tryptic
+and half-tryptic peptides will be plotted in different colors, this requires
+\code{isTryptic} column in \code{annotPP}
+Default is FALSE'.}
 
-\item{infoTryptic}{A character string or numeric giving the column name or
+\item{isTryptic}{A character string or numeric giving the column name or
 column number of \code{annotPP} in which digest type can be found
 Default is 'isTryptic'.}
 
-\item{nameFT}{A character vector defining the name of fully tryptic peptides
-provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-c("Specific").}
+\item{nameFT}{A character vector defining the name of full-tryptic peptides
+provided in the \code{isTryptic} column in \code{annotPP}.
+Default is c("Specific").}
 
-\item{nameHT}{A character vector defining the name of half tryptic peptides
-provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-c("Specific-C", "Specific-N").}
+\item{nameHT}{A character vector defining the name of half-tryptic peptides
+provided in the \code{isTryptic} column in \code{annotPP}.
+Default is c("Specific-C", "Specific-N").}
 
-\item{sigProt}{A boolean value, if set to TRUE, only proteins with
-significant peptides are plotted. Default is set to 'TRUE'.}
+\item{sigProt}{A boolean value, if set to TRUE, only proteins with at least
+one significant peptides are plotted.
+Default is 'TRUE'.}
 
-\item{protList}{A character vector providing names of proteins to be plotted.}
+\item{protVector}{A character vector providing names of proteins to
+be plotted. If set to 'NULL' \code{sigProt} has to be set to 'TRUE'.
+Default is 'NULL'.}
 
-\item{showPv}{A boolean value defining if p-values should be displayed in
-plots. Default is set to 'FALSE'.}
+\item{showPv}{A boolean value, if set to 'TRUE' p-values as defined in
+\code{pvalCol} should be displayed in plots.
+Default is 'FALSE'.}
 
 \item{export}{A boolean value defining if plots should directly be exported.
-If set to 'TRUE', plots will be written into a pdf file, displaying three
+If set to 'TRUE', plots will be written into a .pdf file, displaying three
 plots per sheet. Additionally, a list with the plots will still be returned
-in R. If set to 'TRUE', \code{file} has to be provided, Default is set to
-'FALSE'.}
+in R. If set to 'TRUE', \code{file} has to be provided.
+Default is 'FALSE'.}
 
 \item{file}{A character string providing export path and file name of pdf
 with plots, if \code{export} is set to 'TRUE'.}
 }
 \description{
-Creating wood plots over multiple proteins
+Creating wood plots for multiple proteins
 }

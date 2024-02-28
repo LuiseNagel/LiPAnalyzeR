@@ -1,102 +1,125 @@
-globalVariables(names=c("Coef", "Color"))
+globalVariables(names=c("end", "start", "aes", "Coef", "Color"))
 
-#' @title Creating wood plots over multiple proteins
+
+#' @title Creating wood plots for multiple proteins
+#'
+#' @description
+#'
 #' @usage makeWoodsPlotProteinList(sumDf, annotPP, coefCol="Coefficient",
-#' pvalCol="Padj", infoProtein="Protein", infoStart="startPosition",
-#' infoEnd="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
-#' infoTryptic="isTryptic", nameFT=c("Specific"),
-#' nameHT=c("Specific-C", "Specific-N"), sigProt=TRUE, protList=NULL,
+#' pvalCol="Padj", nameProtQuant="Protein", startPosition="startPosition",
+#' endPosition="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
+#' isTryptic="isTryptic", nameFT=c("Specific"),
+#' nameHT=c("Specific-C", "Specific-N"), sigProt=TRUE, protVector=NULL,
 #' showPv=FALSE, export=FALSE, file=NULL)
 #'
-#' @param sumDf A data.frame containing coefficients and p-values of
-#' peptides, with rows corresponding to the peptides. Can be the output of
-#' \code{summarizeModelResults}
-#' @param annotPP A data.frame with peptide and protein annotation. Rows are
-#' peptides and must match to the row.names of \code{sumDf}. Can be output of
-#' \code{getPepProtAnnot}.Must include all columns needed for plotting the data
-#' (Protein name, start and stop position if each peptide, if
-#' \code{deltaColorIsTryptic} is set to TRUE, information if each peptide is
-#' full or half tryptic).
+#' @param sumDf A data.frame containing coefficients and p-values of the
+#' condition of interest were rows corresponding to the quantity of interest
+#' (e.g. peptides). Can be the output of \code{summarizeModelResults}.
+#' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
+#' protein annotation. Rows are features and must contain the row names of
+#' \code{sumDf}. Can be output of \code{getPepProtAnnot}. Must include all
+#' columns needed for plotting the data:
+#' \itemize{
+#'   \item \code{nameProtQuant} protein IDs
+#'   \item \code{startPosition} AA positions were peptides (/modified peptides
+#'   /precursors) start in protein
+#'   \item \code{endPosition} AA positions were peptides (/modified peptides
+#'   /precursors) end in protein
+#'   \item \code{isTryptic} optional column providing information if peptide is
+#'   full-tryptic or half-tryptic, only needed if
+#'   \code{deltaColorIsTryptic = 'TRUE'}
+#' }
 #' @param coefCol A character vector or numeric value defining column of
-#' \code{sumDf} in which coefficients of the peptides are provided. Set to
-#' 'Coefficient' per default.
+#' \code{sumDf} were coefficients of the quantity of interest (e.g. peptides)
+#' are provided.
+#' Default is 'Coefficient'.
 #' @param pvalCol A character vector or numeric value defining column of
-#' \code{sumDf} in which p-values of the peptides are provided. Set to
-#' 'Padj' per default.
-#' @param infoProtein A character vector or numeric value defining column of
-#' \code{annotPP} in which the protein name of the peptides are provided. Set to
-#' 'Protein' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'.
-#' @param infoStart A character vector or numeric value defining column of
-#' \code{annotPP} in which the start position the peptides are provided. Set to
-#' 'startPosition' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'. If a
-#' peptide matches to multiple positions within the same protein, seperate by
-#' ','.
-#' @param infoEnd A character vector or numeric value defining column of
-#' \code{annotPP} in which the end position the peptides are provided. Set to
-#' 'startPosition' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'. If a
-#' peptide matches to multiple positions within the same protein, seperate by
-#' ','.
+#' \code{sumDf} were (adjusted) p-values  of the quantity of interest
+#' (e.g. peptides) are provided.
+#' Default is 'Padj'.
+#' @param nameProtQuant A character string giving column of \code{annotPP} which
+#' protein names are provided. If a peptides matches to the same protein several
+#' times, the protein name should be provided each time, separated by ','. If a
+#' peptide maps to the multiple proteins, these different proteins can be
+#' provided by separating them with ';'.
+#' Default is 'Protein'.
+#' @param startPosition A character string or numeric giving the column name or
+#' column number in which start position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' Default is 'startPosition'.
+#' @param endPosition A character string or numeric giving the column name or
+#' column number in which end position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' Default is 'endPosition'.
 #' @param pvalCutoff A numeric value, peptides with p-values below this cut-off
-#' are considered to be significant. Default is set to '0.05'.
-#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full and
-#' half tryptic peptides will be plotted in different colors. Default is
-#' 'FALSE'.
-#' @param infoTryptic A character string or numeric giving the column name or
+#' are considered significant.
+#' Default is '0.05'.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}
+#' Default is FALSE'.
+#' @param isTryptic A character string or numeric giving the column name or
 #' column number of \code{annotPP} in which digest type can be found
 #' Default is 'isTryptic'.
-#' @param nameFT A character vector defining the name of fully tryptic peptides
-#' provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-#' c("Specific").
-#' @param nameHT A character vector defining the name of half tryptic peptides
-#' provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-#' c("Specific-C", "Specific-N").
-#' @param sigProt A boolean value, if set to TRUE, only proteins with
-#' significant peptides are plotted. Default is set to 'TRUE'.
-#' @param protList A character vector providing names of proteins to be plotted.
-#' @param showPv A boolean value defining if p-values should be displayed in
-#' plots. Default is set to 'FALSE'.
+#' @param nameFT A character vector defining the name of full-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#' Default is c("Specific").
+#' @param nameHT A character vector defining the name of half-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#' Default is c("Specific-C", "Specific-N").
+#' @param sigProt A boolean value, if set to TRUE, only proteins with at least
+#' one significant peptides are plotted.
+#' Default is 'TRUE'.
+#' @param protVector A character vector providing names of proteins to
+#' be plotted. If set to 'NULL' \code{sigProt} has to be set to 'TRUE'.
+#' Default is 'NULL'.
+#' @param showPv A boolean value, if set to 'TRUE' p-values as defined in
+#' \code{pvalCol} should be displayed in plots.
+#' Default is 'FALSE'.
 #' @param export A boolean value defining if plots should directly be exported.
-#' If set to 'TRUE', plots will be written into a pdf file, displaying three
+#' If set to 'TRUE', plots will be written into a .pdf file, displaying three
 #' plots per sheet. Additionally, a list with the plots will still be returned
-#' in R. If set to 'TRUE', \code{file} has to be provided, Default is set to
-#' 'FALSE'.
+#' in R. If set to 'TRUE', \code{file} has to be provided.
+#' Default is 'FALSE'.
 #' @param file A character string providing export path and file name of pdf
 #' with plots, if \code{export} is set to 'TRUE'.
 #'
 #' @export
 
 makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
-                                     pvalCol="Padj", infoProtein="Protein",
-                                     infoStart="startPosition",
-                                     infoEnd="endPosition",
-                                     pvalCutoff=0.05,
+                                     pvalCol="Padj", nameProtQuant="Protein",
+                                     startPosition="startPosition",
+                                     endPosition="endPosition", pvalCutoff=0.05,
                                      deltaColorIsTryptic=FALSE,
-                                     infoTryptic="isTryptic",
+                                     isTryptic="isTryptic",
                                      nameFT=c("Specific"),
                                      nameHT=c("Specific-C", "Specific-N"),
-                                     sigProt=TRUE, protList=NULL, showPv=FALSE,
-                                     export=FALSE, file=NULL){
+                                     sigProt=TRUE, protVector=NULL,
+                                     showPv=FALSE, export=FALSE, file=NULL){
 
     ## checking input
     if(length(intersect(row.names(sumDf), row.names(annotPP))) == 0){
         stop("Row names of sumDf and annotPP do not match.")
     }
-    if(sigProt == FALSE &is.null(protList)){
+    if(sigProt == FALSE &is.null(protVector)){
         stop("No proteins chosen. Either set 'sigProt' to TRUE or provide a
-    character vector giving proteins you want plotted in form of 'protList'.")
+character vector giving proteins you want plotted in form of 'protVector'.")
     }
     if(export&is.null(file)){
         stop("'export' is set to TRUE, but path and file name are not defined in
-         'file'.")
+'file'.")
     }
 
     ## creating data.frame for plotting
-    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, infoProtein,
-                                  infoStart, infoEnd, pvalCutoff,
-                                  deltaColorIsTryptic, infoTryptic, nameFT,
+    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
+                                  startPosition, endPosition, pvalCutoff,
+                                  deltaColorIsTryptic, isTryptic, nameFT,
                                   nameHT)
 
     if(sigProt){
@@ -106,7 +129,7 @@ makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
         }))]
     }
     else{
-        plotData <- plotData[protList]
+        plotData <- plotData[protVector]
     }
 
     if(all(unlist(lapply(plotData, is.null)))){
@@ -127,79 +150,101 @@ makeWoodsPlotProteinList <- function(sumDf, annotPP, coefCol="Coefficient",
     return(plotList)
 }
 
-#' @title Creating wood plots over a single protein
+#' @title Creating wood plots over a single proteins
+#'
+#' @description
+#'
 #' @usage makeWoodsPlotSingleProtein(sumDf, annotPP, coefCol="Coefficient",
-#' pvalCol="Padj", infoProtein="Protein", infoStart="startPosition",
-#' infoEnd="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
-#' infoTryptic="isTryptic", nameFT=c("Specific"),
+#' pvalCol="Padj", nameProtQuant="Protein", startPosition="startPosition",
+#' endPosition="endPosition", pvalCutoff=0.05, deltaColorIsTryptic=FALSE,
+#' isTryptic="isTryptic", nameFT=c("Specific"),
 #' nameHT=c("Specific-C", "Specific-N"), xlim=NULL, ylim=NULL, protName=NULL,
 #' showPv=FALSE)
 #'
-#' @param sumDf A data.frame containing coefficients and p-values of
-#' peptides, with rows corresponding to the peptides. Can be the output of
-#' \code{summarizeModelResults}
-#' @param annotPP A data.frame with peptide and protein annotation. Rows are
-#' peptides and must match to the row.names of \code{sumDf}. Can be output of
-#' \code{getPepProtAnnot}.Must include all columns needed for plotting the data
-#' (Protein name, start and stop position if each peptide, if
-#' \code{deltaColorIsTryptic} is set to TRUE, information if each peptide is
-#' full or half tryptic).
+#' @param sumDf A data.frame containing coefficients and p-values of the
+#' condition of interest were rows corresponding to the quantity of interest
+#' (e.g. peptides). Can be the output of \code{summarizeModelResults}.
+#' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
+#' protein annotation. Rows are features and must contain the row names of
+#' \code{sumDf}. Can be output of \code{getPepProtAnnot}. Must include all
+#' columns needed for plotting the data:
+#' \itemize{
+#'   \item \code{nameProtQuant} protein IDs
+#'   \item \code{startPosition} AA positions were peptides (/modified peptides
+#'   /precursors) start in protein
+#'   \item \code{endPosition} AA positions were peptides (/modified peptides
+#'   /precursors) end in protein
+#'   \item \code{isTryptic} optional column providing information if peptide is
+#'   full-tryptic or half-tryptic, only needed if
+#'   \code{deltaColorIsTryptic = 'TRUE'}
+#' }
 #' @param coefCol A character vector or numeric value defining column of
-#' \code{sumDf} in which coefficients of the peptides are provided. Set to
-#' 'Coefficient' per default.
+#' \code{sumDf} were coefficients of the quantity of interest (e.g. peptides)
+#' are provided.
+#' Default is 'Coefficient'.
 #' @param pvalCol A character vector or numeric value defining column of
-#' \code{sumDf} in which p-values of the peptides are provided. Set to
-#' 'Padj' per default.
-#' @param infoProtein A character vector or numeric value defining column of
-#' \code{annotPP} in which the protein name of the peptides are provided. Set to
-#' 'Protein' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'.
-#' @param infoStart A character vector or numeric value defining column of
-#' \code{annotPP} in which the start position the peptides are provided. Set to
-#' 'startPosition' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'. If a
-#' peptide matches to multiple positions within the same protein, seperate by
-#' ','.
-#' @param infoEnd A character vector or numeric value defining column of
-#' \code{annotPP} in which the end position the peptides are provided. Set to
-#' 'startPosition' per default. If a peptide is mapped and should be plotted to
-#' multiple proteins, these should be seperated within the column by ';'. If a
-#' peptide matches to multiple positions within the same protein, seperate by
-#' ','.
+#' \code{sumDf} were (adjusted) p-values  of the quantity of interest
+#' (e.g. peptides) are provided.
+#' Default is 'Padj'.
+#' @param nameProtQuant A character string giving column of \code{annotPP} which
+#' protein names are provided. If a peptides matches to the same protein several
+#' times, the protein name should be provided each time, separated by ','. If a
+#' peptide maps to the multiple proteins, these different proteins can be
+#' provided by separating them with ';'.
+#' Default is 'Protein'.
+#' @param startPosition A character string or numeric giving the column name or
+#' column number in which start position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' Default is 'startPosition'.
+#' @param endPosition A character string or numeric giving the column name or
+#' column number in which end position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' Default is 'endPosition'.
 #' @param pvalCutoff A numeric value, peptides with p-values below this cut-off
-#' are considered to be significant. Default is set to '0.05'.
-#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full and
-#' half tryptic peptides will be plotted in different colors. Default is
-#' 'FALSE'.
-#' @param infoTryptic A character string or numeric giving the column name or
+#' are considered significant.
+#' Default is '0.05'.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}
+#' Default is FALSE'.
+#' @param isTryptic A character string or numeric giving the column name or
 #' column number of \code{annotPP} in which digest type can be found
 #' Default is 'isTryptic'.
-#' @param nameFT A character vector defining the name of fully tryptic peptides
-#' provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-#' c("Specific").
-#' @param nameHT A character vector defining the name of half tryptic peptides
-#' provided in the \code{isTryptic} column in \code{annotPP}. Default is set to
-#' c("Specific-C", "Specific-N").
+#' @param nameFT A character vector defining the name of full-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#' Default is c("Specific").
+#' @param nameHT A character vector defining the name of half-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#' Default is c("Specific-C", "Specific-N").
 #' @param xlim A numeric vector of the length two defining the limits of the
 #' x-axis of the plot. If set to NULL, limits of x-axis are chosen based on
-#' sequence positions of the peptides. Default is set to NULL.
-#'
+#' sequence positions of the peptides.
+#' Default is NULL.
 #' @param ylim A numeric vector of the length two defining the limits of the
 #' y-axis of the plot. If set to NULL, limits of x-axis are chosen based on
-#' the coefficients of the peptides. Default is set to NULL.
-#' @param protName A character vector giving name of protein to be plotted.
-#' @param showPv A boolean value defining if p-values should be displayed in
-#' plots. Default is set to 'FALSE'.
+#' the coefficients provided in \code{sumDf}.
+#'  Default is NULL.
+#' @param protName A character vector giving name of protein to be plotted. Has
+#' to be included in the column of \code{nameProtQuant} of \code{annotPP}.
+#' @param showPv A boolean value, if set to 'TRUE' p-values as defined in
+#' \code{pvalCol} should be displayed in plots.
+#' Default is 'FALSE'.
 #'
 #' @export
 
 makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
-                                       pvalCol="Padj", infoProtein="Protein",
-                                       infoStart="startPosition",
-                                       infoEnd="endPosition",
+                                       pvalCol="Padj", nameProtQuant="Protein",
+                                       startPosition="startPosition",
+                                       endPosition="endPosition",
                                        pvalCutoff=0.05,
                                        deltaColorIsTryptic=FALSE,
-                                       infoTryptic="isTryptic",
+                                       isTryptic="isTryptic",
                                        nameFT=c("Specific"),
                                        nameHT=c("Specific-C", "Specific-N"),
                                        xlim=NULL, ylim=NULL, protName=NULL,
@@ -213,7 +258,7 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
         stop("Please provide the name of the protein you want plotted in
          'protName'.")
     }
-    filterProt <- vapply(annotPP[, infoProtein], \(x){
+    filterProt <- vapply(annotPP[, nameProtQuant], \(x){
         x <- unlist(strsplit(x, ";"))
         protName %in% x
     }, logical(1))
@@ -223,15 +268,15 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
     }
 
     ## get only peptides from protein of interest from annotPP
-    annotPP <- annotPP[vapply(annotPP[, infoProtein], \(x){
+    annotPP <- annotPP[vapply(annotPP[, nameProtQuant], \(x){
         x <- unlist(strsplit(x, ";"))
         protName %in% x
     }, logical(1)) ,]
 
     ## creating data.frame for plotting
-    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, infoProtein,
-                                  infoStart, infoEnd, pvalCutoff,
-                                  deltaColorIsTryptic, infoTryptic, nameFT,
+    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
+                                  startPosition, endPosition, pvalCutoff,
+                                  deltaColorIsTryptic, isTryptic, nameFT,
                                   nameHT)
     plotData <- plotData[[protName]]
 
@@ -241,11 +286,68 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
     return(plotProt)
 }
 
-
-getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, infoProtein,
-                              infoStart, infoEnd, pvalCutoff,
+#' @title Function for creating data.frame to create wood plot(s)
+#'
+#' @usage getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
+#' startPosition, endPosition, pvalCutoff, deltaColorIsTryptic, isTryptic,
+#' nameFT, nameHT)
+#'
+#' @param sumDf A data.frame containing coefficients and p-values of the
+#' condition of interest were rows corresponding to the quantity of interest
+#' (e.g. peptides).
+#' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
+#' protein annotation. Rows are features and must contain the row names of
+#' \code{sumDf}. Must include all columns needed for plotting the data:
+#' \itemize{
+#'   \item \code{nameProtQuant} protein IDs
+#'   \item \code{startPosition} AA positions were peptides (/modified peptides
+#'   /precursors) start in protein
+#'   \item \code{endPosition} AA positions were peptides (/modified peptides
+#'   /precursors) end in protein
+#'   \item \code{isTryptic} optional column providing information if peptide is
+#'   full-tryptic or half-tryptic, only needed if
+#'   \code{deltaColorIsTryptic = 'TRUE'}
+#' }
+#' @param coefCol A character vector or numeric value defining column of
+#' \code{sumDf} were coefficients of the quantity of interest (e.g. peptides)
+#' are provided.
+#' @param pvalCol A character vector or numeric value defining column of
+#' \code{sumDf} were (adjusted) p-values  of the quantity of interest
+#' (e.g. peptides) are provided.
+#' @param nameProtQuant A character string giving column of \code{annotPP} which
+#' protein names are provided. If a peptides matches to the same protein several
+#' times, the protein name should be provided each time, separated by ','. If a
+#' peptide maps to the multiple proteins, these different proteins can be
+#' provided by separating them with ';'.
+#' @param startPosition A character string or numeric giving the column name or
+#' column number in which start position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' @param endPosition A character string or numeric giving the column name or
+#' column number in which end position from each peptide in its protein
+#' sequence are provided in \code{annotPP}. If a peptides matches to the sam
+#' protein several times, different start positions should be separated by ','.
+#' If a peptide maps to the multiple proteins, the start positions should be
+#' separated with ';'.
+#' @param pvalCutoff A numeric value, peptides with p-values below this cut-off
+#' are considered significant.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}.
+#' @param isTryptic A character string or numeric giving the column name or
+#' column number of \code{annotPP} in which digest type can be found
+#' @param nameFT A character vector defining the name of full-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#' @param nameHT A character vector defining the name of half-tryptic peptides
+#' provided in the \code{isTryptic} column in \code{annotPP}.
+#'
+#' @return Data.frame based on which woods plots are created
+getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
+                              startPosition, endPosition, pvalCutoff,
                               deltaColorIsTryptic,
-                              infoTryptic, nameFT, nameHT){
+                              isTryptic, nameFT, nameHT){
 
 
     if(length(intersect(row.names(sumDf), row.names(annotPP))) == 0){
@@ -260,26 +362,26 @@ getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, infoProtein,
     ## Create data frame for plotting the data
     plotData <- sumDf[, c(coefCol, pvalCol)]
     colnames(plotData) <- c("Coef", "Pval")
-    plotData$Protein <- annotPP[row.names(plotData), infoProtein]
-    plotData$Peptide <- row.names(plotData)
+    plotData$Protein <- annotPP[row.names(plotData), nameProtQuant]
+    plotData$quantID <- row.names(plotData)
 
     ## add information on IsTryptic
     if(deltaColorIsTryptic){
-        plotData$isTryptic <- annotPP[row.names(plotData), infoTryptic]
+        plotData$isTryptic <- annotPP[row.names(plotData), isTryptic]
     }
 
     ## add peptide positions
-    plotData$start <- annotPP[row.names(plotData), infoStart]
-    plotData$end <- annotPP[row.names(plotData), infoEnd]
+    plotData$start <- annotPP[row.names(plotData), startPosition]
+    plotData$end <- annotPP[row.names(plotData), endPosition]
 
     ## Split protein names for peptides in multiple proteins
     if(sum(grepl(";", plotData$Protein))>0){
-        plotData <- seperateProteins(plotData, deltaColorIsTryptic)
+        plotData <- separateProteins(plotData, deltaColorIsTryptic)
     }
 
     ## Split protein names for peptides present multiple times in one protein
     if(sum(grepl(",", plotData$start))>0){
-        plotData <- seperatePeptides(plotData, deltaColorIsTryptic)
+        plotData <- separatePeptides(plotData, deltaColorIsTryptic)
     }
 
     ## Rename FT and HT column
@@ -316,13 +418,27 @@ getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, infoProtein,
     return(protList)
 }
 
-## Function for adding peptides as often as they are presented in different
-## proteins or in different positions in the data frame
-seperateProteins <- function(plotData, deltaColorIsTryptic){
-    message("At least one peptide matches to more then one single protein based
-    on the protein information provided in 'annotPP'. Peptide(s) is/are being
-    matched to all positions and proteins matched in 'annotPP' and will
-    therefore be plotted multiple times.")
+#' @title Function for duplicating peptides if they occur in multiple proteins
+#'
+#' @description Duplicatig rows of \code{plotData} based on how often the
+#' respective quantID occurs in different proteins. Adjusting rest of
+#' \code{plotData} format accordingly.
+#'
+#' @usage separateProteins(plotData, deltaColorIsTryptic)
+#'
+#' @param plotData Data.frame for plotting as created within
+#' \code{getPlottingFormat}.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}.
+#'
+#' @return \code{plotData} data.frame
+separateProteins <- function(plotData, deltaColorIsTryptic){
+
+    message("At least one quantity of interest (e.g. peptide) matches to more
+then one single protein based on the protein information provided in 'annotPP'.
+Peptide(s) is/are being matched to all positions and proteins matched in
+'annotPP' and will therefore be plotted multiple times.")
 
     plotData <- do.call(rbind, lapply(seq(1, nrow(plotData)), \(i){
         x <- plotData[i,]
@@ -334,7 +450,7 @@ seperateProteins <- function(plotData, deltaColorIsTryptic){
             pepDf <- data.frame(Coef = rep(x$Coef, dPeps),
                                 Pval = rep(x$Pval, dPeps),
                                 Protein = unlist(strsplit(x$Protein, ";")),
-                                Peptide = rep(x$Peptide, dPeps))
+                                quantID = rep(x$quantID, dPeps))
 
             if(dPeps == length(unlist(strsplit(x$start, ";")))){
                 pepDf$start <- unlist(strsplit(x$start, ";"))
@@ -359,12 +475,27 @@ seperateProteins <- function(plotData, deltaColorIsTryptic){
             return(pepDf)
         }
     }))
+
     return(plotData)
 }
 
-## Function for adding peptides as often as they are presented in different
-## proteins or in different positions in the data frame
-seperatePeptides <- function(plotData, deltaColorIsTryptic){
+#' @title Function for duplicating peptides if they occur multiple times in the
+#' same protein
+#'
+#' @description Duplicatig rows of \code{plotData} based on how many start
+#' positions the respective quantID as in the same protein. Adjusting rest of
+#' \code{plotData} format accordingly.
+#'
+#' @usage separatePeptides(plotData, deltaColorIsTryptic)
+#'
+#' @param plotData Data.frame for plotting as created within
+#' \code{getPlottingFormat}.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}.
+#'
+#' @return \code{plotData} data.frame
+separatePeptides <- function(plotData, deltaColorIsTryptic){
     message("At least one peptide matches to more then one position in the
   respective protein provided in 'annotPP'. Peptide(s) is/are being matched to
   all positions and proteins matched in 'annotPP' and will therefore be plotted
@@ -380,7 +511,7 @@ seperatePeptides <- function(plotData, deltaColorIsTryptic){
             pepDf <- data.frame(Coef = rep(x$Coef, dPeps),
                                 Pval = rep(x$Pval, dPeps),
                                 Protein = rep(x$Protein, dPeps),
-                                Peptide = rep(x$Peptide, dPeps),
+                                quantID = rep(x$quantID, dPeps),
                                 start = unlist(strsplit(x$start, ",")),
                                 end = unlist(strsplit(x$end, ",")))
         }
@@ -393,8 +524,23 @@ seperatePeptides <- function(plotData, deltaColorIsTryptic){
     return(plotData)
 }
 
-## Function for splitting up IsTryptic information in case peptides map to
-## multiple positions
+
+#' @title Function for duplicating peptides if they occur multiple times in the
+#' same protein
+#'
+#' @description Function splits up \code{isTryptic} information in case
+#' quantities mapping to multiple positions
+#'
+#' @usage addTrypticInfo(pepDf, x, sign)
+#'
+#' @param pepDf Data.frame for plotting protein in woods plot as created within
+#' \code{separateProteins} or \code{separatePeptides}
+#' @param x Data.frame for plotting protein in woods plot not yet altered by
+#' \code{separateProteins} or \code{separatePeptides}
+#' @param sign A character variable to separate the 'isTryptic' column in
+#' \code{x}
+#'
+#' @return \code{plotData} data.frame
 addTrypticInfo <- function(pepDf, x, sign){
     pepDf$isTryptic <- if(grepl(sign, x$isTryptic)){
         unlist(strsplit(x$isTryptic, sign))
@@ -405,7 +551,32 @@ addTrypticInfo <- function(pepDf, x, sign){
     return(pepDf)
 }
 
-## Function for plotting wood plot pf single protein
+
+#' Function for plotting woods plot for single protein
+#'
+#' @usage plottingProtein(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
+#' showPv, export)
+#'
+#' @param plotData A data.frame to create the woods plot for one protein from,
+#' created using the function \code{getPlottingFormat}.
+#' @param deltaColorIsTryptic A boolean variable, if set to 'TRUE', full-tryptic
+#' and half-tryptic peptides will be plotted in different colors, this requires
+#' \code{isTryptic} column in \code{annotPP}.
+#' @param xlim A numeric vector of the length two defining the limits of the
+#' x-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+#' sequence positions of the peptides.
+#' @param ylim A numeric vector of the length two defining the limits of the
+#' y-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+#' the coefficients provided in \code{sumDf}.
+#' @param showPv A boolean value, if set to 'TRUE' p-values as defined in
+#' \code{pvalCol} should be displayed in plots.
+#' @param export A boolean value defining if plots should directly be exported.
+#' If set to 'TRUE', plots will be written into a .pdf file, displaying three
+#' plots per sheet. Additionally, a list with the plots will still be returned
+#' in R.
+#'
+#' @return Woods plot for peptides over a protein
+
 plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
                             showPv, export){
 
@@ -469,6 +640,17 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
     return(plotProt)
 }
 
+#' @title Function for exporting woods plots and writing them into a .pdf file
+#'
+#' @usage exportWoodsPlots(plotList, lList, file)
+#'
+#' @param plotList A list of woods plots created with the function
+#' \code{plottingProtein} were the variable \code{export} was set to 'TRUE.
+#' @param lList A numeric variable providing the length of \code{plotList}.
+#' @param file A character string providing export path and file name of pdf
+#' with plots.
+#'
+#' @return 'NULL'
 exportWoodsPlots <- function(plotList, lList, file){
     message("Writing plots into pdf file.")
 
@@ -497,5 +679,3 @@ exportWoodsPlots <- function(plotList, lList, file){
 
     return(NULL)
 }
-
-

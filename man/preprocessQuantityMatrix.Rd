@@ -41,9 +41,9 @@ if you want to filter \code{quantityMatrix}}
 
 \item{annotPP}{A data.frame with peptides (/modified peptides/precursors) and
 protein annotation. Rows are features and must match to the row.names of
-quantityList/quantityMatrix. Must include all columns required for filtering
-data according to settings provided to this function. Per default, the output
-from \code{getPepProtAnnot} can be given here.}
+\code{quantityList} or \code{quantityMatrix}. Must include all columns
+required for filtering data according to settings provided to this function.
+The output from \code{getPepProtAnnot} can be given here.}
 
 \item{annotS}{A data.frame object containing sample annotation. Rows are
 samples and must match to columns of \code{quantityList}.

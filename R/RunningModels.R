@@ -1,5 +1,4 @@
-##matrixStats
-globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
+globalVariables(names=c("XPep", "XProt", "Y"))
 
 #' @title Fitting model to quantify  accessibility changes in LiP quantities
 #'
@@ -24,7 +23,9 @@ globalVariables(names=c("Condition", "XPep", "XProt",  "Y"))
 #'   }
 #' @param annotS A data.frame containing sample annotation. Must contain all
 #' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}.
+#' match to columns of the matrices in \code{quantityList}. Must include
+#' columns of any further variables used in \code{formulaRUV} and
+#' \code{formulaContrast}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
@@ -155,7 +156,9 @@ XPep. Please adjust 'formulaRUV'.")
 #'   }
 #' @param annotS A data.frame containing sample annotation. Must contain all
 #' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}.
+#' match to columns of the matrices in \code{quantityList}. Must include
+#' columns of any further variables used in \code{formulaRUV} and
+#' \code{formulaContrast}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
@@ -231,12 +234,14 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' version is run, names should refer to "LiPPep" and "LiPProt").
 #' @param annotS A data.frame containing sample annotation. Must contain all
 #' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}.
+#' match to columns of the matrices in \code{quantityList}. Must include
+#' columns of any further variables used in \code{formulaRUV} and
+#' \code{formulaContrast}.
 #' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
-#' protein annotation. Rows are features and must match to the row.names of the
-#' quantityList. Must include a column named \code{nameProtQuant} providing
-#' protein (group) names. Per default, the output from \code{getPepProtAnnot}
-#' can be given here.
+#' protein annotation. Rows are features and the row names of the
+#' \code{quantityList} matrices must be found here. \code{annotPP} must include
+#' a column named \code{nameProtQuant} providing protein (group) names.
+#' The output from \code{getPepProtAnnot} can be given here.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
@@ -348,7 +353,9 @@ matrix in list names either 'TrPProt' or 'LiPProt'.")
 #'   }
 #' @param annotS A data.frame containing sample annotation. Must contain all
 #' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}.
+#' match to columns of the matrices in \code{quantityList}. Must include
+#' columns of any further variables used in \code{formulaRUV} and
+#' \code{formulaContrast}.
 #' @param formulaRUV A character string or formula defining the RUV models
 #' performing bounded variable least square regression. Use 'Y' for defining the
 #' quantity matrix with values to predict. If additional quantity matrices
@@ -554,12 +561,28 @@ plausibility.")
 }
 
 
-## @title Creating model matrices to run RUV or contrast models
-##
-## @description Creates one model matrices per peptide/protein which are given
-## into the RUV or contrast model function afterwards
-##
-## @return list with matrices for linear modelling
+#' @title Creating model matrices to run RUV or contrast models
+#'
+#' @description Creates one model matrices per peptide/protein which are
+#' used in the RUV or contrast model function afterwards
+#'
+#' @usage createModelMatrix(quantityList, formula, annotS, samples)
+#'
+#' @param quantityList A list of preprocessed matrices, containing quantities of
+#' interest(e.g. peptide, modified peptide, precursor) and protein abundances.
+#' Rows represent features and columns samples and should match between the
+#' different matrices contained in the list.
+#' Output from \code{preprocessQuantityMatrix} have to use the variable naming
+#' 'Y', 'XPep' and 'XProt'.
+#' @param formula A formula providing structure of model matrices created in
+#' this function
+#' @param annotS A data.frame containing sample annotation. Must contain all
+#' columns included in the RUV and contrast models. Rows are samples and must
+#' match to columns of the matrices in \code{quantityList}. Must include
+#' columns of any further variables used in \code{formulaRUV}.
+#' @param samples A character vector providing sample names for the model.
+#'
+#' @return A list with model matrices for running the RUV or contrast models.
 createModelMatrix <- function(quantityList, formula, annotS, samples){
 
     list2env(quantityList, envir=environment()) ## write matrices to environment
@@ -590,12 +613,33 @@ createModelMatrix <- function(quantityList, formula, annotS, samples){
     return(modelMat)
 }
 
-## @title Running RUV models
-##
-## @description Function to run RUV on a list of model matrices, one element in
-## the list should represent one peptide or protein.
-##
-## @return Returns complete RUV model
+
+#' @title Running RUV models for every quantity provided
+#'
+#' @description Function to run RUV on a list of model matrices, one element in
+#' the list should represent one peptide or protein.
+#'
+#' @usage runRUV(formula, modelMat, lowRUV, upRUV, addRUVbounds)
+#'
+#' @param formula A formula used to create \code{modelMat} for RUV models.
+#' @param modelMat A list of model matrices to perform RUV using bounded
+#' variable least square regression.
+#' @param lowRUV A numeric vector defining lower boundaries of the coefficients
+#' of the RUV models. Elements refer to definition of \code{formulaRUV}.
+#' Default is 'c(-Inf, 0, 0)'.
+#' @param upRUV A numeric vector defining upper boundaries of the coefficients
+#' of the RUV models. Elements refer to definition of \code{formulaRUV}.
+#' Default is 'c(Inf, Inf, Inf)'.
+#' @param addRUVbounds A boolean value, if set to 'TRUE' as many bounds as
+#' additionally needed based on \code{formulaRUV} in each RUV model are added to
+#' \code{lowRUV} and \code{upRUV}. Added boundaries are automatically set to
+#' \code{lowRUV = -Inf} and \code{upRUV = Inf}. Important to set to 'TRUE', if
+#' you have categories with multiple levels in the RUV model and did not adjust
+#' the RUV boundaries based in the number of levels. This might be the case if
+#' you have more than two batches you aim to account for in the RUV model.
+#' Default is 'FALSE'.
+#'
+#' @return Returns a list of all RUV models
 runRUV <- function(formula, modelMat, lowRUV, upRUV, addRUVbounds){
 
     ## change -Inf to high negative number instead, since bvls() does not take
@@ -633,14 +677,20 @@ runRUV <- function(formula, modelMat, lowRUV, upRUV, addRUVbounds){
     return(modelRUV)
 }
 
-## @title Extracting information from RUV models
-##
-## @description Function to extract the coefficients and residuals for each
-## peptide/protein from the RUV models
-##
-## @return List with the first element being a data.frame with residuals from
-## the RUV models and the second element being a data.frame with coefficients
-## from the RUV models
+#' @title Extracting information from RUV models
+#'
+#' @description Function to extract the coefficients and residuals from each
+#' RUV model
+#'
+#' @usage extractRUV(mRUV, samples)
+#'
+#' @param mRUV A list of RUV models estimated using bounded variable least
+#' square regression
+#' @param samples A character vector providing sample names for the model.
+#'
+#' @return A list were the first element is a data.frame with residuals from
+#; the RUV models and the second element is a data.frame with coefficients
+#' from the RUV models.
 extractRUV <- function(mRUV, samples){
 
     ## extract residuals and coefficients from RUV models
@@ -664,12 +714,18 @@ extractRUV <- function(mRUV, samples){
     return(list(modelResid=modelResid, modelCoeff=modelCoeff))
 }
 
-## @title Running contrast models
-##
-## @description Function to run contrast models on a list of model matrices,
-## one element in the list should represent one peptide or protein.
-##
-## @return Returns complete contrast model
+
+#' @title Running contrast models for every quantity provided
+#'
+#' @description Function to run contrast on a list of model matrices, one element in
+#' the list should represent one peptide or protein.
+#'
+#' @usage runContrast(modelMat)
+#'
+#' @param modelMat A list of model matrices to perform contrast modeling using
+#' ordinary least square regression.
+#'
+#' @return Returns a list of all contrast models
 runContrast <- function(modelMat){
     modelRes <- lapply(modelMat, function(data){
         Y <- data$Y
@@ -679,16 +735,31 @@ runContrast <- function(modelMat){
     return(modelRes)
 }
 
-## @title Extracting information from Contrast models
-##
-## @description Function to extract the coefficients and p-values for each
-## peptide/protein from the Contrast models. If RUV was run before the contrast
-## model, the p-values are estimated taken the degrees of freedom already used
-## by the RUV into account.
-##
-## @return List with the first element being a data.frame with coefficients from
-## the contrast models and the second element being a data.frame with p- values from
-## the contrast models
+
+#' @title Extracting information from contrast models
+#'
+#' @description Function to extract the coefficients and residuals from each
+#' RUV model. If RUV was run before the contrast model, the p-values estimation
+#' taks into account the degrees of freedom already used by the RUV step.
+#'
+#' @usage extractContrast(mContrast, formulaContrast, dfRUV, coeffPval="Pr(>|t|)",
+#' coeffTval="t value")
+#'
+#' @param mContrast A list of contrast models estimated using ordinary least square
+#' @param formulaContrast A formula used to create \code{modelMat} for
+#' contrast models.
+#' @param dfRUV A numberic value providing the number of degrees of freedom used
+#' in the RUV models.
+#' @param coeffPval A character variable giving the column name were p-values
+#' are provided if \code{summary.lm(mRUV)}.
+#' Default is "Pr(>|t|)".
+#' @param coeffTval A character variable giving the column name were t-values
+#' are provided if \code{summary.lm(mRUV)}.
+#' Default is "t value".
+#'
+#' @return A list were the first element is a data.frame with residuals from
+#; the contrast models and the second element is a data.frame with coefficients
+#' from the contrast models.
 extractContrast <- function(mContrast, formulaContrast, dfRUV,
                             coeffPval="Pr(>|t|)", coeffTval="t value"){
 
@@ -729,15 +800,20 @@ previously used in the RUV models.")
     return(list(modelCoeff=modelCoef, modelPv=modelPv))
 }
 
-## @title Estimate p-values taking degrees of freedom into account
-##
-## @description Function estimates p-values for all coefficients in the contrast
-## model
-## model, but takes the degrees of freedom used when running the RUV into
-## account.
-##
-## @return Returns a data.frame with p-values
-calcualtePvalAfterRUV <- function(LM,coeffTval, dfRUV){
+
+#' @title Estimate p-values from contrast model taking degrees of freedom used
+#' in RUV step into account
+#'
+#' @usage calcualtePvalAfterRUV(LM, coeffTval, dfRUV)
+#'
+#' @param LM A single contrast model estimated with ordinarly linear regression
+#' @param coeffTval A character variable giving the column name were t-values
+#' are provided if \code{summary.lm(mRUV)}.
+#' @param dfRUV A numberic value providing the number of degrees of freedom used
+#' in the RUV models.
+#'
+#' @return Returns a data.frame with p-values.
+calcualtePvalAfterRUV <- function(LM, coeffTval, dfRUV){
     modelPv <- do.call(plyr::rbind.fill.matrix, lapply(LM, function(x){
         x <- stats::summary.lm(x)
         df <- x$df[2] - dfRUV

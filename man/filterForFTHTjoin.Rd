@@ -27,9 +27,10 @@ these need to be adjusted manually.)
   }}
 
 \item{annotPP}{A data.frame with peptides (/modified peptides/precursors) and
-protein annotation. Rows are features and must match to the row names of
-\code{quantityList}. Must contain columns providing the \code{nameIDQuant}
-and matching protein names.}
+protein annotation. Rows are features and should be the same identifiers as
+in the row names of the \code{quantityList}. Data.frame must contain columns
+providing the \code{nameIDQuant} and matching protein names in
+\code{nameProtQuant}.}
 
 \item{nameIDQuant}{A character string giving column of \code{annotPP} which
 matches to the row.names of \code{quantityList} or \code{quantityMatrix}.

@@ -16,13 +16,15 @@ version is run, names should refer to "LiPPep" and "LiPProt").}
 
 \item{annotS}{A data.frame containing sample annotation. Must contain all
 columns included in the RUV and contrast models. Rows are samples and must
-match to columns of the matrices in \code{quantityList}.}
+match to columns of the matrices in \code{quantityList}. Must include
+columns of any further variables used in \code{formulaRUV} and
+\code{formulaContrast}.}
 
 \item{annotPP}{A data.frame with peptides (/modified peptides/precursors) and
-protein annotation. Rows are features and must match to the row.names of the
-quantityList. Must include a column named \code{nameProtQuant} providing
-protein (group) names. Per default, the output from \code{getPepProtAnnot}
-can be given here.}
+protein annotation. Rows are features and the row names of the
+\code{quantityList} matrices must be found here. \code{annotPP} must include
+a column named \code{nameProtQuant} providing protein (group) names.
+The output from \code{getPepProtAnnot} can be given here.}
 
 \item{infoCondition}{A character string providing column name of
 \code{annotS} were condition to fit in the contrast model is provided.

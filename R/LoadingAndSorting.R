@@ -1,5 +1,3 @@
-globalVariables(names = "quantName")
-
 #' @title Creating quantity matrices from a MS report.
 #'
 #' @description Extract the quantity of interest, e.g. peptide intensities, and
