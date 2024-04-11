@@ -1,14 +1,14 @@
 # LiPAnalyzeR
 
-Package for inferring peptide-specific changes in the PK accessibility from LiP-MS data. Provides funtions from reading in the data from Spectronaut reports over filtering to running different regression models to remove unwanted variation and carve out signal due to structural differences between conditions.
+LiPAnalyzeR is a R package for inferring structural changes from *Li*mited-*P*roteolysis *M*ass *S*pectrometry (LiP-MS) data by identitying peptide-specific changes in the PK accessibility of LiP peptides. We provide functions to import MS reports, e.g. from Spectronaut searches, preprocess and filter the data, remove of unwated variation (RUV) through constrianed regression from the LiP signal, inferring effect sizes for structural variation between conditions with corresponding p-values and plotting relevant results. 
 
-LiPAnalyzer was developed unter R 4.2.2 under Ubuntu 22.04.2 LTS.
+LiPAnalyzer was developed in R 4.2.2 under Ubuntu 22.04.2 LTS.
 
 ## Installation
 
-LiPAnalyzer requires R version 4.2.0. The following R commands allow you to install LiPAnalyzeR from github:
+LiPAnalyzeR requires R version >=4.2.0. Please use the following R commands to install LiPAnalyzeR from github:
 ```
-if (!require("devtools")) install.packages("devtools")
+if(!require("devtools")) install.packages("devtools")
 library(devtools)
 if(!require("LiPAnalyzeR")) install_github("LuiseNagel/LiPAnalyzeR")
 library(LiPAnalyzeR)
@@ -16,49 +16,105 @@ library(LiPAnalyzeR)
 
 ## Quickstart
 
-### Getting Spectronaut data into R
+### Import MS reports to R
 
-To get started please export your LiP-MS data from Spectronaut to _.csv_ using the povided [Spectronaut schema](https://github.com/LuiseNagel/LiPAnalyzeR/blob/main/SpectroSchema_LipAnalyzerOut.rs).
+The LiP-MS data have to be provided as MS report(s) (long-table format) for example from Spectronaut or XXX. 
 
-Subsequently, read in your Spectronaut files.
+The MS report has to include the following columns:
+- sample names or identifiers
+- quantity to analyze (e.g. peptide intensities)
+- names/identifiers of the quantity to be analyzes (e.g. AS sequence of peptides)
+- peptide names (i.e., AS sequence, may be identical to the names/identifiers of the quantity to be analyzed) 
+- protein quantities
+- protein names (matching the protein quantities)
+- information the peptide is full- or half-tryptic
+- start position of the peptide in the protein sequence
 
-```
-LiPSpectro <- read.csv("/LiPSpectronautReprot.csv")
-TrpSpectro <- read.csv("/LiPSpectronautReprot.csv")
-```
+Optional columns to include are:
+- all protein names that match the peptide sequence
+- number of missed cleavages
+- information if a peptide is proteotypic or not
 
-### Creating peptide, protein and annotation matrices in R
-
-First, the necessary peptide and protein matrices have to be create. This can be archieved with calling the function ```extractDataFromSpectro```. Per default, peptide(```PEP.Quantity```) and protein(```PG.Quantity```) quantities are extracted from the Spectronaut report. Alternatively, you can also choose to extract modified peptides or precursors instead of peptides by changing ```analysisLvl``` in the function.
-
-```
-QuantityList <- extractDataFromSpectro(spectroLiP = LiPSpectro,
-                                       spectroTrp = TrpSpectro)
-```
-
-Subsequently, please ensure that the column names (sample annotations) are identical. This depends on if the LiP and Trp names where assigned the same names in Spectronaut itself. If this is not the case, please adjust them, making sure that they match.
-
-Additionally, create annotation files of the peptides and proteins as well as the samples. 
-
-```
-annotPepProt <- getPepProtAnnot(spectroOut = TrpSpectro, spectroOut2 = LiPSpectro)
-annotSample <- getSampleAnnot(spectroOut = TrpSpectro
-```
-
-Creating the sample annotation only works, if all necessary information is already added in Spectronaut. If this is not the case, please create the sample annotation file by hand, making sure that the rows are samples, with the row names matching the column names of all ```QuantityList``` matrices.
+If you are using Spectronaut, it is recommended to use the provided [Spectronaut schema](https://github.com/LuiseNagel/LiPAnalyzeR/blob/main/SpectroSchema_LipAnalyzerOut.rs) for exporting your data from Spectronaut. You can then use the Spectronaut-specific functions provided in LiPAnalyzeR for sorting the data.
 
 
-### Filtering and log-transforming peptide and protein quantities
-
-Before models are fitted to the data should be log-transformed as well as filtered. Per default all peptide all log2 transformed quantities below 10 are set to NA, this setting can be accessed wiht ```thresholdMinLogQuant```. All peptides with NAs will be removed by the filtering. This is a very strict filter and can easily be adjusted in the function by defining the number of NAs allowed per condition ```maxNAperCondition```. If too many NAs are allowed the results will not be very reliable or models cannot be fitted due to a lack of degrees of freedom available. How strict the NA filter is set can therefore be very dataset dependent. 
+Subsequently, read in your MS reports.
 
 ```
-QuantityList <- preprocessQuantityMatrix(SpectroList = QuantityList,
+reportLiP <- read.csv("/reportLiP.csv")
+reportTrP <- read.csv("/reprotTrP.csv")
+```
+
+If LiP & TrP are in a combined report, please seperate them into two data matrices after importing the data in R.
+
+
+### Create quantity matrices
+
+In a first step the MS quantity matrices have to be created using ```extractMSData``` (or ```extractSpectroData```). 
+
+```
+quantityList <- extractMSData(reportLiP = reportLiP, 
+			      reportTrP = reportTrP,
+			      sampleName =  _column in MS reports providing sample names_,
+			      quantName =  _column in MS reports providing quantity identifiers_,
+			      quantValue =  _column in MS reports providing quantities of interest_,
+			      protValue =  _column in MS reports providing protein quantities_)
+```
+
+
+If you exported your MS data using the provided Spectronaut schema you can use the following functin instead:
+
+```
+quantityList <- extractSpectroData(reportLiP = reportLiP, 
+			           reportTrP = reportTrP,
+                                   analysisLvl = "Peptide")
+```
+
+```analysisLvl = "Peptide"``` will pick 'PEP.Quantity' as the column to extract the ```quantValue```, for analyzing peptide intensities. Alternatively ```analysisLvl``` can also be set to ```modifiedPeptide``` or ```Precursor```. Protein quantities will be extracted from the 'PG.Quantity' column of the Spectronaut report.
+
+
+
+Subsequently, please ensure that the column names (sample annotations) of all list elements in the ```quantityList``` data are identical. This will be the case if the sample names provided in the LiP and TrP MS reports were already identical. If this is not the case, please adjust them to match. It is important, that every LiP sample has a (biological) matching TrP sample provided in the data. Samples without matching data will be removed in the following analysis steps.
+
+
+### Create peptide & protein as well as sample annotation files
+
+Create annotation files for the quantity of interest, providng information on matching peptides, proteins, start position of the peptides in the protein(s) and tryptic status of each peptide:
+
+```
+annotPepProt <- getPepProtAnnot(reportOut = reportLiP, 
+				reportOut2 = reportTrP,
+                            	quantName,
+                            	pepName, #may be identical to quantName
+                            	protName,
+                            	isTryptic,
+                            	startPosition)
+
+```
+
+Create an annotation file including sample information:
+
+```
+annotSample <- getSampleAnnot(spectroOut = reportTrP,
+			      sampleName = "R.FileName",
+			      sampleCondition = "R.Condition")
+```
+
+Creating the sample annotation with this function only works, if all necessary information is already added in the MS report. As this is commonly not the case, please create the sample annotation file by hand, making sure that the rows are samples, with the row names matching the column names of all ```quantityList``` matrices.
+
+
+### Preprocessing and filtering LiP & TrP quantity matrices
+
+Data should be log-transformed and filtered. Per default all peptides are log2 transformed and quantities below 10 are set to NA, this setting can be accessed wiht ```thresholdMinLogQuant```. Additionally, it is important to limit the number of NAs measured per peptide. Per default LiPAnalyzeR removes all peptides with at least one NA. Depending on the experimental set-up, this may not be appropriate for you data, you can alter these settings and thresholds in the function call. The function per default also filters for full-trytpic peptides, expecting these to be annotated as ```Specific``` in the ```annotPP``` data. If you want to run different modes than the ```default``` mode, such as ```HTonly```, ```FTHTjoin``` or ```LiPonly``` please check the specific descriptions in the function call. 
+```
+quantityList <- preprocessQuantityMatrix(SpectroList = quantityList,
                                          annotPP = annotPepProt,
                                          annotS = annotSample)
 ```
+All quantity matrices in the preprocessed ```quantityList``` contain the same features and samples. Therefore, if sample naming was not adjusted to be identical between the TrP and LiP quantities all samples will be removed. 
 
-### Running regression models
+
+### Running RUV & contrast models
 
 LiPAnalyzeR allows to remove unwanted variation from the LiP peptide quantities, carving out the structural signal and provides the additional option to subsequently inferring differences in the structural proteome in between conditions. Additionally, the coefficients of the structural effect as well as the p-values can be extraced from the results, including the option for p-value correction.
 
@@ -68,9 +124,3 @@ modelStrucVar <- analyzeLiPPepData(spectroList = QuantityList,
 resStrucVar <- summarizeModelResults(resModel = modelStrucVar, 
                                      evalCovariable = "Condition_OLS")
 ```
-
-
-
-
-
-
