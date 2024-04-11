@@ -470,7 +470,6 @@ matching TrPProt data to all FT and HT LiP peptides.")
 #' full-tryptic TrP quantities of interest (e.g. peptide, modified peptide,
 #' precursor) and corresponding TrP protein quantities. The row names in all
 #' matrices correspond to the half-tryptic LiP quantity ID.
-
 filterForHTonly <- function(quantityList, annotPP, annotS, filterNA, maxNAs,
                             infoCondition, nameIDQuant, nameProtQuant,
                             infoTryptic, nameFT){
@@ -492,6 +491,11 @@ few moments.")
                                     infoCondition, maxNAs)
         TrPPep <- filterNAsFromList(quantityList$TrPPep, filterNA, annotS,
                                     infoCondition, maxNAs)
+    }
+
+    else{
+        LiPPep <- quantityList$LiPPep
+        TrPPep <- quantityList$TrPPep
     }
 
     ## annotation files for LiP and TrP data seperated
@@ -525,13 +529,15 @@ few moments.")
         if(is.null(myTrPOpt)){
             return(NA) # return NA if no matching TrP peptide
         }
-        else{myTrPOpt <- myTrPOpt[!duplicated(myTrPOpt[, nameIDQuant]),]
-        myTrPCor <- sapply(myTrPOpt[, nameIDQuant], \(y){
-            stats::cor(as.numeric(LiPPep[x,]), as.numeric(TrPPep[y,]),
-                       use = "pairwise.complete.obs")
-        })
+        else{
+            myTrPOpt <- myTrPOpt[!duplicated(myTrPOpt[, nameIDQuant]),]
+            myTrPCor <- stats::cor(t(LiPPep[x,]), t(TrPPep[myTrPOpt[, nameIDQuant],]),
+                                   use = "pairwise.complete.obs")
+            myHighCor <- colnames(myTrPCor)[which.max(c(myTrPCor))][1]
+            return(myHighCor)
+        }
         myHighCor <- names(myTrPCor)[unname(myTrPCor==max(myTrPCor))][1]
-        return(myHighCor)}
+        return(myHighCor)
     })
 
     ## removing peptides with no matching TrP peptide
@@ -607,7 +613,6 @@ completed.")
 #' Default is 'Condition'.
 #'
 #' @return \code{quantityList} filtered based on number of NAs per quantity ID
-#'
 filterNAsFromList <- function(quantityList, filterNA, annotS, infoCondition,
                               maxNAs){
 

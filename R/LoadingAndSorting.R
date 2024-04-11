@@ -582,7 +582,7 @@ order as the reference level.")
         else{
             if(is.null(baseLevel)){
                 message("No 'baseLevel' provided, choosing the first occuring
-condition in the MS report file as the reference level.")
+condition in the MS report as the reference level for the condition.")
                 baseLevel <- as.character(Condition[1])
             }
             NbaseLevel <- which(levels(Condition) == baseLevel)
