@@ -8,13 +8,14 @@ extractSpectroData(spectroLiP, spectroTrP=NULL, analysisLvl="Peptide",
 sampleName="R.FileName", LiPonly=FALSE)
 }
 \arguments{
-\item{spectroLiP}{Spectronaut report of LiP data. Spectronaut report has to
-be exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut'.}
+\item{spectroLiP}{Spectronaut report of LiP data as data.frame or matrix.
+Spectronaut report has to be exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'.}
 
-\item{spectroTrP}{Spectronaut report of TrP data. Spectronaut report has to
-be exported using the Spectronaut schema 'SpectroSchema_LiPAnalyzerOut'.
-If LiP and TrP data were processed together in Spectronaut, please separate
-them into two input files.}
+\item{spectroTrP}{Spectronaut report of TrP data as data.frame or matrix.
+Spectronaut report has to be exported using the Spectronaut schema
+'SpectroSchema_LiPAnalyzerOut'. If LiP and TrP data were processed together
+in Spectronaut, please separate them into two input files.}
 
 \item{analysisLvl}{A character string defining the level on which the
 peptide/protein quantities should be exported. Is set to 'Peptide' by

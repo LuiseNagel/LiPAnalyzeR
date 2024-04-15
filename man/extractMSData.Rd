@@ -8,16 +8,18 @@ extractMSData(reportLiP, reportTrP=NULL, sampleName, quantName,
 quantValue, protValue, LiPonly=FALSE)
 }
 \arguments{
-\item{reportLiP}{MS report of LiP data. Has to include columns with
-the name of the samples (\code{sampleName}), name of quantities which will be
-the row names of the quantity matrices (e.g. peptide names,
-\code{quantName}), quantities matching the \code{quantName} (e.g. peptide
-quantities, \code{quantValue}) and the protein quantities (\code{protValue}).}
+\item{reportLiP}{MS report of LiP data as data.frame or matrix. Has to
+include columns with the name of the samples (\code{sampleName}), name of
+quantities which will be the row names of the quantity matrices (e.g. peptide
+names, \code{quantName}), quantities matching the \code{quantName} (e.g.
+peptide quantities, \code{quantValue}) and the protein quantities
+(\code{protValue}).}
 
-\item{reportTrP}{MS report of the TrP data. Has to include the same
-columns as the \code{reportLiP}. Does not have to be provided if the LiPonly
-mode is run. For this set (\code{LiPonly} = TRUE). If LiP and TrP data were
-processed together, please separate them into two input files.}
+\item{reportTrP}{MS report of the TrP data as data.frame or matrix. Has to
+include the same columns as the \code{reportLiP}. Does not have to be
+provided if the 'LiPonly' mode is run. For this set (\code{LiPonly} = TRUE).
+If LiP and TrP data were processed together, please separate them into two
+input files.}
 
 \item{sampleName}{A character string or numeric giving the column name or
 column number in which sample names are provided in the MS report.}

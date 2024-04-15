@@ -186,18 +186,32 @@ preprocessQuantityMatrix <- function(quantityList=NULL, quantityMatrix=NULL,
 using 'quantityList' or 'quantityMatrix'")
         }
         if(tolower(mode) != 'default'){
-            stop("'quantityList' can only be filtered if mode is set to default.
-Either set mode='default' or provide quantityList as input.")
+            stop("'quantityMatrix' can only be filtered if mode is set to
+default. Either set mode='default' or provide quantityList as input.")
         }
         else{
-            quantityList <- as.list(quantityMatrix)
+            if(!(is.matrix(quantityMatrix)|is.data.frame(quantityMatrix))){
+                stop("'quantityMatrix' has to be a data.frame or a matrix.")
+
+            }
+            else{
+                quantityList <- as.list(quantityMatrix)
+            }
         }
     }
 
-    else if(!is.null(quantityMatrix)){
-        message("'quantityList' and 'quantitMatrix' are provided. Only using
+    else{
+        if(!all(unlist(lapply(quantityList, \(x) is.matrix(x)|
+                             is.data.frame(x))))){
+            stop("Elements of 'quantityList' have to be data.frames or
+matrices.")
+        }
+        if(!is.null(quantityMatrix)){
+            message("'quantityList' and 'quantitMatrix' are provided. Only using
 'quantityList'.")
+        }
     }
+
 
     ## check if annotPP is required and provided
     if((tolower(mode) %in% c("htonly", "fthtjoin")|filterTryptic!="none"|

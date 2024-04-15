@@ -95,9 +95,8 @@ include 'XPep' AND 'XProt. Please adjust 'formulaRUV'." ))
         }
         if(!(grepl("XPep", as.character(formulaRUV))&
              grepl("XProt", as.character(formulaRUV)))){
-            stop(paste0("Running mode ='", mode, "'. Names of
-                 'quantityList' do
-            not meet expectation to be 'LiPPep', 'TrpPep 'TrPProt'."))
+            stop(paste0("Running mode ='", mode, "'. Names of 'quantityList' do
+not meet expectation to be 'LiPPep', 'TrpPep 'TrPProt'."))
         }
     }
 
@@ -586,6 +585,8 @@ plausibility.")
 createModelMatrix <- function(quantityList, formula, annotS, samples){
 
     list2env(quantityList, envir=environment()) ## write matrices to environment
+
+    ## create model matrices for each quantity
     modelMat <- lapply(as.list(seq(1, nrow(Y))), function(i){
         Y <- as.numeric(Y[i, ])
         formula <- stats::as.formula(formula)

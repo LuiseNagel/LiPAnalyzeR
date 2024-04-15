@@ -6,15 +6,17 @@
 #' @usage extractMSData(reportLiP, reportTrP=NULL, sampleName, quantName,
 #' quantValue, protValue, LiPonly=FALSE)
 #'
-#' @param reportLiP MS report of LiP data. Has to include columns with
-#' the name of the samples (\code{sampleName}), name of quantities which will be
-#' the row names of the quantity matrices (e.g. peptide names,
-#' \code{quantName}), quantities matching the \code{quantName} (e.g. peptide
-#' quantities, \code{quantValue}) and the protein quantities (\code{protValue}).
-#' @param reportTrP MS report of the TrP data. Has to include the same
-#' columns as the \code{reportLiP}. Does not have to be provided if the LiPonly
-#' mode is run. For this set (\code{LiPonly} = TRUE). If LiP and TrP data were
-#' processed together, please separate them into two input files.
+#' @param reportLiP MS report of LiP data as data.frame or matrix. Has to
+#' include columns with the name of the samples (\code{sampleName}), name of
+#' quantities which will be the row names of the quantity matrices (e.g. peptide
+#' names, \code{quantName}), quantities matching the \code{quantName} (e.g.
+#' peptide quantities, \code{quantValue}) and the protein quantities
+#' (\code{protValue}).
+#' @param reportTrP MS report of the TrP data as data.frame or matrix. Has to
+#' include the same columns as the \code{reportLiP}. Does not have to be
+#' provided if the 'LiPonly' mode is run. For this set (\code{LiPonly} = TRUE).
+#' If LiP and TrP data were processed together, please separate them into two
+#' input files.
 #' @param sampleName A character string or numeric giving the column name or
 #' column number in which sample names are provided in the MS report.
 #' @param quantName A character string or numeric giving the column name or
@@ -66,6 +68,16 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
         stop("Please provide 'reportTrP' data or set LiPonly to 'TRUE'.")
     }
 
+    ## checking input format
+    if(!(is.matrix(reportLiP)|is.data.frame(reportLiP))){
+        stop("'reportLiP' has to be a data.frame or a matrix.")
+
+    }
+    if(!is.null(reportTrP)&!(is.matrix(reportTrP)|is.data.frame(reportTrP))){
+        stop("'reportTrP' has to be a data.frame or a matrix.")
+
+    }
+
     ## extracting feature matrix for LiP quantities of interest
     message("Creating LiP matrix with '", quantName, "'.")
     LiPPep <- convert2Matrix(reportLiP, quantValue, quantName, sampleName)
@@ -99,12 +111,13 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
 #' @usage extractSpectroData(spectroLiP, spectroTrP=NULL, analysisLvl="Peptide",
 #' sampleName="R.FileName", LiPonly=FALSE)
 #'
-#' @param spectroLiP Spectronaut report of LiP data. Spectronaut report has to
-#' be exported using the Spectronaut schema SpectroSchema_LiPAnalyzerOut'.
-#' @param spectroTrP Spectronaut report of TrP data. Spectronaut report has to
-#' be exported using the Spectronaut schema 'SpectroSchema_LiPAnalyzerOut'.
-#' If LiP and TrP data were processed together in Spectronaut, please separate
-#' them into two input files.
+#' @param spectroLiP Spectronaut report of LiP data as data.frame or matrix.
+#' Spectronaut report has to be exported using the Spectronaut schema
+#' 'SpectroSchema_LiPAnalyzerOut'.
+#' @param spectroTrP Spectronaut report of TrP data as data.frame or matrix.
+#' Spectronaut report has to be exported using the Spectronaut schema
+#' 'SpectroSchema_LiPAnalyzerOut'. If LiP and TrP data were processed together
+#' in Spectronaut, please separate them into two input files.
 #' @param analysisLvl A character string defining the level on which the
 #' peptide/protein quantities should be exported. Is set to 'Peptide' by
 #' default, can alternatively be set to 'ModifiedPeptide' or 'Precursor'.This
@@ -184,8 +197,8 @@ extractSpectroData <- function(spectroLiP, spectroTrP=NULL,
 #'
 #' @usage convert2Matrix(reportOut, quantValue, rows, cols)
 #'
-#' @param reportOut MS report exported including sample and quantity
-#' information, e.g. Spectronaut report.
+#' @param reportOut MS report as data.frame or matrix including sample and
+#' quantity information, e.g. Spectronaut report.
 #' @param quantValue A character string or numeric variable referring to the
 #' column name or column number from the MS report in which quantities or
 #' interest are provided. If there are multiple quantities referring to the same
@@ -233,8 +246,8 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #' protName, isTryptic, startPosition, allProtName=NULL, NMissedCleavages=NULL,
 #' isProteotypic=NULL)
 #'
-#' @param reportOut MS report exported including sample and quantity
-#' information, e.g. Spectronaut report.
+#' @param reportOut MS report as data.frame or matrix including sample and
+#' quantity information, e.g. Spectronaut report.
 #' The MS report has to include the following columns:
 #' \itemize{
 #'   \item names/identifiers of the quantity to be analyzes (e.g. peptide,
@@ -251,12 +264,12 @@ convert2Matrix <- function(reportOut, quantValue, rows, cols){
 #'   \item number of missed cleavages
 #'   \item proteotypic state
 #'   }
-#' @param reportOut2 Optional additional MS report including sample and
-#' quantity information, e.g. Spectronaut report. \code{reportOut2} should
-#' contain the same columns as \code{reportOut}. If \code{reportOut2} is added,
-#' the peptide & protein annotation file will also include quantities uniquely
-#' measured in \code{reportOut}. Default is 'NULL', assuming only one MS report
-#' being presented.
+#' @param reportOut2 Optional additional MS report as data.frame or matrix
+#' including sample and quantity information, e.g. Spectronaut report.
+#' \code{reportOut2} should contain the same columns as \code{reportOut}. If
+#' \code{reportOut2} is added, the peptide & protein annotation file will also
+#' include quantities uniquely measured in \code{reportOut}. Default is 'NULL',
+#' assuming only one MS report being presented.
 #' @param quantName A character string or numeric giving the column name or
 #' column number in which the row names of value used in the quantity matrices
 #' are provided. This  These variable should be identical to the
@@ -304,6 +317,16 @@ getPepProtAnnot <- function(reportOut,
                             allProtName=NULL,
                             NMissedCleavages=NULL,
                             isProteotypic=NULL){
+
+    ## checking input format
+    if(!(is.matrix(reportOut)|is.data.frame(reportOut))){
+        stop("'reportOut' has to be a data.frame or a matrix.")
+
+    }
+    if(!is.null(reportOut2)&!(is.matrix(reportOut2)|is.data.frame(reportOut2))){
+        stop("'reportOut2' has to be a data.frame or a matrix.")
+
+    }
 
     ## join Spectronaut reports if two are provided
     if(!is.null(reportOut2)){
@@ -355,13 +378,13 @@ getPepProtAnnot <- function(reportOut,
 #' @usage getPepProtAnnotSpectro(spectroOut, spectroOut2=NULL,
 #' analysisLvl="Peptide")
 #'
-#' @param spectroOut MS report exported including sample and quantity information,
-#' e.g. Spectronaut report.
-#' @param spectroOut2 An optional additional MS report including sample and
-#' quantity information, e.g. Spectronaut report. If included theh peptide &
-#' protein annotation file will also include quantities uniquely measured in
-#' \code{reportOut}. Default is 'NULL', assuming only one MS report being
-#' presented.
+#' @param spectroOut Spectronaut report as data.frame or matrix including sample
+#' and quantity information.
+#' @param spectroOut2 An optional additional Spectronaut reportas data.frame or
+#' matrix including sample and quantity information, e.g. Spectronaut report. If
+#' included the peptide & protein annotation file will also include quantities
+#' uniquely measured in \code{reportOut}. Default is 'NULL', assuming only one
+#' MS report being provided.
 #' @param analysisLvl A character string defining the level on which the
 #' peptide/protein quantities should be exported. Peptide' by default, can
 #' alternatively be set to 'ModifiedPeptide' or Precursor'. Should be identical
@@ -375,6 +398,17 @@ getPepProtAnnot <- function(reportOut,
 getPepProtAnnotSpectro <- function(spectroOut,
                                    spectroOut2=NULL,
                                    analysisLvl="Peptide"){
+
+    ## checking input format
+    if(!(is.matrix(spectroOut)|is.data.frame(spectroOut))){
+        stop("'spectroOut' has to be a data.frame or a matrix.")
+
+    }
+    if(!is.null(spectroOut2)&!(is.matrix(spectroOut2)|
+                               is.data.frame(spectroOut2))){
+        stop("'spectroOut2' has to be a data.frame or a matrix.")
+
+    }
 
     ## checking if value of AnalysisLvl is set correctly
     if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
@@ -463,7 +497,7 @@ getEndPositionOfPep <- function(annotPP, startPosition="startPosition",
 #' to different PG groups in different MS reports. Only relevant if two MS
 #' reports are used to create the annotation data.frame.
 #'
-#' @param annotPP data.frame with peptide and protein annotation were rows are
+#' @param annotPP A data.frame with peptide and protein annotation were rows are
 #' features. The data.frame must include a column with the identifiers for the
 #' quantity of interest, which should be unique after this function is run, e.g.
 #' peptide, modified peptide or precursor ID. It must additionally include a
@@ -512,9 +546,11 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' sampleCondition="R.Condition", typeCondition="categorical",
 #' contrastCoding="dummyCoding", baseLevel=NULL)
 #'
-#' @param reportOut Spectronaut report of MS data. Spectronaut report should
-#' have been exported using the Spectronaut schema
-#' 'SpectroSchema_LiPAnalyzerOut'.
+#' @param reportOut MS report as data.frame or matrix including sample names and
+#' condition of interest. Per default, a Spectronaut report exported using the
+#' Spectronaut schema 'SpectroSchema_LiPAnalyzerOut' is expected. If outer MS
+#' report formats are provided, please alter the input variables
+#' \code{sampleName} and \code{sampleCondition} accordingly.
 #' @param sampleName A character string or numeric giving the column name or
 #' column number providing the sample names in the MS report.
 #' Default is 'R.FileName'.
@@ -522,9 +558,9 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' or column number providing sample conditions in the MS report.
 #' Default is 'R.Condition'.
 #' @param typeCondition A character string providing information if condition is
-#' a 'categorical' or 'continuous' variable. If condition is 'continuous', the column
-#' containing the condition in the MS report has to be numeric variable. If
-#' the condition is a 'categorical', contrast coding for later models is defined
+#' a 'categorical' or 'continuous' variable. If condition is 'continuous', the
+#' column containing the condition in the MS report has to be numeric. If the
+#' condition is a 'categorical', contrast coding for later models is defined
 #' within this function.
 #' Default is 'categorical'.
 #' @param contrastCoding A character string providing information which type of
@@ -550,13 +586,18 @@ getSampleAnnot <- function(reportOut,
                            contrastCoding="dummyCoding",
                            baseLevel=NULL){
 
+    ## check reportOut input
+    if(!(is.matrix(reportOut)|is.data.frame(reportOut))){
+        stop("'reportOut' has to be a data.frame or a matrix.")
+
+    }
+
     ## check if typeCondition input is as expected
     if(!tolower(typeCondition) %in% c("categorical", "continuous")){
         stop("Please set 'typeCondition' to 'categorical' or 'continuous.")
     }
 
     ## check if contrastCoding input is as expected
-
     if(!is.null(contrastCoding)){
         if(!tolower(contrastCoding) %in% c("dummycoding", "sumcoding",
                                            "weccoding")){
