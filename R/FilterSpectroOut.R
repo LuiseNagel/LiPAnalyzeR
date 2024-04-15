@@ -190,7 +190,7 @@ using 'quantityList' or 'quantityMatrix'")
 default. Either set mode='default' or provide quantityList as input.")
         }
         else{
-            if(!(is.matrix(quantityMatrix)|is.data.frame(quantityMatrix))){
+            if(!!inherits(quantityMatrix, c("matrix", "data.frame"))){
                 stop("'quantityMatrix' has to be a data.frame or a matrix.")
 
             }
@@ -201,8 +201,8 @@ default. Either set mode='default' or provide quantityList as input.")
     }
 
     else{
-        if(!all(unlist(lapply(quantityList, \(x) is.matrix(x)|
-                             is.data.frame(x))))){
+        if(!all(unlist(lapply(quantityList, \(x)
+                              inherits(x, c("matrix","data.frame")))))){
             stop("Elements of 'quantityList' have to be data.frames or
 matrices.")
         }

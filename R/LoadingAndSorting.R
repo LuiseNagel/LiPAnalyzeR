@@ -65,16 +65,17 @@ extractMSData <- function(reportLiP, reportTrP=NULL, sampleName, quantName,
 
     ## checking if 'reportTrP' is provided in case that LiPonly is FALSE
     if(!LiPonly & is.null(reportTrP)){
-        stop("Please provide 'reportTrP' data or set LiPonly to 'TRUE'.")
+        stop("Please provide 'reportTrP'/'spectroTrP' data or set LiPonly to
+'TRUE'.")
     }
 
     ## checking input format
-    if(!(is.matrix(reportLiP)|is.data.frame(reportLiP))){
-        stop("'reportLiP' has to be a data.frame or a matrix.")
+    if(!inherits(reportLiP, c("matrix", "data.frame"))){
+        stop("'reportLiP'/'spectroLiP' has to be a data.frame or a matrix.")
 
     }
-    if(!is.null(reportTrP)&!(is.matrix(reportTrP)|is.data.frame(reportTrP))){
-        stop("'reportTrP' has to be a data.frame or a matrix.")
+    if(!is.null(reportTrP)&!inherits(reportTrP, c("matrix", "data.frame"))){
+        stop("'reportTrP'/'spectroTrP' has to be a data.frame or a matrix.")
 
     }
 
@@ -319,12 +320,12 @@ getPepProtAnnot <- function(reportOut,
                             isProteotypic=NULL){
 
     ## checking input format
-    if(!(is.matrix(reportOut)|is.data.frame(reportOut))){
-        stop("'reportOut' has to be a data.frame or a matrix.")
+    if(!inherits(reportOut, c("matrix", "data.frame"))){
+        stop("'reportOut'/'spectroOut' has to be a data.frame or a matrix.")
 
     }
-    if(!is.null(reportOut2)&!(is.matrix(reportOut2)|is.data.frame(reportOut2))){
-        stop("'reportOut2' has to be a data.frame or a matrix.")
+    if(!inherits(reportOut2, c("matrix", "data.frame"))){
+        stop("'reportOut2'/'spectroOut2' has to be a data.frame or a matrix.")
 
     }
 
@@ -398,17 +399,6 @@ getPepProtAnnot <- function(reportOut,
 getPepProtAnnotSpectro <- function(spectroOut,
                                    spectroOut2=NULL,
                                    analysisLvl="Peptide"){
-
-    ## checking input format
-    if(!(is.matrix(spectroOut)|is.data.frame(spectroOut))){
-        stop("'spectroOut' has to be a data.frame or a matrix.")
-
-    }
-    if(!is.null(spectroOut2)&!(is.matrix(spectroOut2)|
-                               is.data.frame(spectroOut2))){
-        stop("'spectroOut2' has to be a data.frame or a matrix.")
-
-    }
 
     ## checking if value of AnalysisLvl is set correctly
     if(!tolower(analysisLvl) %in% c("peptide", "modifiedpeptide", "precursor")){
@@ -587,7 +577,7 @@ getSampleAnnot <- function(reportOut,
                            baseLevel=NULL){
 
     ## check reportOut input
-    if(!(is.matrix(reportOut)|is.data.frame(reportOut))){
+    if(!inherits(reportOut, c("matrix", "data.frame"))){
         stop("'reportOut' has to be a data.frame or a matrix.")
 
     }
