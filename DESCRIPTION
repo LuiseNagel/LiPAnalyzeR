@@ -1,0 +1,27 @@
+Package: LiPAnalyzeR
+Type: Package
+Title: Infer protein accessibility changes from LiP-MS data
+Version: 0.1.0
+Author: Luise Nagel
+Maintainer: Luise Nagel <lnagel6@uni-koeln.de>
+Description: LiPAnalyzeR is a R package for inferring structural changes from Limited-Proteolysis Mass Spectrometry (LiP-MS) data by identitying peptide-specific changes in the PK accessibility of LiP peptides. We provide functions to import MS reports, e.g. from Spectronaut searches, preprocess and filter the data, remove of unwated variation (RUV) through constrianed regression from the LiP signal, inferring effect sizes for structural variation between conditions with corresponding p-values and plotting relevant results.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: false
+Depends:
+    R (>= 4.2.0)
+Imports:
+    bvls,
+    FactoMineR,
+    formula.tools,
+    ggplot2,
+    grDevices,
+    patchwork,
+    plyr,
+    reshape2,
+    stats,
+    wec
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
