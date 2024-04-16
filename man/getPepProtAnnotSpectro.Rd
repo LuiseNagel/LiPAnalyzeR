@@ -8,14 +8,14 @@ getPepProtAnnotSpectro(spectroOut, spectroOut2=NULL,
 analysisLvl="Peptide")
 }
 \arguments{
-\item{spectroOut}{MS report exported including sample and quantity information,
-e.g. Spectronaut report.}
+\item{spectroOut}{Spectronaut report as data.frame or matrix including sample
+and quantity information.}
 
-\item{spectroOut2}{An optional additional MS report including sample and
-quantity information, e.g. Spectronaut report. If included theh peptide &
-protein annotation file will also include quantities uniquely measured in
-\code{reportOut}. Default is 'NULL', assuming only one MS report being
-presented.}
+\item{spectroOut2}{An optional additional Spectronaut reportas data.frame or
+matrix including sample and quantity information, e.g. Spectronaut report. If
+included the peptide & protein annotation file will also include quantities
+uniquely measured in \code{reportOut}. Default is 'NULL', assuming only one
+MS report being provided.}
 
 \item{analysisLvl}{A character string defining the level on which the
 peptide/protein quantities should be exported. Peptide' by default, can

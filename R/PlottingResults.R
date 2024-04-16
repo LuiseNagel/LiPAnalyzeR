@@ -1,4 +1,188 @@
-globalVariables(names=c("end", "start", "aes", "Coef", "Color"))
+#globalVariables(names=c("end", "start", "aes", "Coef", "Color"))
+
+#' @title Creating volcano plot
+#'
+#' @description Creating volcano plot with model coefficients & corresponding
+#' p-values
+#'
+#' @usage makeVolcanoPlot(sumDf, coefCol="Coefficient", pvalCol="Padj",
+#' pvalCutoff=0.05,xlim=NULL, ylim=NULL)
+#'
+#' @param sumDf A data.frame containing coefficients and p-values of the
+#' condition of interest were rows corresponding to the quantity of interest
+#' (e.g. peptides). Can be the output of \code{summarizeModelResults}.
+#' @param coefCol A character vector or numeric value defining column of
+#' \code{sumDf} were coefficients of the quantity of interest (e.g. peptides)
+#' are provided.
+#' Default is 'Coefficient'.
+#' @param pvalCol A character vector or numeric value defining column of
+#' \code{sumDf} were (adjusted) p-values  of the quantity of interest
+#' (e.g. peptides) are provided.
+#' Default is 'Padj'.
+#' @param pvalCutoff A numeric value, peptides with p-values below this cut-off
+#' are considered significant.
+#' Default is '0.05'.
+#' @param xlim A numeric vector of the length two defining the limits of the
+#' x-axis of the plot. If set to NULL, limits of x-axis are chosen based on
+#' coefficients provided in \code{sumDf}.
+#' @param ylim A numeric vector of the length two defining the limits of the
+#' y-axis of the plot. If set to NULL, the lower limit starts at 1 and the upper
+#' limit is defined to the smallest provided p-value in \code{pvalCol}.
+#'
+#' @return Returns a volcano plot (ggplot) of coefficients and matching p-values
+#'
+#' @export
+#'
+makeVolcanoPlot <- function(sumDf, coefCol="Coefficient", pvalCol="Padj",
+                            pvalCutoff=0.05, xlim=NULL, ylim=NULL){
+
+    ## creating data.frame for plotting
+    plotData <- data.frame(Coef = sumDf[, coefCol],
+                        log10Pv = -log10(sumDf[,pvalCol]),
+                        sig = sumDf[,pvalCol]< pvalCutoff)
+    plotData <- plotData[order(plotData$sig), ]
+
+    if(is.null(xlim)){
+        xlim <- c(min(stats::na.omit(plotData[, "Coef"])),
+                  max(stats::na.omit(plotData[, "Coef"])))
+    }
+    if(is.null(ylim)){
+        ylim <- c(0, max(stats::na.omit(plotData[, "log10Pv"])))
+    }
+
+    ## creating volcano plot
+    volcanoPlot <- ggplot2::ggplot(mapping = ggplot2::aes(
+        x = plotData[, "Coef"],
+        y = plotData[, "log10Pv"],
+        color = plotData[, "sig"],
+        alpha = plotData[, "sig"])) +
+        ggplot2::geom_point(size = 2) +
+        ggplot2::xlim(xlim) +
+        ggplot2::ylim(ylim) +
+        ggplot2::xlab("Coefficient") +
+        ggplot2::ylab("log10(p-value)") +
+        ggplot2::scale_color_manual(name = paste0("Pval < ", pvalCutoff),
+                                    values = c("#000000", "#c11509")) +
+        ggplot2::scale_alpha_manual(name = paste0("Pval < ", pvalCutoff),
+                                    values = c(0.3, 1)) +
+        ggplot2::theme_bw(base_size = 15)
+
+    return(volcanoPlot)
+}
+
+
+#' @title Creating PCA plot
+#'
+#' @description Estimating and plotting PCA from LiP data, TrP data or RUV
+#' residuals.
+#'
+#' @usage makePCA(dataMat, annotS, infoCondition="Condition",
+#' typeCondition="categorical", runProt=FALSE, annotPP=NULL,
+#' nameProtQuant="Protein", Xaxis="PC1", Yaxis="PC2", nPCs=5)
+#'
+#' @param dataMat A matrix or data.frame providing data for estimating the PCA.
+#' Rows are features and columns are samples. Can be a LiP or TrP peptide or
+#' protein matrix (e.g. one element of the \code{preprocessQuantityMatrix}
+#' output) or a matrix of residuals from the RUV model estimated with
+#' \code{runModel}\\code{analyzeLiPPepData}\\code{analyzeTrPPepData}\
+#' \code{analyzeProtData}.
+#' @param annotS A data.frame containing sample annotation. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}. Must include
+#' column matching to \code{formulaContrast}.
+#' @param infoCondition A character string providing column name of
+#' \code{annotS} were condition of interest is provided. PCA will be colored
+#' according to condition.
+#' Default is 'Condition'.
+#' @param typeCondition A character string providing information if
+#' \code{inofCondition} is a 'categorical' or 'continuous' variable.
+#' Default is 'categorical'.
+#' @param runProt A boolean variable, if set to 'TRUE', function will remove
+#' duplicated rows in \code{dataMat} and match row names of \code{dataMat} to
+#' \code{nameProtQuant} in \code{annotPP}.
+#' Default is 'FALSE'.
+#' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
+#' protein annotation. Rows are features and row.names of \code{dataMat} must be
+#' found here. \code{annotPP} must include a column named \code{nameProtQuant}
+#' providing protein (group) names. The output from \code{getPepProtAnnot} can
+#' be given here.
+#' @param nameProtQuant A character string giving column of \code{annotPP} were
+#' protein names are provided.
+#' Default is 'Protein'.
+#' @param Xaxis Numeric variable giving which PC should be visualized on the
+#' X-axis. Cannot be be higher than the number of PCs (\code{nPCs}) being
+#' estimated.
+#' Default is '1'.
+#' @param Yaxis  Numeric variable giving which PC should be visualized on the
+#' Y-axis. Cannot be be higher than the number of PCs (\code{nPCs}) being
+#' estimated.
+#' Default is '2'.
+#' @param nPCs Numierc variable defining number of PCs to be estimated in PCA.
+#' Default is '5'.
+#'
+#' @return PCA plot colored by condition
+#'
+#' @export
+
+makePCA <- function(dataMat, annotS, infoCondition="Condition",
+                    typeCondition="categorical", runProt=FALSE, annotPP=NULL,
+                    nameProtQuant="Protein", Xaxis="PC1", Yaxis="PC2", nPCs=5){
+
+    ## Testing input
+    if(!inherits(dataMat, c("matrix", "data.frame"))){
+        stop("'dataMat' has to be a data.frame or a matrix.")
+    }
+    if(!infoCondition %in% colnames(annotS)){
+        stop("'infoCondition' has to be present in colnames of 'annotS'.")
+    }
+
+    ## matching peptides to proteins if necessary
+    if(runProt){
+        if(is.null(annotPP)){
+            stop("'runProt' is set to 'TRUE', please add 'annotPP' to match the
+row names of the 'dataMat' to proteins and remove duplicates. If you the rows
+of 'dataMat' are already proteins, please set 'runProt' to 'FALSE'.")
+        }
+        else{
+            Peps2Prots <- split(row.names(dataMat), annotPP[row.names(dataMat),
+                                                            nameProtQuant])
+            Peps2Prots <- unlist(lapply(Peps2Prots, \(x) (x[1])))
+            dataMat <- dataMat[Peps2Prots,]
+            row.names(dataMat) <- names(Peps2Prots)
+        }
+    }
+
+    ## Adding color
+    if(tolower(typeCondition) == "categorical"){
+        myColTheme <- ggplot2::scale_color_viridis_d(name = infoCondition,
+                                                     begin = 0.9, end = 0)
+    }
+    else if(tolower(typeCondition) == "continuous"){
+        myColTheme <- ggplot2::scale_color_viridis_c(name = infoCondition,
+                                                     begin = 0.9, end = 0)
+    }
+    else{
+        stop("'typeCondition' has to be set to 'categorical' or 'continuous'.")
+    }
+
+    ## Estimating PCA & preparing plotting data
+    PCAdata <- FactoMineR::PCA(t(dataMat), ncp = nPCs, graph = FALSE)
+
+    plotData <- PCAdata[["ind"]][["coord"]]
+    colnames(plotData) <- paste0("PC", seq(1:ncol(plotData)))
+    myCol <- annotS[row.names(plotData), infoCondition]
+
+    # plot PCA
+    plot <- ggplot2::ggplot(mapping = ggplot2::aes(x = plotData[, Xaxis],
+                                                   y = plotData[, Yaxis],
+                                                   color = myCol)) +
+        ggplot2::geom_point(size = 3) +
+        ggplot2::xlab(Xaxis) +
+        ggplot2::ylab(Yaxis) +
+        myColTheme +
+        ggplot2::theme_bw(base_size = 15)
+
+    return(plot)
+}
 
 
 #' @title Creating wood plots for multiple proteins
@@ -609,17 +793,20 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
 
     ## adding xlim and ylim if set to NULL
     if(is.null(xlim)){
-        xlim <- c(min(stats::na.omit(plotData$start)),
-                  max(stats::na.omit(plotData$end)))
+        xlim <- c(min(stats::na.omit(plotData[ ,"start"])),
+                  max(stats::na.omit(plotData[, "end"])))
     }
     if(is.null(ylim)){
-        ylim <- c(min(stats::na.omit(plotData$Coef)),
-                  max(stats::na.omit(plotData$Coef)))
+        ylim <- c(min(stats::na.omit(plotData[, "Coef"])),
+                  max(stats::na.omit(plotData[, "Coef"])))
     }
 
-    plotProt <- ggplot2::ggplot(plotData, ggplot2::aes(x = start, xend = end,
-                                                       y = Coef, yend = Coef,
-                                                       col = Color)) +
+    plotProt <- ggplot2::ggplot(mapping = ggplot2::aes(
+        x = plotData[, "start"],
+        xend = plotData[, "end"],
+        y = plotData[, "Coef"],
+        yend = plotData[, "Coef"],
+        col = plotData[, "Color"])) +
         ggplot2::geom_segment(size = sz) +
         ggplot2::geom_hline(yintercept = 0, linewidth = 1, col = "black") +
         myColor +
@@ -632,8 +819,11 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
 
     if(showPv){
         plotProt <- plotProt +
-            ggplot2::geom_label(data = plotData, aes(x = start, y = Coef,
-                                                     label = round(plotData[, "Pval"], 3)),
+            ggplot2::geom_label(mapping = ggplot2::aes(x = plotData[, "start"],
+                                                       y =  plotData[, "Coef"],
+                                                       label = round(plotData
+                                                                     [, "Pval"],
+                                                                     3)),
                                 show.legend = F)
     }
 

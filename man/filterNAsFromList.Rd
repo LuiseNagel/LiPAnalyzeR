@@ -49,11 +49,9 @@ conditions/groups.}
 
 \item{infoCondition}{A character string or numeric giving the column name
 or column number of \code{annotS} in which condition is provided. Required,
-if \code{filterNA = 'byCondition'}.
-Default is 'Condition'.}
+if \code{filterNA = 'byCondition'}.}
 
-\item{maxNAs}{A numeric value, defining maximal number of NAs allowed.
-Default is '0'.}
+\item{maxNAs}{A numeric value, defining maximal number of NAs allowed.}
 }
 \value{
 \code{quantityList} filtered based on number of NAs per quantity ID

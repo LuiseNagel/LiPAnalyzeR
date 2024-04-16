@@ -33,15 +33,13 @@ providing the \code{nameIDQuant} and matching protein names in
 \code{nameProtQuant}.}
 
 \item{nameIDQuant}{A character string giving column of \code{annotPP} which
-matches to the row.names of \code{quantityList} or \code{quantityMatrix}.
-Default is 'quantID'.}
+matches to the row.names of \code{quantityList} or \code{quantityMatrix}.}
 
 \item{nameProtQuant}{A character string giving column of \code{annotPP} which
 protein names are provided. If a peptides matches to the same protein several
 times, the protein name should be provided each time, separated by ','. If a
 peptide maps to the multiple proteins, these different proteins can be
-provided by separating them with ';'.
-Default is 'Protein'.}
+provided by separating them with ';'.}
 }
 \value{
 Returns a list of matrices containing full-tryptic and half-tryptic

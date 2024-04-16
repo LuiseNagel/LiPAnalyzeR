@@ -11,15 +11,16 @@ LazyData: false
 Depends:
     R (>= 4.2.0)
 Imports:
-    stats,
-    reshape2,
-    wec,
     bvls,
+    FactoMineR,
     formula.tools,
-    plyr,
-    grDevices,
     ggplot2,
-    patchwork
+    grDevices,
+    patchwork,
+    plyr,
+    reshape2,
+    stats,
+    wec
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0)

@@ -9,9 +9,11 @@ sampleCondition="R.Condition", typeCondition="categorical",
 contrastCoding="dummyCoding", baseLevel=NULL)
 }
 \arguments{
-\item{reportOut}{Spectronaut report of MS data. Spectronaut report should
-have been exported using the Spectronaut schema
-'SpectroSchema_LiPAnalyzerOut'.}
+\item{reportOut}{MS report as data.frame or matrix including sample names and
+condition of interest. Per default, a Spectronaut report exported using the
+Spectronaut schema 'SpectroSchema_LiPAnalyzerOut' is expected. If outer MS
+report formats are provided, please alter the input variables
+\code{sampleName} and \code{sampleCondition} accordingly.}
 
 \item{sampleName}{A character string or numeric giving the column name or
 column number providing the sample names in the MS report.
@@ -21,11 +23,11 @@ Default is 'R.FileName'.}
 or column number providing sample conditions in the MS report.
 Default is 'R.Condition'.}
 
-\item{typeCondition}{A character string providing information if condition is
-a 'categorical' or 'continuous' variable. If condition is 'continuous', the column
-containing the condition in the MS report has to be numeric variable. If
-the condition is a 'categorical', contrast coding for later models is defined
-within this function.
+\item{typeCondition}{A character string providing information if
+\code{sampleCondition} is  'categorical' or 'continuous'. If condition is
+'continuous', the column containing the condition in the MS report has to be
+numeric. If the condition is a 'categorical', contrast coding for later
+models is defined within this function.
 Default is 'categorical'.}
 
 \item{contrastCoding}{A character string providing information which type of

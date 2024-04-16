@@ -22,11 +22,10 @@ The matrices of \code{quantityList} may have the following names
   \item c('LiPPep', 'LiPProt') for \code{mode = "LiPonly"}
   }}
 
-\item{annotS}{A data.frame containing sample annotation. Must contain all
-columns included in the RUV and contrast models. Rows are samples and must
-match to columns of the matrices in \code{quantityList}. Must include
+\item{annotS}{A data.frame containing sample annotation. Rows are samples and
+must match to columns of the matrices in \code{quantityList}. Must include
 columns of any further variables used in \code{formulaRUV} and
-\code{formulaContrast}.}
+\code{formulaContrast}, including \code{infoCondition}.}
 
 \item{infoCondition}{A character string providing column name of
 \code{annotS} were condition to fit in the contrast model is provided.

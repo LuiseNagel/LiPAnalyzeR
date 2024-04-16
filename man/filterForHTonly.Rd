@@ -63,34 +63,28 @@ Can be set to c('all', 'byCondition' or 'none').
   running RUV and/or contrast models subsequently.
   }}
 
-\item{maxNAs}{A numeric value, defining maximal number of NAs allowed.
-Default is '0'.}
+\item{maxNAs}{A numeric value, defining maximal number of NAs allowed.}
 
 \item{infoCondition}{A character string or numeric giving the column name
 or column number of \code{annotS} in which condition is provided. Required,
-if \code{filterNA = 'byCondition'}.
-Default is 'Condition'.}
+if \code{filterNA = 'byCondition'}.}
 
 \item{nameIDQuant}{A character string giving column of \code{annotPP} which
-matches to the row.names of \code{quantityList} or \code{quantityMatrix}.
-Default is 'quantID'.}
+matches to the row.names of \code{quantityList} or \code{quantityMatrix}.}
 
 \item{nameProtQuant}{A character string giving column of \code{annotPP} which
 protein names are provided. If a peptides matches to the same protein several
 times, the protein name should be provided each time, separated by ','. If a
 peptide maps to the multiple proteins, these different proteins can be
-provided by separating them with ';'.
-Default is 'Protein'.}
+provided by separating them with ';'.}
 
 \item{infoTryptic}{A character string or numeric giving the column name or
-column number of \code{annotPP} in which digest type is provided.
-Default is 'isTryptic'.}
+column number of \code{annotPP} in which digest type is provided.}
 
 \item{nameFT}{A character string defining how full-tryptic peptides are
 annotated in the \code{infoTryptic} colunm in \code{annotPP}. Only peptides
 annotated accordingly will remain in the data if \code{filterTryptic} is set
-to 'TRUE'.
-Default is 'Specific'.}
+to 'TRUE'.}
 }
 \value{
 Returns a list of matrices containing half-tryptic LiP quantities of

@@ -21,11 +21,10 @@ globalVariables(names=c("XPep", "XProt", "Y"))
 #'   \item c('LiPPep', 'TrPProt') for \code{mode = "FTHTjoin"}
 #'   \item c('LiPPep', 'LiPProt') for \code{mode = "LiPonly"}
 #'   }
-#' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}. Must include
+#' @param annotS A data.frame containing sample annotation. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}. Must include
 #' columns of any further variables used in \code{formulaRUV} and
-#' \code{formulaContrast}.
+#' \code{formulaContrast}, including \code{infoCondition}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
@@ -153,11 +152,10 @@ XPep. Please adjust 'formulaRUV'.")
 #'   be taken into account.
 #'   \item c('TrPPep', 'TrPProt)
 #'   }
-#' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}. Must include
+#' @param annotS A data.frame containing sample annotation. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}. Must include
 #' columns of any further variables used in \code{formulaRUV} and
-#' \code{formulaContrast}.
+#' \code{formulaContrast}, including \code{infoCondition}.
 #' @param infoCondition A character string providing column name of
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
@@ -223,7 +221,7 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' @description Function to build linear regression models for fitting MS data
 #' and retrieving protein abundance variation between different conditions.
 #'
-#' @usage analyzeTrPProtData(quantityList, annotS, annotPP,
+#' @usage analyzeProtData(quantityList, annotS, annotPP,
 #' infoCondition="Condition", nameProtQuant="Protein", formulaRUV=NULL,
 #' formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE)
 #'
@@ -231,11 +229,10 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' Rows represent features and columns refer to the samples. Names of the list
 #' items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the LiP only
 #' version is run, names should refer to "LiPPep" and "LiPProt").
-#' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}. Must include
+#' @param annotS A data.frame containing sample annotation. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}. Must include
 #' columns of any further variables used in \code{formulaRUV} and
-#' \code{formulaContrast}.
+#' \code{formulaContrast}, including \code{infoCondition}.
 #' @param annotPP A data.frame with peptides (/modified peptides/precursors) and
 #' protein annotation. Rows are features and the row names of the
 #' \code{quantityList} matrices must be found here. \code{annotPP} must include
@@ -245,7 +242,7 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' \code{annotS} were condition to fit in the contrast model is provided.
 #' Default is 'Condition'.
 #' @param nameProtQuant A character string giving column of \code{annotPP} were
-#' protein names are provided..
+#' protein names are provided.
 #' Default is 'Protein'.
 #' @param formulaRUV A character string or formula defining the RUV models.
 #' Default is defined as 'NULL'.
@@ -269,11 +266,11 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' Default is 'FALSE'.
 #'
 #' @export
-analyzeTrPProtData <- function(quantityList, annotS, annotPP,
-                               infoCondition="Condition",
-                               nameProtQuant="Protein", formulaRUV=NULL,
-                               formulaContrast=NULL, lowRUV=NULL, upRUV=NULL,
-                               addRUVbounds=FALSE){
+analyzeProtData <- function(quantityList, annotS, annotPP,
+                            infoCondition="Condition",
+                            nameProtQuant="Protein", formulaRUV=NULL,
+                            formulaContrast=NULL, lowRUV=NULL, upRUV=NULL,
+                            addRUVbounds=FALSE){
 
     ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
@@ -350,9 +347,8 @@ matrix in list names either 'TrPProt' or 'LiPProt'.")
 #'   \item c('LiPPep', 'LiPProt')
 #'   or use the variable naming 'Y', 'XPep' and 'XProt'.
 #'   }
-#' @param annotS A data.frame containing sample annotation. Must contain all
-#' columns included in the RUV and contrast models. Rows are samples and must
-#' match to columns of the matrices in \code{quantityList}. Must include
+#' @param annotS A data.frame containing sample annotation. Rows are samples and
+#' must match to columns of the matrices in \code{quantityList}. Must include
 #' columns of any further variables used in \code{formulaRUV} and
 #' \code{formulaContrast}.
 #' @param formulaRUV A character string or formula defining the RUV models
@@ -391,14 +387,16 @@ matrix in list names either 'TrPProt' or 'LiPProt'.")
 #' additionally return all contrast models
 #' Default is 'FALSE'.
 #'
-#' @return If RUV & contrast model or only the contrast model is run, a list of
-#' two data.frames will be returned. The first contains the model coefficients
-#' of all models, the second one provides the p-values estimated in the contrast
-#' model. If only RUV is run, it will return a list of two data.frame, the first
-#' containing the residuals of the RUV model, the second one provides the
-#' coefficients from the model. If \code{returnContrastmodels} and/or
-#' \code{returnRUVmodels} is set to 'TRUE', least square models for each
-#' peptide will be exported as additional list elements.
+#' @return If a contrast model is run, a list of two data.frames will be
+#' returned. The first contains the model coefficients of all models, the second
+#' provides the p-values estimated in the contrast model. If a RUV model is run
+#' before the contrast model, a third data.frame containing the RUV residuals
+#' is provided in the returned list. If only RUV is run, it will return a list
+#' of two data.frame, the first containing the residuals of the RUV model, the
+#' second one provides the coefficients from the model. If
+#' \code{returnContrastmodels} and/or \code{returnRUVmodels} is set to 'TRUE',
+#' the RUV and/or contrast models for each peptide will be exported as
+#' additional list element(s).
 #'
 #' @export
 runModel <- function(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
@@ -503,8 +501,10 @@ provided data." )
             message("Returning RUV results including residuals and estimated
 coefficients.")
         }
-        dfRUV <- ncol(resRUV[[2]])-1
-        quantityList[["Y"]] <- resRUV[[1]]
+        else{
+            dfRUV <- ncol(resRUV[[2]])-1
+            quantityList[["Y"]] <- resRUV[[1]]
+        }
     }
     else{
         dfRUV <- NULL
@@ -543,6 +543,11 @@ plausibility.")
         }
     }
 
+    ## add residuals to output, if not already included
+    if(!is.null(formulaRUV)&!(is.null(formulaContrast))){
+        resAll[[length(resAll)+1]] <- quantityList[["Y"]]
+        names(resAll)[length(resAll)] <- "modelResid"
+    }
     ## adding models to results if set in function input
     if(returnRUVmodels){
         names(modelRUV) <- row.names(resAll$modelCoeff)

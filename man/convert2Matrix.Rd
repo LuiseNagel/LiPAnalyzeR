@@ -7,8 +7,8 @@
 convert2Matrix(reportOut, quantValue, rows, cols)
 }
 \arguments{
-\item{reportOut}{MS report exported including sample and quantity
-information, e.g. Spectronaut report.}
+\item{reportOut}{MS report as data.frame or matrix including sample and
+quantity information, e.g. Spectronaut report.}
 
 \item{quantValue}{A character string or numeric variable referring to the
 column name or column number from the MS report in which quantities or

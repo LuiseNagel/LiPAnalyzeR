@@ -8,7 +8,7 @@ protein annotation data.frame.}
 joinPG(annotPP, iCol, protCol = "Protein")
 }
 \arguments{
-\item{annotPP}{data.frame with peptide and protein annotation were rows are
+\item{annotPP}{A data.frame with peptide and protein annotation were rows are
 features. The data.frame must include a column with the identifiers for the
 quantity of interest, which should be unique after this function is run, e.g.
 peptide, modified peptide or precursor ID. It must additionally include a

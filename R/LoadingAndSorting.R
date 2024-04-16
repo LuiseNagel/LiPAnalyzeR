@@ -547,11 +547,11 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
 #' @param sampleCondition A character string or numeric giving the column name
 #' or column number providing sample conditions in the MS report.
 #' Default is 'R.Condition'.
-#' @param typeCondition A character string providing information if condition is
-#' a 'categorical' or 'continuous' variable. If condition is 'continuous', the
-#' column containing the condition in the MS report has to be numeric. If the
-#' condition is a 'categorical', contrast coding for later models is defined
-#' within this function.
+#' @param typeCondition A character string providing information if
+#' \code{sampleCondition} is  'categorical' or 'continuous'. If condition is
+#' 'continuous', the column containing the condition in the MS report has to be
+#' numeric. If the condition is a 'categorical', contrast coding for later
+#' models is defined within this function.
 #' Default is 'categorical'.
 #' @param contrastCoding A character string providing information which type of
 #' contrast coding to use if \code{typeCondition} is 'categorical'. Can be set
@@ -642,8 +642,8 @@ condition in the MS report as the reference level for the condition.")
         Condition <- as.numeric(reportOut[, sampleCondition])
     }
 
-    annotS <- data.frame(SampleName=reportOut[, sampleName],
-                        Condition= Condition)
+    annotS <- data.frame(SampleName = reportOut[, sampleName],
+                         Condition = Condition)
     annotS <- unique(annotS)
     row.names(annotS) <- annotS$SampleName
 

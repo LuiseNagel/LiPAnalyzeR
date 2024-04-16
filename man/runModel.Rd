@@ -23,9 +23,8 @@ The matrices of \code{quantityList} may have the following names
   or use the variable naming 'Y', 'XPep' and 'XProt'.
   }}
 
-\item{annotS}{A data.frame containing sample annotation. Must contain all
-columns included in the RUV and contrast models. Rows are samples and must
-match to columns of the matrices in \code{quantityList}. Must include
+\item{annotS}{A data.frame containing sample annotation. Rows are samples and
+must match to columns of the matrices in \code{quantityList}. Must include
 columns of any further variables used in \code{formulaRUV} and
 \code{formulaContrast}.}
 
@@ -72,14 +71,16 @@ additionally return all contrast models
 Default is 'FALSE'.}
 }
 \value{
-If RUV & contrast model or only the contrast model is run, a list of
-two data.frames will be returned. The first contains the model coefficients
-of all models, the second one provides the p-values estimated in the contrast
-model. If only RUV is run, it will return a list of two data.frame, the first
-containing the residuals of the RUV model, the second one provides the
-coefficients from the model. If \code{returnContrastmodels} and/or
-\code{returnRUVmodels} is set to 'TRUE', least square models for each
-peptide will be exported as additional list elements.
+If a contrast model is run, a list of two data.frames will be
+returned. The first contains the model coefficients of all models, the second
+provides the p-values estimated in the contrast model. If a RUV model is run
+before the contrast model, a third data.frame containing the RUV residuals
+is provided in the returned list. If only RUV is run, it will return a list
+of two data.frame, the first containing the residuals of the RUV model, the
+second one provides the coefficients from the model. If
+\code{returnContrastmodels} and/or \code{returnRUVmodels} is set to 'TRUE',
+the RUV and/or contrast models for each peptide will be exported as
+additional list element(s).
 }
 \description{
 Function to build linear regression models to

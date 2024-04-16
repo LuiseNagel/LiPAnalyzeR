@@ -10,8 +10,8 @@ protName, isTryptic, startPosition, allProtName=NULL, NMissedCleavages=NULL,
 isProteotypic=NULL)
 }
 \arguments{
-\item{reportOut}{MS report exported including sample and quantity
-information, e.g. Spectronaut report.
+\item{reportOut}{MS report as data.frame or matrix including sample and
+quantity information, e.g. Spectronaut report.
 The MS report has to include the following columns:
 \itemize{
   \item names/identifiers of the quantity to be analyzes (e.g. peptide,
@@ -29,12 +29,12 @@ Optional columns to include are:
   \item proteotypic state
   }}
 
-\item{reportOut2}{Optional additional MS report including sample and
-quantity information, e.g. Spectronaut report. \code{reportOut2} should
-contain the same columns as \code{reportOut}. If \code{reportOut2} is added,
-the peptide & protein annotation file will also include quantities uniquely
-measured in \code{reportOut}. Default is 'NULL', assuming only one MS report
-being presented.}
+\item{reportOut2}{Optional additional MS report as data.frame or matrix
+including sample and quantity information, e.g. Spectronaut report.
+\code{reportOut2} should contain the same columns as \code{reportOut}. If
+\code{reportOut2} is added, the peptide & protein annotation file will also
+include quantities uniquely measured in \code{reportOut}. Default is 'NULL',
+assuming only one MS report being presented.}
 
 \item{quantName}{A character string or numeric giving the column name or
 column number in which the row names of value used in the quantity matrices

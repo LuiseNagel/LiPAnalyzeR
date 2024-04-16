@@ -64,6 +64,7 @@ summarizeModelResults <- function(resModel, evalCovariable="Condition_Contrast",
         stop("No valid option choosen for correctPval. Please set correctPval to
              'all' or 'protein-wise'.")
     }
+
     modelSum <- data.frame(Coefficient=modelCoef[order(modelPvalAdj,
                                                        decreasing=FALSE)],
                            Pvalue=modelPval[order(modelPvalAdj,
