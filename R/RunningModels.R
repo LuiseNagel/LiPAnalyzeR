@@ -68,9 +68,22 @@ globalVariables(names=c("XPep", "XProt", "Y"))
 #' peptide quantities) please use \code{runModel} instead. This function allows
 #' for more concrete settings.
 #'
-#' @result add Result
+#' @return If running RUV and contrast model a list containing the following
+#' matrices is returned:
+#' \itemize{
+#'   \item Matrix containing coefficients estimated in both models.
+#'   \item P-values estimated for coefficients of contrast model.
+#'   \item Matrix with the residuals resulting from the RUV model, rows are
+#'   features and columns are samples.
+#' }
+#' If only a contrast model is run a list containing the following matrices is
+#' returned:
+#'   \item Matrix containing coefficients estimated in the contrast model.
+#'   \item P-values estimated for coefficients of contrast model.
+#' }
 #'
 #' @export
+
 analyzeLiPPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XPep+XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0, 0), upRUV=c(Inf, Inf, Inf),
@@ -79,7 +92,8 @@ analyzeLiPPepData <- function(quantityList, annotS, infoCondition="Condition",
     ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
         message("'formulaContrast' is set to 'NULL', function is setting
-formulaContrast to Y ~ 'infoCondition'.")
+formulaContrast to Y ~ 'infoCondition'. If you wish to not run a contrast model
+but only a RUV model please use the function 'runModel'.")
         if(!infoCondition %in% colnames(annotS)){
             stop("'infoCondition' is not a column provided in 'annotS'.")
         }
@@ -180,7 +194,22 @@ XPep. Please adjust 'formulaRUV'.")
 #' you have more than two batches you aim to account for in the RUV model.
 #' Default is 'FALSE'.
 #'
+#' @return If running RUV and contrast model a list containing the following
+#' matrices is returned:
+#' \itemize{
+#'   \item Matrix containing coefficients estimated in both models.
+#'   \item P-values estimated for coefficients of contrast model.
+#'   \item Matrix with the residuals resulting from the RUV model, rows are
+#'   features and columns are samples.
+#' }
+#' If only a contrast model is run a list containing the following matrices is
+#' returned:
+#'   \item Matrix containing coefficients estimated in the contrast model.
+#'   \item P-values estimated for coefficients of contrast model.
+#' }
+#'
 #' @export
+
 analyzeTrPPepData <- function(quantityList, annotS, infoCondition="Condition",
                               formulaRUV="Y~XProt", formulaContrast=NULL,
                               lowRUV=c(-1e9, 0), upRUV=c(Inf, Inf),
@@ -189,7 +218,8 @@ analyzeTrPPepData <- function(quantityList, annotS, infoCondition="Condition",
     ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
         message("'formulaContrast' is set to 'NULL', function is setting
-formulaContrast to Y ~ 'infoCondition'.")
+formulaContrast to Y ~ 'infoCondition'. If you wish to not run a contrast model
+but only a RUV model please use the function 'runModel'.")
         if(!infoCondition %in% colnames(annotS)){
             stop("'infoCondition' is not a column provided in 'annotS'.")
         }
@@ -265,7 +295,22 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' you have more than two batches you aim to account for in the RUV model.
 #' Default is 'FALSE'.
 #'
+#' @return If running RUV and contrast model a list containing the following
+#' matrices is returned:
+#' \itemize{
+#'   \item Matrix containing coefficients estimated in both models.
+#'   \item P-values estimated for coefficients of contrast model.
+#'   \item Matrix with the residuals resulting from the RUV model, rows are
+#'   features and columns are samples.
+#' }
+#' If only a contrast model is run a list containing the following matrices is
+#' returned:
+#'   \item Matrix containing coefficients estimated in the contrast model.
+#'   \item P-values estimated for coefficients of contrast model.
+#' }
+#'
 #' @export
+
 analyzeProtData <- function(quantityList, annotS, annotPP,
                             infoCondition="Condition",
                             nameProtQuant="Protein", formulaRUV=NULL,
@@ -275,7 +320,8 @@ analyzeProtData <- function(quantityList, annotS, annotPP,
     ## Setting (and checking) contrast if necessary
     if(is.null(formulaContrast)){
         message("'formulaContrast' is set to 'NULL', function is setting
-formulaContrast to Y ~ 'infoCondition'.")
+formulaContrast to Y ~ 'infoCondition'. If you wish to not run a contrast model
+but only a RUV model please use the function 'runModel'.")
         if(!infoCondition %in% colnames(annotS)){
             stop("'infoCondition' is not a column provided in 'annotS'.")
         }
@@ -387,18 +433,31 @@ matrix in list names either 'TrPProt' or 'LiPProt'.")
 #' additionally return all contrast models
 #' Default is 'FALSE'.
 #'
-#' @return If a contrast model is run, a list of two data.frames will be
-#' returned. The first contains the model coefficients of all models, the second
-#' provides the p-values estimated in the contrast model. If a RUV model is run
-#' before the contrast model, a third data.frame containing the RUV residuals
-#' is provided in the returned list. If only RUV is run, it will return a list
-#' of two data.frame, the first containing the residuals of the RUV model, the
-#' second one provides the coefficients from the model. If
-#' \code{returnContrastmodels} and/or \code{returnRUVmodels} is set to 'TRUE',
-#' the RUV and/or contrast models for each peptide will be exported as
+#' @return If running RUV and contrast model a list containing the following
+#' matrices is returned:
+#' \itemize{
+#'   \item Matrix containing coefficients estimated in both models.
+#'   \item P-values estimated for coefficients of contrast model.
+#'   \item Matrix with the residuals resulting from the RUV model, rows are
+#'   features and columns are samples.
+#' }
+#' If only a RUV model is run a list containing the following matrices is
+#' returned:
+#'   \item Matrix containing coefficients estimated in the RUV model.
+#'   \item Matrix with the residuals resulting from the RUV model, rows are
+#'   features and columns are samples.
+#' }
+#' If only a contrast model is run a list containing the following matrices is
+#' returned:
+#'   \item Matrix containing coefficients estimated in the contrast model.
+#'   \item P-values estimated for coefficients of contrast model.
+#' }
+#' If \code{returnContrastmodels} and/or \code{returnRUVmodels} is set to
+#' 'TRUE', the RUV and/or contrast models for each peptide will be exported as
 #' additional list element(s).
 #'
 #' @export
+
 runModel <- function(quantityList, annotS=NULL, formulaRUV="Y~XPep+XProt",
                      formulaContrast="Y~Condition", lowRUV=c(-1e9, 0, 0),
                      upRUV=c(Inf, Inf, Inf), addRUVbounds=FALSE,
@@ -587,6 +646,7 @@ plausibility.")
 #' @param samples A character vector providing sample names for the model.
 #'
 #' @return A list with model matrices for running the RUV or contrast models.
+
 createModelMatrix <- function(quantityList, formula, annotS, samples){
 
     list2env(quantityList, envir=environment()) ## write matrices to environment
@@ -646,6 +706,7 @@ createModelMatrix <- function(quantityList, formula, annotS, samples){
 #' Default is 'FALSE'.
 #'
 #' @return Returns a list of all RUV models
+
 runRUV <- function(formula, modelMat, lowRUV, upRUV, addRUVbounds){
 
     ## change -Inf to high negative number instead, since bvls() does not take
@@ -697,6 +758,7 @@ runRUV <- function(formula, modelMat, lowRUV, upRUV, addRUVbounds){
 #' @return A list were the first element is a data.frame with residuals from
 #; the RUV models and the second element is a data.frame with coefficients
 #' from the RUV models.
+
 extractRUV <- function(mRUV, samples){
 
     ## extract residuals and coefficients from RUV models
@@ -732,6 +794,7 @@ extractRUV <- function(mRUV, samples){
 #' ordinary least square regression.
 #'
 #' @return Returns a list of all contrast models
+
 runContrast <- function(modelMat){
     modelRes <- lapply(modelMat, function(data){
         Y <- data$Y
@@ -766,6 +829,7 @@ runContrast <- function(modelMat){
 #' @return A list were the first element is a data.frame with residuals from
 #; the contrast models and the second element is a data.frame with coefficients
 #' from the contrast models.
+
 extractContrast <- function(mContrast, formulaContrast, dfRUV,
                             coeffPval="Pr(>|t|)", coeffTval="t value"){
 
@@ -819,6 +883,7 @@ previously used in the RUV models.")
 #' in the RUV models.
 #'
 #' @return Returns a data.frame with p-values.
+
 calcualtePvalAfterRUV <- function(LM, coeffTval, dfRUV){
     modelPv <- do.call(plyr::rbind.fill.matrix, lapply(LM, function(x){
         x <- stats::summary.lm(x)

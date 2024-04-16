@@ -156,6 +156,7 @@
 #' Rows represent features and columns samples.
 #'
 #' @export
+
 preprocessQuantityMatrix <- function(quantityList=NULL, quantityMatrix=NULL,
                                      annotPP=NULL, annotS=NULL, mode="default",
                                      logT=TRUE, filterMinLogQuant=TRUE,
@@ -396,7 +397,7 @@ matching TrPProt data to all FT and HT LiP peptides.")
     TrPProt <- TrPProt[LiPPP,]
     row.names(TrPProt) <- row.names(LiPPep)
     quantityList <- list(LiPPep = LiPPep,
-                        TrPProt = TrPProt)
+                         TrPProt = TrPProt)
 
     return(quantityList)
 }
@@ -476,6 +477,7 @@ matching TrPProt data to all FT and HT LiP peptides.")
 #' full-tryptic TrP quantities of interest (e.g. peptide, modified peptide,
 #' precursor) and corresponding TrP protein quantities. The row names in all
 #' matrices correspond to the half-tryptic LiP quantity ID.
+
 filterForHTonly <- function(quantityList, annotPP, annotS, filterNA, maxNAs,
                             infoCondition, nameIDQuant, nameProtQuant,
                             infoTryptic, nameFT){
@@ -537,7 +539,8 @@ few moments.")
         }
         else{
             myTrPOpt <- myTrPOpt[!duplicated(myTrPOpt[, nameIDQuant]),]
-            myTrPCor <- stats::cor(t(LiPPep[x,]), t(TrPPep[myTrPOpt[, nameIDQuant],]),
+            myTrPCor <- stats::cor(t(LiPPep[x,]), t(TrPPep[myTrPOpt
+                                                           [, nameIDQuant],]),
                                    use = "pairwise.complete.obs")
             myHighCor <- colnames(myTrPCor)[which.max(c(myTrPCor))][1]
             return(myHighCor)
@@ -617,6 +620,7 @@ completed.")
 #' if \code{filterNA = 'byCondition'}.
 #'
 #' @return \code{quantityList} filtered based on number of NAs per quantity ID
+
 filterNAsFromList <- function(quantityList, filterNA, annotS, infoCondition,
                               maxNAs){
 
