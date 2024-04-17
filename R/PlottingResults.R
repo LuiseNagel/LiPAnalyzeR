@@ -35,9 +35,9 @@ makeVolcanoPlot <- function(sumDf, coefCol="Coefficient", pvalCol="Padj",
                             pvalCutoff=0.05, xlim=NULL, ylim=NULL){
 
     ## creating data.frame for plotting
-    plotData <- data.frame(Coef = sumDf[, coefCol],
-                        log10Pv = -log10(sumDf[,pvalCol]),
-                        sig = sumDf[,pvalCol]< pvalCutoff)
+    plotData <- data.frame(Coef=sumDf[, coefCol],
+                           log10Pv=-log10(sumDf[,pvalCol]),
+                           sig=sumDf[,pvalCol]< pvalCutoff)
     plotData <- plotData[order(plotData$sig), ]
 
     if(is.null(xlim)){
@@ -49,21 +49,21 @@ makeVolcanoPlot <- function(sumDf, coefCol="Coefficient", pvalCol="Padj",
     }
 
     ## creating volcano plot
-    volcanoPlot <- ggplot2::ggplot(mapping = ggplot2::aes(
-        x = plotData[, "Coef"],
-        y = plotData[, "log10Pv"],
-        color = plotData[, "sig"],
-        alpha = plotData[, "sig"])) +
-        ggplot2::geom_point(size = 2) +
+    volcanoPlot <- ggplot2::ggplot(mapping=ggplot2::aes(
+        x=plotData[, "Coef"],
+        y=plotData[, "log10Pv"],
+        color=plotData[, "sig"],
+        alpha=plotData[, "sig"])) +
+        ggplot2::geom_point(size=2) +
         ggplot2::xlim(xlim) +
         ggplot2::ylim(ylim) +
         ggplot2::xlab("Coefficient") +
         ggplot2::ylab("log10(p-value)") +
-        ggplot2::scale_color_manual(name = paste0("Pval < ", pvalCutoff),
-                                    values = c("#000000", "#c11509")) +
-        ggplot2::scale_alpha_manual(name = paste0("Pval < ", pvalCutoff),
-                                    values = c(0.3, 1)) +
-        ggplot2::theme_bw(base_size = 15)
+        ggplot2::scale_color_manual(name=paste0("Pval < ", pvalCutoff),
+                                    values=c("#000000", "#c11509")) +
+        ggplot2::scale_alpha_manual(name=paste0("Pval < ", pvalCutoff),
+                                    values=c(0.3, 1)) +
+        ggplot2::theme_bw(base_size=15)
 
     return(volcanoPlot)
 }
@@ -151,33 +151,33 @@ of 'dataMat' are already proteins, please set 'runProt' to 'FALSE'.")
 
     ## Adding color
     if(tolower(typeCondition) == "categorical"){
-        myColTheme <- ggplot2::scale_color_viridis_d(name = infoCondition,
-                                                     begin = 0.9, end = 0)
+        myColTheme <- ggplot2::scale_color_viridis_d(name=infoCondition,
+                                                     begin=0.9, end=0)
     }
     else if(tolower(typeCondition) == "continuous"){
-        myColTheme <- ggplot2::scale_color_viridis_c(name = infoCondition,
-                                                     begin = 0.9, end = 0)
+        myColTheme <- ggplot2::scale_color_viridis_c(name=infoCondition,
+                                                     begin=0.9, end=0)
     }
     else{
         stop("'typeCondition' has to be set to 'categorical' or 'continuous'.")
     }
 
     ## Estimating PCA & preparing plotting data
-    PCAdata <- FactoMineR::PCA(t(dataMat), ncp = nPCs, graph = FALSE)
+    PCAdata <- FactoMineR::PCA(t(dataMat), ncp=nPCs, graph=FALSE)
 
     plotData <- PCAdata[["ind"]][["coord"]]
     colnames(plotData) <- paste0("PC", seq(1:ncol(plotData)))
     myCol <- annotS[row.names(plotData), infoCondition]
 
     # plot PCA
-    plot <- ggplot2::ggplot(mapping = ggplot2::aes(x = plotData[, Xaxis],
-                                                   y = plotData[, Yaxis],
-                                                   color = myCol)) +
-        ggplot2::geom_point(size = 3) +
+    plot <- ggplot2::ggplot(mapping=ggplot2::aes(x=plotData[, Xaxis],
+                                                 y=plotData[, Yaxis],
+                                                 color=myCol)) +
+        ggplot2::geom_point(size=3) +
         ggplot2::xlab(Xaxis) +
         ggplot2::ylab(Yaxis) +
         myColTheme +
-        ggplot2::theme_bw(base_size = 15)
+        ggplot2::theme_bw(base_size=15)
 
     return(plot)
 }
@@ -299,10 +299,10 @@ character vector giving proteins you want plotted in form of 'protVector'.")
     }
 
     ## creating data.frame for plotting
-    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
-                                  startPosition, endPosition, pvalCutoff,
-                                  deltaColorIsTryptic, isTryptic, nameFT,
-                                  nameHT)
+    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol,
+                                  nameProtQuant, startPosition, endPosition,
+                                  pvalCutoff, deltaColorIsTryptic, isTryptic,
+                                  nameFT, nameHT)
 
     if(sigProt){
         message("Plotting proteins with at least one significant peptide.")
@@ -320,11 +320,11 @@ character vector giving proteins you want plotted in form of 'protVector'.")
 
     # creating list of protein plots
     plotList <- lapply(plotData, \(x){
-        plottingProtein(plotData = x, deltaColorIsTryptic = deltaColorIsTryptic,
-                        showPv = showPv, export = export)
+        plottingProtein(plotData=x, deltaColorIsTryptic=deltaColorIsTryptic,
+                        showPv=showPv, export=export)
     })
 
-    ## creating and writing pdf if export = TRUE
+    ## creating and writing pdf if export=TRUE
     if(export){
         exportWoodsPlots(plotList, length(plotList), file)
     }
@@ -456,15 +456,15 @@ makeWoodsPlotSingleProtein <- function(sumDf, annotPP, coefCol="Coefficient",
     }, logical(1)) ,]
 
     ## creating data.frame for plotting
-    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
-                                  startPosition, endPosition, pvalCutoff,
-                                  deltaColorIsTryptic, isTryptic, nameFT,
-                                  nameHT)
+    plotData <- getPlottingFormat(sumDf, annotPP, coefCol, pvalCol,
+                                  nameProtQuant, startPosition, endPosition,
+                                  pvalCutoff, deltaColorIsTryptic, isTryptic,
+                                  nameFT, nameHT)
     plotData <- plotData[[protName]]
 
     ## creating plot of protein
     plotProt <- plottingProtein(plotData, deltaColorIsTryptic, xlim, ylim,
-                                showPv, export = FALSE)
+                                showPv, export=FALSE)
     return(plotProt)
 }
 
@@ -533,8 +533,8 @@ getPlottingFormat <- function(sumDf, annotPP, coefCol, pvalCol, nameProtQuant,
 
 
     if(length(intersect(row.names(sumDf), row.names(annotPP))) == 0){
-        stop("Chosen protein(s) have no overlapping peptides present in sumDf and
-         annotPP.")
+        stop("Chosen protein(s) have no overlapping peptides present in sumDf
+and annotPP.")
     }
 
     sumDf <- sumDf[intersect(row.names(sumDf), row.names(annotPP)), ]
@@ -629,10 +629,10 @@ Peptide(s) is/are being matched to all positions and proteins matched in
         }
         else{
             dPeps <- length(unlist(strsplit(x$Protein, ";")))
-            pepDf <- data.frame(Coef = rep(x$Coef, dPeps),
-                                Pval = rep(x$Pval, dPeps),
-                                Protein = unlist(strsplit(x$Protein, ";")),
-                                quantID = rep(x$quantID, dPeps))
+            pepDf <- data.frame(Coef=rep(x$Coef, dPeps),
+                                Pval=rep(x$Pval, dPeps),
+                                Protein=unlist(strsplit(x$Protein, ";")),
+                                quantID=rep(x$quantID, dPeps))
 
             if(dPeps == length(unlist(strsplit(x$start, ";")))){
                 pepDf$start <- unlist(strsplit(x$start, ";"))
@@ -690,12 +690,12 @@ separatePeptides <- function(plotData, deltaColorIsTryptic){
         }
         else{
             dPeps <- length(unlist(strsplit(x$start, ",")))
-            pepDf <- data.frame(Coef = rep(x$Coef, dPeps),
-                                Pval = rep(x$Pval, dPeps),
-                                Protein = rep(x$Protein, dPeps),
-                                quantID = rep(x$quantID, dPeps),
-                                start = unlist(strsplit(x$start, ",")),
-                                end = unlist(strsplit(x$end, ",")))
+            pepDf <- data.frame(Coef=rep(x$Coef, dPeps),
+                                Pval=rep(x$Pval, dPeps),
+                                Protein=rep(x$Protein, dPeps),
+                                quantID=rep(x$quantID, dPeps),
+                                start=unlist(strsplit(x$start, ",")),
+                                end=unlist(strsplit(x$end, ",")))
         }
 
         if(deltaColorIsTryptic){
@@ -764,27 +764,27 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
 
     ## set sizes of plot based on if it is exported as pdf or not
     if(export){
-        myTheme <- ggplot2::theme_bw(base_size = 12)
+        myTheme <- ggplot2::theme_bw(base_size=12)
         sz <- 4
     }
     else{
-        myTheme <- ggplot2::theme_bw(base_size = 15)
+        myTheme <- ggplot2::theme_bw(base_size=15)
         sz <- 5
     }
 
     ## setting colors
     if(deltaColorIsTryptic){
-        myColor <- ggplot2::scale_color_manual(name = "",
-                                               breaks = c("FT_nonSig", "FT_Sig",
-                                                          "HT_nonSig",
-                                                          "HT_Sig"),
-                                               values = c("#000000", "#c11509",
-                                                          "#a6a6a6", "#f8a19d"))
+        myColor <- ggplot2::scale_color_manual(name="",
+                                               breaks=c("FT_nonSig", "FT_Sig",
+                                                        "HT_nonSig",
+                                                        "HT_Sig"),
+                                               values=c("#000000", "#c11509",
+                                                        "#a6a6a6", "#f8a19d"))
     }
     else{
-        myColor <- ggplot2::scale_color_manual(name = "",
-                                               breaks = c("nonSig", "Sig"),
-                                               values = c("#000000", "#c11509"))
+        myColor <- ggplot2::scale_color_manual(name="",
+                                               breaks=c("nonSig", "Sig"),
+                                               values=c("#000000", "#c11509"))
     }
 
     plotName <- plotData$Protein[1]
@@ -799,14 +799,14 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
                   max(stats::na.omit(plotData[, "Coef"])))
     }
 
-    plotProt <- ggplot2::ggplot(mapping = ggplot2::aes(
-        x = plotData[, "start"],
-        xend = plotData[, "end"],
-        y = plotData[, "Coef"],
-        yend = plotData[, "Coef"],
-        col = plotData[, "Color"])) +
-        ggplot2::geom_segment(size = sz) +
-        ggplot2::geom_hline(yintercept = 0, linewidth = 1, col = "black") +
+    plotProt <- ggplot2::ggplot(mapping=ggplot2::aes(
+        x=plotData[, "start"],
+        xend=plotData[, "end"],
+        y=plotData[, "Coef"],
+        yend=plotData[, "Coef"],
+        col=plotData[, "Color"])) +
+        ggplot2::geom_segment(size=sz) +
+        ggplot2::geom_hline(yintercept=0, linewidth=1, col="black") +
         myColor +
         ggplot2::xlim(xlim) +
         ggplot2::ylim(ylim) +
@@ -817,12 +817,12 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
 
     if(showPv){
         plotProt <- plotProt +
-            ggplot2::geom_label(mapping = ggplot2::aes(x = plotData[, "start"],
-                                                       y =  plotData[, "Coef"],
-                                                       label = round(plotData
-                                                                     [, "Pval"],
-                                                                     3)),
-                                show.legend = F)
+            ggplot2::geom_label(mapping=ggplot2::aes(x=plotData[, "start"],
+                                                     y=lotData[, "Coef"],
+                                                     label=round(plotData
+                                                                 [, "Pval"],
+                                                                 3)),
+                                show.legend=F)
     }
 
     return(plotProt)
@@ -861,7 +861,7 @@ exportWoodsPlots <- function(plotList, lList, file){
         else{
             p3 <- plotList[[i+2]]
         }
-        print(p1 + p2 + p3 + patchwork::plot_layout(nrow = 3))
+        print(p1 + p2 + p3 + patchwork::plot_layout(nrow=3))
     })
     grDevices::dev.off()
 

@@ -247,13 +247,13 @@ matrices.")
             filterTryptic <- FALSE
         }
 
-        if(paste(names(quantityList), collapse = "") ==
+        if(paste(names(quantityList), collapse="") ==
            c("LiPPepTrPPepTrPProt")){
             quantityList <- filterForFTHTjoin(quantityList, annotPP,
                                               nameIDQuant, nameProtQuant)
         }
 
-        else if(paste(names(quantityList), collapse = "") != c("LiPPepLiPProt")){
+        else if(paste(names(quantityList), collapse="") != c("LiPPepLiPProt")){
             stop("Function is run in 'FTHTjoin' mode and names of the
 quantityList do not meet the expectations. Please provide either a list with
 matrices defined as 'LiPPep', 'TrPPep' and 'TrPProt' or a list with two
@@ -276,7 +276,7 @@ matrices defined as 'LiPPep' and 'LiPProt'.")
     if(tolower(mode) == "htonly"){
         filterTryptic <- FALSE
 
-        if(paste(names(quantityList), collapse = "") !=
+        if(paste(names(quantityList), collapse="") !=
            c("LiPPepTrPPepTrPProt")){
             stop("Function is run in 'HTonly' mode and the names list elements
 in 'quantityList' do not meet the expectations. Please provide a list with three
@@ -396,8 +396,8 @@ matching TrPProt data to all FT and HT LiP peptides.")
     ## matching TrPProt to LiPPep quantities
     TrPProt <- TrPProt[LiPPP,]
     row.names(TrPProt) <- row.names(LiPPep)
-    quantityList <- list(LiPPep = LiPPep,
-                         TrPProt = TrPProt)
+    quantityList <- list(LiPPep=LiPPep,
+                         TrPProt=TrPProt)
 
     return(quantityList)
 }
@@ -541,7 +541,7 @@ few moments.")
             myTrPOpt <- myTrPOpt[!duplicated(myTrPOpt[, nameIDQuant]),]
             myTrPCor <- stats::cor(t(LiPPep[x,]), t(TrPPep[myTrPOpt
                                                            [, nameIDQuant],]),
-                                   use = "pairwise.complete.obs")
+                                   use="pairwise.complete.obs")
             myHighCor <- colnames(myTrPCor)[which.max(c(myTrPCor))][1]
             return(myHighCor)
         }
@@ -560,9 +560,9 @@ few moments.")
     row.names(TrPPep) <- row.names(LiPPep)
     row.names(TrPProt) <- row.names(LiPPep)
 
-    quantityList <- list(LiPPep = LiPPep,
-                        TrPPep = TrPPep,
-                        TrPProt = TrPProt)
+    quantityList <- list(LiPPep=LiPPep,
+                        TrPPep=TrPPep,
+                        TrPProt=TrPProt)
 
     message("Matching half-tryptic LiP peptides to full-tryptic TrP peptides
 completed.")

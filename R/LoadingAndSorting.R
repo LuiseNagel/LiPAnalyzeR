@@ -335,7 +335,8 @@ getPepProtAnnot <- function(reportOut,
     }
 
     ## creating basic peptide & protein annotation file
-    annotPP <- data.frame(quantID=gsub("_", "", gsub(" ", "", reportOut[, quantName])),
+    annotPP <- data.frame(quantID=gsub("_", "",
+                                       gsub(" ", "", reportOut[, quantName])),
                           Peptide=gsub(" ", "", reportOut[, pepName]),
                           Protein=gsub(" ", "", reportOut[, protName]),
                           isTryptic=reportOut[, isTryptic])
@@ -354,8 +355,8 @@ getPepProtAnnot <- function(reportOut,
     annotPP$startPosition <- reportOut[, startPosition]
     annotPP <- unique(annotPP) ## removing all duplicated rows from data.frame
 
-    ## join protein names if quantity of interest was matched to different PG groups in
-    ## different MS reports
+    ## join protein names if quantity of interest was matched to different PG
+    ## groups in different MS reports
     if(!is.null(reportOut2)){
         annotPP <- joinPG(annotPP, "quantID")
     }
@@ -407,9 +408,9 @@ getPepProtAnnotSpectro <- function(spectroOut,
     }
     ## assigning quantName accordingly to choosen analysis level
     quantName <- switch(tolower(analysisLvl),
-                        peptide = "PEP.StrippedSequence",
-                        modifiedpeptide = "EG.ModifiedSequence",
-                        precursor = "EG.PrecursorId")
+                        peptide="PEP.StrippedSequence",
+                        modifiedpeptide="EG.ModifiedSequence",
+                        precursor="EG.PrecursorId")
 
     ## call getPepProtAnnot with specified Spectronaut names
     annotPP <- getPepProtAnnot(spectroOut, spectroOut2, quantName,
@@ -642,8 +643,8 @@ condition in the MS report as the reference level for the condition.")
         Condition <- as.numeric(reportOut[, sampleCondition])
     }
 
-    annotS <- data.frame(SampleName = reportOut[, sampleName],
-                         Condition = Condition)
+    annotS <- data.frame(SampleName=reportOut[, sampleName],
+                         Condition=Condition)
     annotS <- unique(annotS)
     row.names(annotS) <- annotS$SampleName
 

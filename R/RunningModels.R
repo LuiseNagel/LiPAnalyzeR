@@ -255,10 +255,10 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' infoCondition="Condition", nameProtQuant="Protein", formulaRUV=NULL,
 #' formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE)
 #'
-#' @param quantityList A list of matrices, containing peptide/protein quantities.
-#' Rows represent features and columns refer to the samples. Names of the list
-#' items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the LiP only
-#' version is run, names should refer to "LiPPep" and "LiPProt").
+#' @param quantityList A list of matrices, containing peptide/protein
+#' quantities. Rows represent features and columns refer to the samples. Names
+#' of the list items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the
+#' LiP only version is run, names should refer to "LiPPep" and "LiPProt").
 #' @param annotS A data.frame containing sample annotation. Rows are samples and
 #' must match to columns of the matrices in \code{quantityList}. Must include
 #' columns of any further variables used in \code{formulaRUV} and
@@ -785,13 +785,13 @@ extractRUV <- function(mRUV, samples){
 
 #' @title Running contrast models for every quantity provided
 #'
-#' @description Function to run contrast on a list of model matrices, one element in
-#' the list should represent one peptide or protein.
+#' @description Function to run contrast on a list of model matrices, one
+#' element in the list should represent one peptide or protein.
 #'
 #' @usage runContrast(modelMat)
 #'
-#' @param modelMat A list of model matrices to perform contrast modeling using
-#' ordinary least square regression.
+#' @param modelMat A list of model matrices to perform contrast modeling on
+#' facilitating ordinary least square regression.
 #'
 #' @return Returns a list of all contrast models
 
@@ -814,7 +814,7 @@ runContrast <- function(modelMat){
 #' @usage extractContrast(mContrast, formulaContrast, dfRUV, coeffPval="Pr(>|t|)",
 #' coeffTval="t value")
 #'
-#' @param mContrast A list of contrast models estimated using ordinary least square
+#' @param mContrast A list of contrast models
 #' @param formulaContrast A formula used to create \code{modelMat} for
 #' contrast models.
 #' @param dfRUV A numberic value providing the number of degrees of freedom used
@@ -876,7 +876,7 @@ previously used in the RUV models.")
 #'
 #' @usage calcualtePvalAfterRUV(LM, coeffTval, dfRUV)
 #'
-#' @param LM A single contrast model estimated with ordinarly linear regression
+#' @param LM A single linear regression model originating from contrast step
 #' @param coeffTval A character variable giving the column name were t-values
 #' are provided if \code{summary.lm(mRUV)}.
 #' @param dfRUV A numberic value providing the number of degrees of freedom used
