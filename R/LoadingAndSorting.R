@@ -335,7 +335,7 @@ getPepProtAnnot <- function(reportOut,
     }
 
     ## creating basic peptide & protein annotation file
-    annotPP <- data.frame(quantID=gsub(" ", "", reportOut[, quantName]),
+    annotPP <- data.frame(quantID=gsub("_", "", gsub(" ", "", reportOut[, quantName])),
                           Peptide=gsub(" ", "", reportOut[, pepName]),
                           Protein=gsub(" ", "", reportOut[, protName]),
                           isTryptic=reportOut[, isTryptic])

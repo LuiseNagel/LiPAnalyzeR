@@ -58,6 +58,9 @@ the RUV boundaries based in the number of levels. This might be the case if
 you have more than two batches you aim to account for in the RUV model.
 Default is 'FALSE'.}
 }
+\value{
+
+}
 \description{
 Function to build linear regression models for fitting MS data
 and retrieving protein abundance variation between different conditions.

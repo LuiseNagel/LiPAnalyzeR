@@ -76,6 +76,9 @@ When aiming to run different corrections (e.g. correct LiP peptide for TrP
 peptide quantities) please use \code{runModel} instead. This function allows
 for more concrete settings.}
 }
+\value{
+
+}
 \description{
 Function to build linear regression models for fitting MS data
 and retrieving structural variation between different conditions.

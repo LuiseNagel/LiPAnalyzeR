@@ -1,5 +1,3 @@
-#globalVariables(names=c("end", "start", "aes", "Coef", "Color"))
-
 #' @title Creating volcano plot
 #'
 #' @description Creating volcano plot with model coefficients & corresponding
