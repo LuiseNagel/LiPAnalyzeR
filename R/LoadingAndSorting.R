@@ -324,7 +324,7 @@ getPepProtAnnot <- function(reportOut,
         stop("'reportOut'/'spectroOut' has to be a data.frame or a matrix.")
 
     }
-    if(!inherits(reportOut2, c("matrix", "data.frame"))){
+    if(!is.null(reportOut2)&!inherits(reportOut2, c("matrix", "data.frame"))){
         stop("'reportOut2'/'spectroOut2' has to be a data.frame or a matrix.")
 
     }

@@ -191,7 +191,7 @@ using 'quantityList' or 'quantityMatrix'")
 default. Either set mode='default' or provide quantityList as input.")
         }
         else{
-            if(!!inherits(quantityMatrix, c("matrix", "data.frame"))){
+            if(!inherits(quantityMatrix, c("matrix", "data.frame"))){
                 stop("'quantityMatrix' has to be a data.frame or a matrix.")
 
             }
