@@ -5,32 +5,32 @@ library(LiPAnalyzeR)
 test_that("extractMSData function returns expected output", {
 
     # Create mock MS reports
-    reportLiP <- data.frame(SampleName = c("S1", "S2"),
-                            Peptide = c("Pep1", "Pep2"),
-                            PepQuant = c(1, 2),
-                            ProtQuant = c(10, 20))
+    reportLiP <- data.frame(SampleName=c("S1", "S2"),
+                            Peptide=c("Pep1", "Pep2"),
+                            PepQuant=c(1, 2),
+                            ProtQuant=c(10, 20))
 
-    reportTrP <- data.frame(SampleName = c("S1", "S2"),
-                            Peptide = c("Pep3", "Pep4"),
-                            PepQuant = c(3, 4),
-                            ProtQuant = c(30, 40))
+    reportTrP <- data.frame(SampleName=c("S1", "S2"),
+                            Peptide=c("Pep3", "Pep4"),
+                            PepQuant=c(3, 4),
+                            ProtQuant=c(30, 40))
 
-    # Test with LiPonly = FALSE
-    result <- extractMSData(reportLiP = reportLiP,
-                            reportTrP = reportTrP,
-                            sampleName = "SampleName",
-                            quantName = "Peptide",
-                            quantValue = "PepQuant",
-                            protValue = "ProtQuant")
+    # Test with LiPonly=FALSE
+    result <- extractMSData(reportLiP=reportLiP,
+                            reportTrP=reportTrP,
+                            sampleName="SampleName",
+                            quantName="Peptide",
+                            quantValue="PepQuant",
+                            protValue="ProtQuant")
     expect_equal(length(result), 3)
 
-    # Test with LiPonly = TRUE
-    result <- extractMSData(reportLiP = reportLiP,
-                            sampleName = "SampleName",
-                            quantName = "Peptide",
-                            quantValue = "PepQuant",
-                            protValue = "ProtQuant",
-                            LiPonly = TRUE)
+    # Test with LiPonly=TRUE
+    result <- extractMSData(reportLiP=reportLiP,
+                            sampleName="SampleName",
+                            quantName="Peptide",
+                            quantValue="PepQuant",
+                            protValue="ProtQuant",
+                            LiPonly=TRUE)
     expect_equal(length(result), 2)
 })
 
@@ -38,15 +38,15 @@ test_that("extractMSData function returns expected output", {
 test_that("convert2Matrix function returns expected output", {
 
     # Create mock MS report
-    report <- data.frame(Peptide = c("Pep1", "Pep2", "Pep1", "Pep2"),
-                         Sample = c("S1", "S1", "S2", "S2"),
-                         quantValue = c(1, 2, 3, 4))
+    report <- data.frame(Peptide=c("Pep1", "Pep2", "Pep1", "Pep2"),
+                         Sample=c("S1", "S1", "S2", "S2"),
+                         quantValue=c(1, 2, 3, 4))
 
     # Test the function
-    result <- convert2Matrix(reportOut = report,
-                             quantValue = "quantValue",
-                             rows = "Peptide",
-                             cols = "Sample")
+    result <- convert2Matrix(reportOut=report,
+                             quantValue="quantValue",
+                             rows="Peptide",
+                             cols="Sample")
     expect_equal(dim(result), c(2, 2))
     expect_equal(result["Pep1","S1"], 1)
 })
@@ -56,19 +56,19 @@ test_that("convert2Matrix function returns expected output", {
 test_that("getPepProtAnnot function returns expected output", {
 
     # Create mock MS report
-    report <- data.frame(Peptide = c("ABCD", "EFGHIJKLM"),
-                         Protein = c("ProtA", "ProtB"),
-                         isTryptic = c("FT", "HT"),
-                         startPosition = c(1, 10))
+    report <- data.frame(Peptide=c("ABCD", "EFGHIJKLM"),
+                         Protein=c("ProtA", "ProtB"),
+                         isTryptic=c("FT", "HT"),
+                         startPosition=c(1, 10))
 
     # Test the function
-    result <- getPepProtAnnot(reportOut = report,
-                              reportOut2 = report,
-                              quantName = "Peptide",
-                              pepName = "Peptide",
-                              protName = "Protein",
-                              isTryptic = "isTryptic",
-                              startPosition = "startPosition")
+    result <- getPepProtAnnot(reportOut=report,
+                              reportOut2=report,
+                              quantName="Peptide",
+                              pepName="Peptide",
+                              protName="Protein",
+                              isTryptic="isTryptic",
+                              startPosition="startPosition")
 
     expect_equal(dim(result), c(2,6))
     expect_equal(row.names(result), result[, "quantID"])
@@ -80,17 +80,17 @@ test_that("getPepProtAnnot function returns expected output", {
 test_that("getSampleAnnot function returns expected output", {
 
     # Create mock MS report with categorical and continious condition
-    report <- data.frame(SampleName = c("S1", "S2", "S3", "S4"),
-                         ConditionFactor = c("CX", "CY", "CZ", "CY"),
-                         ConditionContinuous = c(1, 4, 7, 3))
+    report <- data.frame(SampleName=c("S1", "S2", "S3", "S4"),
+                         ConditionFactor=c("CX", "CY", "CZ", "CY"),
+                         ConditionContinuous=c(1, 4, 7, 3))
 
     # Test default settings (CY condition is reference, dummy coding)
     result <- getSampleAnnot(report,
-                             sampleName = "SampleName",
-                             sampleCondition = "ConditionFactor",
-                             typeCondition = "categorical",
-                             baseLevel = "CY",
-                             contrastCoding = NULL)
+                             sampleName="SampleName",
+                             sampleCondition="ConditionFactor",
+                             typeCondition="categorical",
+                             baseLevel="CY",
+                             contrastCoding=NULL)
 
     lm <- lm(report$ConditionContinuous ~ result$Condition)
 
@@ -101,19 +101,19 @@ test_that("getSampleAnnot function returns expected output", {
 
     # Test default settings (first condition is reference, wec coding)
     result <- getSampleAnnot(report,
-                             sampleName = "SampleName",
-                             sampleCondition = "ConditionFactor",
-                             typeCondition = "categorical",
-                             contrastCoding = "weccoding")
+                             sampleName="SampleName",
+                             sampleCondition="ConditionFactor",
+                             typeCondition="categorical",
+                             contrastCoding="weccoding")
 
     # Check that wec coding worked as expected
     expect_equal(as.vector(contrasts(result$Condition)[1,]), c(-2, -1))
 
     # Test continious variable
     result <- getSampleAnnot(report,
-                             sampleName = "SampleName",
-                             sampleCondition = "ConditionContinuous",
-                             typeCondition = "continuous")
+                             sampleName="SampleName",
+                             sampleCondition="ConditionContinuous",
+                             typeCondition="continuous")
 
     # Check that variable is continuous
     expect_type(result$Condition, "double")
