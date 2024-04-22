@@ -122,5 +122,5 @@ LiPAnalyzeR allows to remove unwanted variation from the LiP peptide quantities,
 modelStrucVar <- analyzeLiPPepData(spectroList = QuantityList, 
                                    annotS = annotSample)
 resStrucVar <- summarizeModelResults(resModel = modelStrucVar, 
-                                     evalCovariable = "Condition_OLS")
+                                     evalCovariable = "Condition_RUV")
 ```
