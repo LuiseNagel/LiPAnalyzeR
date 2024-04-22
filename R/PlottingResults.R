@@ -540,7 +540,6 @@ and annotPP.")
     sumDf <- sumDf[intersect(row.names(sumDf), row.names(annotPP)), ]
     annotPP <- annotPP[intersect(row.names(sumDf), row.names(annotPP)), ]
 
-
     ## Create data frame for plotting the data
     plotData <- sumDf[, c(coefCol, pvalCol)]
     colnames(plotData) <- c("Coef", "Pval")
@@ -620,7 +619,8 @@ separateProteins <- function(plotData, deltaColorIsTryptic){
     message("At least one quantity of interest (e.g. peptide) matches to more
 then one single protein based on the protein information provided in 'annotPP'.
 Peptide(s) is/are being matched to all positions and proteins matched in
-'annotPP' and will therefore be plotted multiple times.")
+'annotPP' and will therefore be plotted multiple times. If not all proteins are
+plotted, this peptide may not be present in the proteins chosen for plotting.")
 
     plotData <- do.call(rbind, lapply(seq(1, nrow(plotData)), \(i){
         x <- plotData[i,]
@@ -679,9 +679,10 @@ Peptide(s) is/are being matched to all positions and proteins matched in
 #' @return \code{plotData} data.frame
 separatePeptides <- function(plotData, deltaColorIsTryptic){
     message("At least one peptide matches to more then one position in the
-  respective protein provided in 'annotPP'. Peptide(s) is/are being matched to
-  all positions and proteins matched in 'annotPP' and will therefore be plotted
-  multiple times.")
+respective protein provided in 'annotPP'. Peptide(s) is/are being matched to
+all positions and proteins matched in 'annotPP' and will therefore be plotted
+multiple times.If not all proteins are plotted, this peptide may not be present
+in the proteins chosen for plotting.")
 
     plotData <- do.call(rbind, lapply(seq(1, nrow(plotData)), \(i){
         x <- plotData[i,]
@@ -806,7 +807,6 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
         yend=plotData[, "Coef"],
         col=plotData[, "Color"])) +
         ggplot2::geom_segment(size=sz) +
-        ggplot2::geom_hline(yintercept=0, linewidth=1, col="black") +
         myColor +
         ggplot2::xlim(xlim) +
         ggplot2::ylim(ylim) +
@@ -814,6 +814,11 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
         ggplot2::ylab("Coefficient") +
         ggplot2::xlab("Protein positions") +
         myTheme
+
+    if(ylim[1]<=0 & ylim[2] >=0){
+        plotProt <- plotProt +
+            ggplot2::geom_hline(yintercept=0, linewidth=1, col="black")
+    }
 
     if(showPv){
         plotProt <- plotProt +
@@ -861,7 +866,8 @@ exportWoodsPlots <- function(plotList, lList, file){
         else{
             p3 <- plotList[[i+2]]
         }
-        print(p1 + p2 + p3 + patchwork::plot_layout(nrow=3))
+        #print(p1 + p2 + p3 + patchwork::plot_layout(nrow=3))
+        print(patchwork::wrap_plots(p1, p2, p3, nrow = 3))
     })
     grDevices::dev.off()
 

@@ -8,7 +8,7 @@ in RUV step into account}
 calcualtePvalAfterRUV(LM, coeffTval, dfRUV)
 }
 \arguments{
-\item{LM}{A single contrast model estimated with ordinarly linear regression}
+\item{LM}{A single linear regression model originating from contrast step}
 
 \item{coeffTval}{A character variable giving the column name were t-values
 are provided if \code{summary.lm(mRUV)}.}

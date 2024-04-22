@@ -7,13 +7,13 @@
 runContrast(modelMat)
 }
 \arguments{
-\item{modelMat}{A list of model matrices to perform contrast modeling using
-ordinary least square regression.}
+\item{modelMat}{A list of model matrices to perform contrast modeling on
+facilitating ordinary least square regression.}
 }
 \value{
 Returns a list of all contrast models
 }
 \description{
-Function to run contrast on a list of model matrices, one element in
-the list should represent one peptide or protein.
+Function to run contrast on a list of model matrices, one
+element in the list should represent one peptide or protein.
 }

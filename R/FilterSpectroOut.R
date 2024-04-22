@@ -290,6 +290,7 @@ matrices named 'LiPPep', 'TrPPep' and 'TrPProt'.")
 
     ## adjusting peptides and samples to be identical in all data
     peps <- Reduce(intersect, lapply(quantityList, row.names))
+    nPeps <- length(peps)
     samples <- Reduce(intersect, lapply(quantityList, colnames))
     if(!is.null(annotPP)){
         peps <- intersect(peps, row.names(annotPP))
@@ -326,9 +327,15 @@ matrices named 'LiPPep', 'TrPPep' and 'TrPProt'.")
     }
 
 
+    message(paste0(nrow(quantityList[[1]]),
+" different quantities (e.g. peptides) from originally ", nPeps,
+" remaining in filtered data matrix.
+", ncol(quantityList[[1]]), " samples are included in the data."))
+
     if(is.null(quantityList)){
         quantityList <- unlist(quantityList)
     }
+
 
     return(quantityList)
 }

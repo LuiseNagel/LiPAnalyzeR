@@ -9,10 +9,10 @@ infoCondition="Condition", nameProtQuant="Protein", formulaRUV=NULL,
 formulaContrast=NULL, lowRUV=NULL, upRUV=NULL, addRUVbounds=FALSE)
 }
 \arguments{
-\item{quantityList}{A list of matrices, containing peptide/protein quantities.
-Rows represent features and columns refer to the samples. Names of the list
-items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the LiP only
-version is run, names should refer to "LiPPep" and "LiPProt").}
+\item{quantityList}{A list of matrices, containing peptide/protein
+quantities. Rows represent features and columns refer to the samples. Names
+of the list items should be set to "LiPPep", "TrPPep" and "TrPProt" (if the
+LiP only version is run, names should refer to "LiPPep" and "LiPProt").}
 
 \item{annotS}{A data.frame containing sample annotation. Rows are samples and
 must match to columns of the matrices in \code{quantityList}. Must include

@@ -8,7 +8,7 @@ extractContrast(mContrast, formulaContrast, dfRUV, coeffPval="Pr(>|t|)",
 coeffTval="t value")
 }
 \arguments{
-\item{mContrast}{A list of contrast models estimated using ordinary least square}
+\item{mContrast}{A list of contrast models}
 
 \item{formulaContrast}{A formula used to create \code{modelMat} for
 contrast models.}
