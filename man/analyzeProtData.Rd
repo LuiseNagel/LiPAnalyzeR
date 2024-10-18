@@ -59,7 +59,20 @@ you have more than two batches you aim to account for in the RUV model.
 Default is 'FALSE'.}
 }
 \value{
-
+If running RUV and contrast model a list containing the following
+matrices is returned:
+\itemize{
+  \item Matrix containing coefficients estimated in both models.
+  \item P-values estimated for coefficients of contrast model.
+  \item Matrix with the residuals resulting from the RUV model, rows are
+  features and columns are samples.
+}
+If only a contrast model is run a list containing the following matrices is
+returned:
+\itemize{
+  \item Matrix containing coefficients estimated in the contrast model.
+  \item P-values estimated for coefficients of contrast model.
+}
 }
 \description{
 Function to build linear regression models for fitting MS data

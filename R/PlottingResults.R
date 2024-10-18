@@ -823,7 +823,7 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
     if(showPv){
         plotProt <- plotProt +
             ggplot2::geom_label(mapping=ggplot2::aes(x=plotData[, "start"],
-                                                     y=lotData[, "Coef"],
+                                                     y=plotData[, "Coef"],
                                                      label=round(plotData
                                                                  [, "Pval"],
                                                                  3)),
@@ -866,7 +866,7 @@ exportWoodsPlots <- function(plotList, lList, file){
         else{
             p3 <- plotList[[i+2]]
         }
-        #print(p1 + p2 + p3 + patchwork::plot_layout(nrow=3))
+
         print(patchwork::wrap_plots(p1, p2, p3, nrow = 3))
     })
     grDevices::dev.off()

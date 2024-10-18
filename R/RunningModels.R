@@ -78,6 +78,7 @@ globalVariables(names=c("XPep", "XProt", "Y"))
 #' }
 #' If only a contrast model is run a list containing the following matrices is
 #' returned:
+#' \itemize{
 #'   \item Matrix containing coefficients estimated in the contrast model.
 #'   \item P-values estimated for coefficients of contrast model.
 #' }
@@ -204,6 +205,7 @@ XPep. Please adjust 'formulaRUV'.")
 #' }
 #' If only a contrast model is run a list containing the following matrices is
 #' returned:
+#' \itemize{
 #'   \item Matrix containing coefficients estimated in the contrast model.
 #'   \item P-values estimated for coefficients of contrast model.
 #' }
@@ -305,6 +307,7 @@ meet expectation to be 'LiPPep', 'TrpPep', 'TrpProt' OR 'TrpPep', 'TrPProt'.")
 #' }
 #' If only a contrast model is run a list containing the following matrices is
 #' returned:
+#' \itemize{
 #'   \item Matrix containing coefficients estimated in the contrast model.
 #'   \item P-values estimated for coefficients of contrast model.
 #' }
@@ -443,12 +446,14 @@ matrix in list names either 'TrPProt' or 'LiPProt'.")
 #' }
 #' If only a RUV model is run a list containing the following matrices is
 #' returned:
+#' \itemize{
 #'   \item Matrix containing coefficients estimated in the RUV model.
 #'   \item Matrix with the residuals resulting from the RUV model, rows are
 #'   features and columns are samples.
 #' }
 #' If only a contrast model is run a list containing the following matrices is
 #' returned:
+#' \itemize{
 #'   \item Matrix containing coefficients estimated in the contrast model.
 #'   \item P-values estimated for coefficients of contrast model.
 #' }

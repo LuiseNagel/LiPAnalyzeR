@@ -71,7 +71,30 @@ additionally return all contrast models
 Default is 'FALSE'.}
 }
 \value{
-
+If running RUV and contrast model a list containing the following
+matrices is returned:
+\itemize{
+  \item Matrix containing coefficients estimated in both models.
+  \item P-values estimated for coefficients of contrast model.
+  \item Matrix with the residuals resulting from the RUV model, rows are
+  features and columns are samples.
+}
+If only a RUV model is run a list containing the following matrices is
+returned:
+\itemize{
+  \item Matrix containing coefficients estimated in the RUV model.
+  \item Matrix with the residuals resulting from the RUV model, rows are
+  features and columns are samples.
+}
+If only a contrast model is run a list containing the following matrices is
+returned:
+\itemize{
+  \item Matrix containing coefficients estimated in the contrast model.
+  \item P-values estimated for coefficients of contrast model.
+}
+If \code{returnContrastmodels} and/or \code{returnRUVmodels} is set to
+'TRUE', the RUV and/or contrast models for each peptide will be exported as
+additional list element(s).
 }
 \description{
 Function to build linear regression models to

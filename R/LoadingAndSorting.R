@@ -331,7 +331,7 @@ getPepProtAnnot <- function(reportOut,
 
     ## join Spectronaut reports if two are provided
     if(!is.null(reportOut2)){
-        reportOut <-rbind(reportOut, reportOut2)
+        reportOut <- rbind(reportOut, reportOut2)
     }
 
     ## creating basic peptide & protein annotation file
@@ -358,9 +358,11 @@ getPepProtAnnot <- function(reportOut,
     ## join protein names if quantity of interest was matched to different PG
     ## groups in different MS reports
     if(!is.null(reportOut2)){
+        message("Joining protein groups of different MS reports together.")
         annotPP <- joinPG(annotPP, "quantID")
     }
     ## get end position of peptides
+    print("EndPosition adding.")
     annotPP$endPosition <- getEndPositionOfPep(annotPP)
 
     row.names(annotPP) <- annotPP[, "quantID"]
