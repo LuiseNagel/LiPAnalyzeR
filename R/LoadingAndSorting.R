@@ -365,6 +365,7 @@ getPepProtAnnot <- function(reportOut,
     print("EndPosition adding.")
     annotPP$endPosition <- getEndPositionOfPep(annotPP)
 
+    annotPP <- as.data.frame(annotPP)
     row.names(annotPP) <- annotPP[, "quantID"]
     return(annotPP)
 }
