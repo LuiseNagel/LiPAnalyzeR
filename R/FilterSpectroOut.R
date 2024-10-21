@@ -292,16 +292,28 @@ matrices named 'LiPPep', 'TrPPep' and 'TrPProt'.")
     peps <- Reduce(intersect, lapply(quantityList, row.names))
     nPeps <- length(peps)
     samples <- Reduce(intersect, lapply(quantityList, colnames))
+
+    if(length(peps) == 0){
+        message("No overlapping identifiers (row.names) between the provided
+data matrices.")
+    }
+
     if(!is.null(annotPP)){
         peps <- intersect(peps, row.names(annotPP))
         annotPP <- annotPP[peps,]
+        if(length(peps) == 0){
+            message("No overlapping identifiers (row.names) between the provided
+data matrices and the 'annotPP' file.")
+        }
+
     }
     if(!is.null(annotS)){
         samples <- intersect(samples, row.names(annotS))
         annotS <- annotS[samples, ]
     }
-    quantityList <- lapply(quantityList, function(x)
-    {x[peps, samples]})
+
+    quantityList <- lapply(quantityList, function(x){
+        x[peps, samples]})
 
     ## filter FT, proteotypic and missed cleavages
     quantityList <- lapply(quantityList, function(x){
