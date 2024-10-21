@@ -406,7 +406,7 @@ matching TrPProt data to all FT and HT LiP peptides.")
     ## only keep peptides from proteins with TrPProt quantity available
     TrPProt <-  split(quantityList$TrPProt, TrPPP)
     TrPPP <- names(TrPProt)
-    TrPProt <- do.call(rbind, lapply(TrPProt, \(x){x[1,]}))
+    TrPProt <- rbindlist(lapply(TrPProt, \(x){x[1,]}))
     row.names(TrPProt) <- TrPPP
     LiPPep <- quantityList$LiPPep[LiPPP[, nameProtQuant] %in% TrPPP, ]
     LiPPP <- LiPPP[match(row.names(LiPPep),

@@ -15,6 +15,7 @@ Imports:
     FactoMineR,
     formula.tools,
     ggplot2,
+    data.table,
     grDevices,
     patchwork,
     plyr,
