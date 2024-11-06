@@ -558,9 +558,12 @@ few moments.")
         }
         else{
             myTrPOpt <- myTrPOpt[!duplicated(myTrPOpt[, nameIDQuant]),]
-            myTrPCor <- stats::cor(t(LiPPep[x,]), t(TrPPep[myTrPOpt
-                                                           [, nameIDQuant],]),
+
+            myTrPCor <- stats::cor(t(LiPPep[x, , drop = FALSE]),
+                                   t(TrPPep[myTrPOpt[, nameIDQuant], ,
+                                            drop = FALSE]),
                                    use="pairwise.complete.obs")
+
             myHighCor <- colnames(myTrPCor)[which.max(c(myTrPCor))][1]
             return(myHighCor)
         }
