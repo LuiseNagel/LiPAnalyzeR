@@ -338,7 +338,6 @@ data matrices and the 'annotPP' file.")
                                           infoCondition, maxNAs)
     }
 
-
     message(paste0(nrow(quantityList[[1]]),
 " different quantities (e.g. peptides) from originally ", nPeps,
 " remaining in filtered data matrix.
@@ -406,7 +405,7 @@ matching TrPProt data to all FT and HT LiP peptides.")
     ## only keep peptides from proteins with TrPProt quantity available
     TrPProt <-  split(quantityList$TrPProt, TrPPP)
     TrPPP <- names(TrPProt)
-    TrPProt <- rbindlist(lapply(TrPProt, \(x){x[1,]}))
+    TrPProt <- as.data.frame(data.table::rbindlist(lapply(TrPProt, \(x){x[1,]})))
     row.names(TrPProt) <- TrPPP
     LiPPep <- quantityList$LiPPep[LiPPP[, nameProtQuant] %in% TrPPP, ]
     LiPPP <- LiPPP[match(row.names(LiPPep),

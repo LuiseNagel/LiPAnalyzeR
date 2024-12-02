@@ -331,7 +331,8 @@ getPepProtAnnot <- function(reportOut,
 
     ## join Spectronaut reports if two are provided
     if(!is.null(reportOut2)){
-        reportOut <- rbindlist(list(reportOut, reportOut2))
+        reportOut <- as.data.frame(data.table::rbindlist(list(reportOut,
+                                                              reportOut2)))
     }
 
     ## creating basic peptide & protein annotation file
@@ -512,7 +513,7 @@ getEndPositionOfPep <- function(annotPP, startPosition="startPosition",
 
 joinPG <- function(annotPP, iCol, protCol="Protein"){
     annotPP <- split(annotPP, annotPP[, iCol])
-    annotPP <- rbindlist(lapply(annotPP, function(x){
+    annotPP <- data.table::rbindlist(lapply(annotPP, function(x){
         if(nrow(x)>1){
             Proteins <- unlist(strsplit(paste(x[, protCol], collapse=";"), ";"))
             Proteins <- paste(Proteins[!duplicated(Proteins)], collapse=";")
@@ -521,6 +522,7 @@ joinPG <- function(annotPP, iCol, protCol="Protein"){
         }
         return(x)
     }))
+    annotPP <- as.data.frame(annotPP)
     annotPP <- unique(annotPP)
     return(annotPP)
 }
