@@ -496,6 +496,15 @@ of them for running models.")
     }
     resAll <- NULL
 
+    ## checking if quantiyList is in data.frame/matrix format
+    if(!all(unlist(lapply(quantityList, \(x)
+                          inherits(x, c("matrix","data.frame")))))){
+        stop("Elements of 'quantityList' have to be data.frames or
+matrices.")
+    }
+    quantityList <- lapply(quantityList, as.data.frame)
+
+
     ## checking and potentially changing names of quantityList matrices
     if(sum(!names(quantityList) %in% c("LiPPep", "TrPPep", "TrPProt", "LiPProt",
                                        "Y", "XPep", "XProt"))>0){
@@ -531,6 +540,8 @@ quantityList. Please only povide one.")
 quantityList. Please only povide one.")
         }
     }
+
+    ###quantityList <- lapply(quantityList, as.data.frame)
 
     ## assuring row.names and colnames fit over all input data
     feat <- Reduce(intersect, lapply(quantityList, row.names))

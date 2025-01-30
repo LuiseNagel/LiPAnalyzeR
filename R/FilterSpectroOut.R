@@ -207,6 +207,8 @@ default. Either set mode='default' or provide quantityList as input.")
             stop("Elements of 'quantityList' have to be data.frames or
 matrices.")
         }
+        quantityList <- lapply(quantityList, as.data.frame)
+
         if(!is.null(quantityMatrix)){
             message("'quantityList' and 'quantitMatrix' are provided. Only using
 'quantityList'.")
