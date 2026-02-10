@@ -806,7 +806,7 @@ plottingProtein <- function(plotData, deltaColorIsTryptic, xlim=NULL, ylim=NULL,
         y=plotData[, "Coef"],
         yend=plotData[, "Coef"],
         col=plotData[, "Color"])) +
-        ggplot2::geom_segment(size=sz) +
+        ggplot2::geom_segment(linewidth=sz) +
         myColor +
         ggplot2::xlim(xlim) +
         ggplot2::ylim(ylim) +
